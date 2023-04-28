@@ -1,0 +1,98 @@
+name: Soroban CI
+
+on:
+  push:
+    branches:
+      - main
+      - "v*.[0-9]"
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: Run tests
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        otp: ["24"]
+        elixir: ["1.14.0"]
+    env:
+      MIX_ENV: test
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@18bf8ad2ca49c14cbb28b91346d626ccfb00c518 # v2.1.0
+        with:
+          disable-sudo: true
+          egress-policy: block
+          allowed-endpoints: >
+            coveralls.io:443
+            github.com:443
+            repo.hex.pm:443
+
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - uses: erlef/setup-beam@e3f6ffe2878180f57318bf13febd3933ee81f664 # v1.15.2
+        id: beam
+        with:
+          otp-version: "24"
+          elixir-version: "1.14.0"
+      - uses: actions/cache@627f0f41f6904a5b1efbaed9f96d9eb58e92e920 # v3.2.4
+        with:
+          path: deps
+          key: ${{ runner.os }}-mix-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
+          restore-keys: |
+            ${{ runner.os }}-mix-
+      - name: Install Dependencies
+        run: mix deps.get
+      - name: Check Formatting
+        run: mix format --check-formatted
+      - name: Restore PLT cache
+        uses: actions/cache@627f0f41f6904a5b1efbaed9f96d9eb58e92e920 # v3.2.4
+        id: plt_cache
+        with:
+          key: |
+            ${{ runner.os }}-${{ steps.beam.outputs.elixir-version }}-${{ steps.beam.outputs.otp-version }}-plt
+          restore-keys: |
+            ${{ runner.os }}-${{ steps.beam.outputs.elixir-version }}-${{ steps.beam.outputs.otp-version }}-plt
+          path: |
+            priv/plts
+      # Create PLTs if no cache was found
+      - name: Create PLTs
+        if: steps.plt_cache.outputs.cache-hit != 'true'
+        run: mix dialyzer --plt
+      - name: Run dialyzer
+        run: mix dialyzer --format short
+      - name: Run Tests and Coverage
+        run: mix coveralls.github --parallel --flagname otp-${{ matrix.otp }}-elixir-${{ matrix.elixir }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run Credo
+        run: mix credo --strict
+
+  finish:
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@18bf8ad2ca49c14cbb28b91346d626ccfb00c518 # v2.1.0
+        with:
+          disable-sudo: true
+          egress-policy: block
+          allowed-endpoints: >
+            coveralls.io:443
+
+      - name: Set BUILD_NUMBER for Pull Request event
+        if: github.event_name == 'pull_request'
+        run: echo "BUILD_NUMBER=${{ github.event.pull_request.head.sha }}-PR-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+      - name: Set BUILD_NUMBER for Push event
+        if: github.event_name == 'push'
+        run: echo "BUILD_NUMBER=${{ github.sha }}" >> $GITHUB_ENV
+      - name: Coveralls Finished
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BUILD_NUMBER: ${{ env.BUILD_NUMBER }}
+        run: |
+          curl -k "https://coveralls.io/webhook" -d "repo_token=$GITHUB_TOKEN&repo_name=$GITHUB_REPOSITORY&payload[build_num]=$BUILD_NUMBER&payload[status]=done"

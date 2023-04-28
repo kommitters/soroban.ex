@@ -1,0 +1,47 @@
+name: Soroban CD
+
+on:
+  release:
+    types: [published]
+
+permissions: # added using https://github.com/step-security/secure-workflows
+  contents: read
+
+jobs:
+  publish:
+    name: Publish Release to HEX PM
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        otp: ["24"]
+        elixir: ["1.14.0"]
+    env:
+      HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@18bf8ad2ca49c14cbb28b91346d626ccfb00c518 # v2.1.0
+        with:
+          disable-sudo: true
+          egress-policy: block
+          allowed-endpoints: >
+            github.com:443
+            hex.pm:443
+            repo.hex.pm:443
+
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - uses: erlef/setup-elixir@e3f6ffe2878180f57318bf13febd3933ee81f664 # v1.15.2
+        with:
+          otp-version: ${{ matrix.otp }}
+          elixir-version: ${{ matrix.elixir }}
+      - uses: actions/cache@627f0f41f6904a5b1efbaed9f96d9eb58e92e920 # v3.2.4
+        with:
+          path: deps
+          key: ${{ runner.os }}-mix-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
+          restore-keys: |
+            ${{ runner.os }}-mix-
+      - name: Install Dependencies
+        run: |
+          rm -rf deps _build
+          mix deps.get
+      - name: Publish
+        run: HEX_API_KEY=$HEX_API_KEY mix hex.publish --yes
