@@ -49,7 +49,7 @@ defmodule Soroban.MixProject do
 
   defp description do
     """
-    Elixir library to to deploy and invoke Soroban smart contracts
+    Elixir to interact with the Soroban-RPC server, and facilitate the deployment and invocation of Soroban smart contracts.
     """
   end
 
@@ -59,7 +59,7 @@ defmodule Soroban.MixProject do
       files: ["lib", "config", "mix.exs", "README*", "LICENSE"],
       licenses: ["MIT"],
       links: %{
-        "Changelog" => "#{@github_url}/blob/master/CHANGELOG.md",
+        "Changelog" => "#{@github_url}/blob/main/CHANGELOG.md",
         "GitHub" => @github_url,
         "Sponsor" => "https://github.com/sponsors/kommitters"
       }
