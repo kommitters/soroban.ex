@@ -49,7 +49,7 @@ defmodule Soroban.MixProject do
 
   defp description do
     """
-    Elixir to interact with the Soroban-RPC server, and facilitate the deployment and invocation of Soroban smart contracts.
+    Elixir library to interact with the Soroban-RPC server, and facilitate the deployment and invocation of Soroban smart contracts.
     """
   end
 
