@@ -1,6 +1,9 @@
 # Soroban.ex
 
-**Soroban.ex.ex** is an open source library for Elixir that allows developers to deploy and invoke **Soroban** smart contracts.
+**Soroban.ex** is an open source library for Elixir to interact with the Soroban-RPC server, and facilitate the deployment and invocation of Soroban smart contracts.
+
+> **Warning**
+> Please note that Soroban is still under development, so breaking changes may occur.
 
 ## Installation
 
