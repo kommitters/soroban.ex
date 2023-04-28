@@ -1,4 +1,4 @@
-name: Soroban CI
+name: Soroban.ex CI
 
 on:
   push:

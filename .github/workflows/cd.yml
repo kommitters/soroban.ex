@@ -1,4 +1,4 @@
-name: Soroban CD
+name: Soroban.ex CD
 
 on:
   release:
