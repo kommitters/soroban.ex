@@ -5,25 +5,20 @@ defmodule Soroban.Types.AddressTest do
   alias Stellar.TxBuild.{SCAddress, SCVal}
 
   setup do
-    address_account =
-      Address.new(account: "GB6FIXFOEK46VBDAG5USXRKKDJYFOBQZDMAPOYY6MC4KMRTSPVUH3X2A")
+    address_account = Address.new("GB6FIXFOEK46VBDAG5USXRKKDJYFOBQZDMAPOYY6MC4KMRTSPVUH3X2A")
 
-    address_contract = Address.new(contract: "GCIZ3GSM5XL7OUS4UP64THMDZ7CZ3ZWN")
+    address_contract = Address.new("CCEMOFO5TE7FGOAJOA3RDHPC6RW3CFXRVIGOFQPFE4ZGOKA2QEA636SN")
     %{address_account: address_account, address_contract: address_contract}
   end
 
   describe "new/1" do
     test "with a valid value" do
-      %Address{value: "GCIZ3GSM5XL7OUS4UP64THMDZ7CZ3ZWN", type: :contract} =
-        Address.new(contract: "GCIZ3GSM5XL7OUS4UP64THMDZ7CZ3ZWN")
+      %Address{value: "CCEMOFO5TE7FGOAJOA3RDHPC6RW3CFXRVIGOFQPFE4ZGOKA2QEA636SN"} =
+        Address.new("CCEMOFO5TE7FGOAJOA3RDHPC6RW3CFXRVIGOFQPFE4ZGOKA2QEA636SN")
     end
 
     test "with an invalid value" do
-      {:error, :invalid} = Address.new(contract: :invalid)
-    end
-
-    test "with an invalid type" do
-      {:error, :not_address_type} = Address.new(invalid: "GCIZ3GSM5XL7OUS4UP64THMDZ7CZ3ZWN")
+      {:error, :invalid_address} = Address.new("CCEMOFO5TE7FGOAJOA3RDH")
     end
 
     test "with a nil value" do
@@ -49,15 +44,11 @@ defmodule Soroban.Types.AddressTest do
     test "with a valid contract type struct", %{address_contract: address_contract} do
       %SCVal{
         type: :address,
-        value: %SCAddress{type: :contract, value: "GCIZ3GSM5XL7OUS4UP64THMDZ7CZ3ZWN"}
+        value: %SCAddress{
+          type: :contract,
+          value: "CCEMOFO5TE7FGOAJOA3RDHPC6RW3CFXRVIGOFQPFE4ZGOKA2QEA636SN"
+        }
       } = Address.to_sc_val(address_contract)
-    end
-
-    test "with a valid contract type struct but creates an invalid SCAddress" do
-      {:error, :invalid_account_id} =
-        [account: "GCIZ3GSM5XL7OUS4UP64THMDZ7CZ3ZWN"]
-        |> Address.new()
-        |> Address.to_sc_val()
     end
 
     test "with an invalid value" do

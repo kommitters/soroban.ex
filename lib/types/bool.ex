@@ -13,9 +13,7 @@ defmodule Soroban.Types.Bool do
   @type t :: %__MODULE__{value: value()}
 
   @impl true
-  def new(value) when is_boolean(value) do
-    %__MODULE__{value: value}
-  end
+  def new(value) when is_boolean(value), do: %__MODULE__{value: value}
 
   def new(_value), do: {:error, :invalid}
 
