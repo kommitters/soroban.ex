@@ -8,7 +8,7 @@ defmodule Soroban.RPC.Client.Spec do
   @type endpoint :: String.t()
   @type headers :: [{binary(), binary()}, ...]
   @type options :: Keyword.t()
-  @type params :: map()
+  @type params :: map() | nil
   @type response :: {:ok, map()}
   @type response_error :: {:error, Error.t()}
 

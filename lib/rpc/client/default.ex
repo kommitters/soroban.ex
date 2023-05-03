@@ -85,7 +85,7 @@ defmodule Soroban.RPC.Client.Default do
     |> (&[:with_body | &1]).()
   end
 
-  @spec request_body(endpoint :: String.t(), params :: map()) :: map()
+  @spec request_body(endpoint :: String.t(), params :: map() | nil) :: map()
   defp request_body(endpoint, params) do
     %{
       jsonrpc: "2.0",
