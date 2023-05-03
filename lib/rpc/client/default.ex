@@ -44,7 +44,7 @@ defmodule Soroban.RPC.Client.Default do
 
     case decoded_body do
       %{error: error} -> {:error, Error.new(error)}
-      _decoded_body -> {:ok, decoded_body}
+      %{result: result} -> {:ok, result}
     end
   end
 

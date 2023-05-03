@@ -51,11 +51,8 @@ defmodule Soroban.RPC.Request do
     do: %{request | params: params}
 
   @spec perform(request :: t()) :: response()
-  def perform(%__MODULE__{endpoint: endpoint, url: url, headers: headers, params: params}) do
-    with {:ok, %{result: result}} <- Client.request(endpoint, url, headers, params) do
-      {:ok, result}
-    end
-  end
+  def perform(%__MODULE__{endpoint: endpoint, url: url, headers: headers, params: params}),
+    do: Client.request(endpoint, url, headers, params)
 
   @spec results(response :: response(), opts :: opts()) :: parsed_response()
   def results({:ok, results}, as: resource), do: {:ok, resource.new(results)}
