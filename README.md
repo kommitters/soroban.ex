@@ -19,15 +19,16 @@ Add `soroban` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:soroban, "~> 0.1.0"}
+    {:soroban, "~> 0.3.0"}
   ]
 end
 ```
 
 ## Development
-* Install an Elixir version `v1.14` or lower.
-* Compile dependencies: `mix deps.get`.
-* Run tests: `mix test`.
+
+- Install an Elixir version `v1.14` or lower.
+- Compile dependencies: `mix deps.get`.
+- Run tests: `mix test`.
 
 ## Changelog
 
