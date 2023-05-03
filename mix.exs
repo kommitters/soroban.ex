@@ -1,7 +1,7 @@
 defmodule Soroban.MixProject do
   use Mix.Project
 
-  @version "0.1.0"
+  @version "0.2.0"
   @github_url "https://github.com/kommitters/soroban.ex"
 
   def project do
@@ -43,7 +43,8 @@ defmodule Soroban.MixProject do
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.29", only: :dev, runtime: false},
-      {:excoveralls, "~> 0.15", only: :test}
+      {:excoveralls, "~> 0.15", only: :test},
+      {:stellar_sdk, "~> 0.13.1"}
     ]
   end
 
