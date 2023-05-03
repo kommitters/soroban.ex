@@ -9,7 +9,7 @@ defmodule Soroban.RPC.Request do
 
   @default_url "https://rpc-futurenet.stellar.org:443/"
 
-  @type method :: String.t()
+  @type endpoint :: String.t()
   @type headers :: [{binary(), binary()}]
   @type params :: map() | nil
   @type opts :: Keyword.t()
@@ -18,25 +18,25 @@ defmodule Soroban.RPC.Request do
   @type url :: String.t()
 
   @type t :: %__MODULE__{
-          method: method(),
+          endpoint: endpoint(),
           url: url(),
           params: params(),
           headers: headers()
         }
 
   defstruct [
-    :method,
+    :endpoint,
     :url,
     :params,
     :headers
   ]
 
-  @spec new(method :: method(), opts :: opts()) :: t()
-  def new(method, opts \\ []) do
+  @spec new(endpoint :: endpoint(), opts :: opts()) :: t()
+  def new(endpoint, opts \\ []) do
     url = Keyword.get(opts, :url, @default_url)
 
     %__MODULE__{
-      method: method,
+      endpoint: endpoint,
       url: url,
       params: nil,
       headers: []
@@ -51,8 +51,11 @@ defmodule Soroban.RPC.Request do
     do: %{request | params: params}
 
   @spec perform(request :: t()) :: response()
-  def perform(%__MODULE__{method: method, url: url, headers: headers, params: params}),
-    do: Client.request(method, url, headers, params)
+  def perform(%__MODULE__{endpoint: endpoint, url: url, headers: headers, params: params}) do
+    with {:ok, %{result: result}} <- Client.request(endpoint, url, headers, params) do
+      {:ok, result}
+    end
+  end
 
   @spec results(response :: response(), opts :: opts()) :: parsed_response()
   def results({:ok, results}, as: resource), do: {:ok, resource.new(results)}

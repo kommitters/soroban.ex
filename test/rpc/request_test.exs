@@ -5,14 +5,14 @@ defmodule Soroban.RPC.Client.CannedRequestImpl do
 
   @impl true
   def request(
-        _method,
+        _endpoint,
         _url,
         _headers,
         _params,
         _opts
       ) do
     send(self(), {:soroban_response, 200})
-    {:ok, 200, [], nil}
+    {:ok, %{result: "result"}}
   end
 end
 
@@ -31,7 +31,7 @@ defmodule Soroban.RPC.RequestTest do
 
     url = "https://rpc-futurenet.stellar.org:443/"
     headers = [{"Content-Type", "application/json"}]
-    method = "getTransaction"
+    endpoint = "getTransaction"
 
     params = %{
       hash: "2a3c55cc19ed98e40f8eff426f1e16f2cff84bb0a75be45c2ed4b62159380e9a"
@@ -39,41 +39,41 @@ defmodule Soroban.RPC.RequestTest do
 
     %{
       url: url,
-      method: method,
+      endpoint: endpoint,
       headers: headers,
       params: params
     }
   end
 
-  test "new/1", %{url: url, method: method} do
+  test "new/1", %{url: url, endpoint: endpoint} do
     %Request{
-      method: ^method,
+      endpoint: ^endpoint,
       url: ^url,
       params: nil,
       headers: []
-    } = Request.new(method)
+    } = Request.new(endpoint)
   end
 
-  test "add_params/2", %{method: method, params: params} do
-    %Request{method: ^method, params: ^params} =
-      method
+  test "add_params/2", %{endpoint: endpoint, params: params} do
+    %Request{endpoint: ^endpoint, params: ^params} =
+      endpoint
       |> Request.new()
       |> Request.add_params(params)
   end
 
-  test "add_headers/2", %{method: method, headers: headers} do
-    %Request{method: ^method, headers: ^headers} =
-      method
+  test "add_headers/2", %{endpoint: endpoint, headers: headers} do
+    %Request{endpoint: ^endpoint, headers: ^headers} =
+      endpoint
       |> Request.new()
       |> Request.add_headers(headers)
   end
 
   test "perform/2", %{
-    method: method,
+    endpoint: endpoint,
     params: params,
     headers: headers
   } do
-    method
+    endpoint
     |> Request.new()
     |> Request.add_params(params)
     |> Request.add_headers(headers)
