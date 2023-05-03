@@ -1,9 +1,12 @@
 defmodule Soroban.RPC.Endpoint.Spec do
   @moduledoc """
-  Defines RPC response type constructions.
+  Specifies the callbacks to build the Soroban's endpoints.
   """
-  @type response :: tuple()
-  @type transaction :: String.t()
 
-  @callback request(transaction :: transaction()) :: response()
+  alias Soroban.RPC.{Error, HTTPError}
+
+  @type response :: {:ok, struct()} | {:error, Error.t() | HTTPError.t()}
+  @type params :: String.t() | Keyword.t() | nil
+
+  @callback request(params :: params()) :: response()
 end
