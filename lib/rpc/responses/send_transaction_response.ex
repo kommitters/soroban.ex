@@ -1,10 +1,10 @@
-defmodule Soroban.RPC.Responses.SendTransactionResponse do
+defmodule Soroban.RPC.SendTransactionResponse do
   @moduledoc """
   `SendTransactionResponse` struct definition.
   """
   @behaviour Soroban.RPC.Response.Spec
 
-  @type status :: :pending | :duplicate | :try_again_later | :error
+  @type status :: String.t()
   @type hash :: binary()
   @type latest_ledger :: String.t()
   @type latest_ledger_close_time :: String.t()

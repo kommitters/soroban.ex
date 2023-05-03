@@ -1,7 +1,7 @@
-defmodule Soroban.RPC.Responses.SendTransactionResponseTest do
+defmodule Soroban.RPC.SendTransactionResponseTest do
   use ExUnit.Case
 
-  alias Soroban.RPC.Responses.SendTransactionResponse
+  alias Soroban.RPC.SendTransactionResponse
 
   setup do
     result = %{

@@ -1,10 +1,10 @@
-defmodule Soroban.RPC.Responses.GetTransactionResponse do
+defmodule Soroban.RPC.GetTransactionResponse do
   @moduledoc """
   `GetTransactionResponse` struct definition.
   """
   @behaviour Soroban.RPC.Response.Spec
 
-  @type status :: :success | :not_found | :failed
+  @type status :: String.t()
   @type latest_ledger :: String.t()
   @type latest_ledger_close_time :: String.t()
   @type oldest_ledger :: String.t()

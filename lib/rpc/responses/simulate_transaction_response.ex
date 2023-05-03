@@ -1,4 +1,4 @@
-defmodule Soroban.RPC.Responses.SimulateTransactionResponse do
+defmodule Soroban.RPC.SimulateTransactionResponse do
   @moduledoc """
   `SimulateTransactionResponse` struct definition.
   """
@@ -7,7 +7,7 @@ defmodule Soroban.RPC.Responses.SimulateTransactionResponse do
   @type results :: list(map())
   @type cost :: map()
   @type latest_ledger :: String.t()
-  @type error :: String.t()
+  @type error :: String.t() | nil
   @type t :: %__MODULE__{
           results: results(),
           cost: cost(),

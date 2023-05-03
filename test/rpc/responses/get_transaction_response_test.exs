@@ -1,7 +1,7 @@
-defmodule Soroban.RPC.Responses.GetTransactionResponseTest do
+defmodule Soroban.RPC.GetTransactionResponseTest do
   use ExUnit.Case
 
-  alias Soroban.RPC.Responses.GetTransactionResponse
+  alias Soroban.RPC.GetTransactionResponse
 
   setup do
     not_found_result = %{
