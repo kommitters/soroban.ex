@@ -52,9 +52,7 @@ defmodule Soroban.RPC.DefaultClientTest do
     test "success", %{url: url, headers: headers, endpoint: endpoint} do
       {:ok,
        %{
-         result: %{
-           status: "healthy"
-         }
+         status: "healthy"
        }} = Client.request(endpoint, url, headers)
     end
 
