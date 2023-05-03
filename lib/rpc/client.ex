@@ -1,6 +1,6 @@
 defmodule Soroban.RPC.Client do
   @moduledoc """
-  Specifies the RPC for processing HTTP requests in the Soroban endpoint.
+  Specifies the API for processing HTTP requests in the Soroban-RPC server.
   """
   alias Soroban.RPC.Client
 
