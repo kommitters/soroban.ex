@@ -4,7 +4,7 @@ defmodule Soroban.RPC.CannedClientImpl do
   @behaviour Soroban.RPC.Client.Spec
 
   @impl true
-  def request(_method, _url, _headers, _body, _opts) do
+  def request(_endpoint, _url, _headers, _body, _opts) do
     send(self(), {:request, "RESPONSE"})
     :ok
   end

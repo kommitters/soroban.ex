@@ -1,6 +1,6 @@
 defmodule Soroban.RPC.HTTPError do
   @moduledoc """
-  Represents an error which occurred during a Soroban RPC call.
+  Represents an error which occurred during a HTTP request.
   """
 
   @type status :: 400..599 | :network_error

@@ -24,11 +24,11 @@ defmodule Soroban.RPC.Client.Default do
   }
 
   @impl true
-  def request(soroban_method, url, headers \\ [], params \\ nil, opts \\ []) do
+  def request(endpoint, url, headers \\ [], params \\ nil, opts \\ []) do
     options = http_options(opts)
 
     body =
-      soroban_method
+      endpoint
       |> request_body(params)
       |> json_library().encode!()
 
@@ -85,11 +85,12 @@ defmodule Soroban.RPC.Client.Default do
     |> (&[:with_body | &1]).()
   end
 
-  defp request_body(method, params) do
+  @spec request_body(endpoint :: String.t(), params :: map()) :: map()
+  defp request_body(endpoint, params) do
     %{
       jsonrpc: "2.0",
-      id: UUID.uuid4(:hex),
-      method: method,
+      id: 1,
+      method: endpoint,
       params: params
     }
   end

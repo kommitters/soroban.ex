@@ -5,7 +5,7 @@ defmodule Soroban.RPC.Client.Spec do
 
   alias Soroban.RPC.Error
 
-  @type method :: String.t()
+  @type endpoint :: String.t()
   @type headers :: [{binary(), binary()}, ...]
   @type options :: Keyword.t()
   @type params :: map()
@@ -13,7 +13,7 @@ defmodule Soroban.RPC.Client.Spec do
   @type response_error :: {:error, Error.t()}
 
   @callback request(
-              method :: method(),
+              endpoint :: endpoint(),
               url :: binary(),
               headers :: headers(),
               params :: params(),

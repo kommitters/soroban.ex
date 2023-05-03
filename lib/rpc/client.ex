@@ -7,8 +7,8 @@ defmodule Soroban.RPC.Client do
   @behaviour Client.Spec
 
   @impl true
-  def request(method, url, headers \\ [], params \\ nil, opts \\ []),
-    do: impl().request(method, url, headers, params, opts)
+  def request(endpoint, url, headers \\ [], params \\ nil, opts \\ []),
+    do: impl().request(endpoint, url, headers, params, opts)
 
   @spec impl() :: atom()
   defp impl do

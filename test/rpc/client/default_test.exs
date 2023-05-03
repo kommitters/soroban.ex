@@ -19,8 +19,8 @@ defmodule Soroban.RPC.CannedHTTPClient do
 
   def request(:post, _url, _headers, body, _opt) do
     json_body =
-      if Regex.match?(~r/\"method\":\"InvalidMethod\"/, body) do
-        "{\"error\":{\"code\":-32601,\"data\":\"InvalidMethod\",\"message\":\"method not found\"},\"id\":8675309,\"jsonrpc\":\"2.0\"}"
+      if Regex.match?(~r/\"method\":\"InvalidEndpoint\"/, body) do
+        "{\"error\":{\"code\":-32601,\"data\":\"InvalidEndpoint\",\"message\":\"method not found\"},\"id\":8675309,\"jsonrpc\":\"2.0\"}"
       else
         "{\"id\":8675309,\"jsonrpc\":\"2.0\",\"result\":{\"status\":\"healthy\"}}"
       end
@@ -44,18 +44,18 @@ defmodule Soroban.RPC.DefaultClientTest do
     %{
       url: "https://rpc-futurenet.stellar.org:443/",
       headers: [{"Content-Type", "application/json"}],
-      method: "getHealth"
+      endpoint: "getHealth"
     }
   end
 
   describe "request/5" do
-    test "success", %{url: url, headers: headers, method: method} do
+    test "success", %{url: url, headers: headers, endpoint: endpoint} do
       {:ok,
        %{
          result: %{
            status: "healthy"
          }
-       }} = Client.request(method, url, headers)
+       }} = Client.request(endpoint, url, headers)
     end
 
     test "success with error", %{url: url, headers: headers} do
@@ -63,31 +63,32 @@ defmodule Soroban.RPC.DefaultClientTest do
        %Error{
          code: -32_601,
          message: "method not found"
-       }} = Client.request("InvalidMethod", url, headers)
+       }} = Client.request("InvalidEndpoint", url, headers)
     end
 
-    test "with an invalid url", %{method: method} do
+    test "with an invalid url", %{endpoint: endpoint} do
       {:error, %HTTPError{status: 404, message: "not found"}} =
-        Client.request(method, "/not_existing_url", [])
+        Client.request(endpoint, "/not_existing_url", [])
     end
 
-    test "without headers", %{url: url, method: method} do
-      {:error, %HTTPError{status: 415, message: "client error"}} = Client.request(method, url, [])
+    test "without headers", %{url: url, endpoint: endpoint} do
+      {:error, %HTTPError{status: 415, message: "client error"}} =
+        Client.request(endpoint, url, [])
     end
 
-    test "with an unauthorized access", %{headers: headers, method: method} do
+    test "with an unauthorized access", %{headers: headers, endpoint: endpoint} do
       {:error, %HTTPError{status: 401, message: "unauthorized"}} =
-        Client.request(method, "/url_not_authorized", headers)
+        Client.request(endpoint, "/url_not_authorized", headers)
     end
 
-    test "with a server error", %{headers: headers, method: method} do
+    test "with a server error", %{headers: headers, endpoint: endpoint} do
       {:error, %HTTPError{status: 500, message: "server error"}} =
-        Client.request(method, "/server_error_mock", headers)
+        Client.request(endpoint, "/server_error_mock", headers)
     end
 
-    test "timeout", %{url: url, headers: headers, method: method} do
+    test "timeout", %{url: url, headers: headers, endpoint: endpoint} do
       {:error, %HTTPError{status: :network_error, message: :timeout}} =
-        Client.request(method, url, headers, %{}, recv_timeout: 1)
+        Client.request(endpoint, url, headers, %{}, recv_timeout: 1)
     end
   end
 end

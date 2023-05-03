@@ -45,8 +45,7 @@ defmodule Soroban.MixProject do
       {:ex_doc, "~> 0.29", only: :dev, runtime: false},
       {:excoveralls, "~> 0.15", only: :test},
       {:stellar_sdk, "~> 0.13.1"},
-      {:hackney, "~> 1.18"},
-      {:uuid, "~> 1.1"}
+      {:hackney, "~> 1.18"}
     ]
   end
 
