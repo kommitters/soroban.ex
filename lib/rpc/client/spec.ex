@@ -9,8 +9,8 @@ defmodule Soroban.RPC.Client.Spec do
   @type headers :: [{binary(), binary()}, ...]
   @type options :: Keyword.t()
   @type params :: map() | nil
-  @type response :: {:ok, map()}
-  @type response_error :: {:error, Error.t() | HTTPError.t()}
+  @type success_response :: {:ok, map()}
+  @type error_response :: {:error, Error.t() | HTTPError.t()}
 
   @callback request(
               endpoint :: endpoint(),
@@ -18,5 +18,5 @@ defmodule Soroban.RPC.Client.Spec do
               headers :: headers(),
               params :: params(),
               options :: options()
-            ) :: response() | response_error()
+            ) :: success_response() | error_response()
 end
