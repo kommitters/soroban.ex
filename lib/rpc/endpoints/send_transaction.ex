@@ -1,6 +1,6 @@
 defmodule Soroban.RPC.SendTransaction do
   @moduledoc """
-  To perform a request to SendTransaction endpoint for Soroban.
+  SendTransaction request implementation for Soroban RPC.
   """
   @behaviour Soroban.RPC.Endpoint.Spec
 
