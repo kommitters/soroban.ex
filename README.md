@@ -19,7 +19,7 @@ Add `soroban` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:soroban, "~> 0.3.0"}
+    {:soroban, "~> 0.4.0"}
   ]
 end
 ```
