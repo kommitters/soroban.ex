@@ -46,44 +46,36 @@ defmodule Soroban.Contract.InvokeHostFunction do
         function_args,
         auth_accounts \\ []
       ) do
-    function_args = covert_to_sc_val(function_args)
-    keypair = {public_key, _secret} = Stellar.KeyPair.from_secret_seed(source_secret_key)
-    signature = Signature.new(keypair)
-    source_account = Account.new(public_key)
-    {:ok, seq_num} = Accounts.fetch_next_sequence_number(public_key)
-    sequence_number = SequenceNumber.new(seq_num)
+    with {public_key, _secret} = keypair <- Stellar.KeyPair.from_secret_seed(source_secret_key),
+         {:ok, seq_num} <- Accounts.fetch_next_sequence_number(public_key),
+         {:ok, function_args} <- covert_to_sc_val(function_args),
+         signature <- Signature.new(keypair),
+         source_account <- Account.new(public_key),
+         sequence_number <- SequenceNumber.new(seq_num),
+         auth_account <- Enum.at(auth_accounts, 0) do
+      invoke_host_function_op = create_host_function_op(contract_id, function_name, function_args)
 
-    function =
-      HostFunction.new(
-        type: :invoke,
-        contract_id: contract_id,
-        function_name: function_name,
-        args: function_args
-      )
-
-    invoke_host_function_op = InvokeHostFunction.new(function: function)
-    auth_account = Enum.at(auth_accounts, 0)
-
-    source_account
-    |> simulate(sequence_number, invoke_host_function_op)
-    |> send_transaction(
-      source_account,
-      sequence_number,
-      signature,
-      auth_account,
       invoke_host_function_op
-    )
+      |> simulate(source_account, sequence_number)
+      |> send_transaction(
+        source_account,
+        sequence_number,
+        signature,
+        auth_account,
+        invoke_host_function_op
+      )
+    end
   end
 
   @spec simulate(
+          invoke_host_function_op :: invoke_host_function(),
           source_account :: account(),
-          sequence_number :: sequence_number(),
-          invoke_host_function_op :: invoke_host_function()
+          sequence_number :: sequence_number()
         ) :: simulate_response()
   defp simulate(
+         invoke_host_function_op,
          source_account,
-         sequence_number,
-         invoke_host_function_op
+         sequence_number
        ) do
     {:ok, envelop_xdr} =
       source_account
@@ -133,6 +125,23 @@ defmodule Soroban.Contract.InvokeHostFunction do
        ),
        do: response
 
+  @spec create_host_function_op(
+          contract_id :: contract_id(),
+          function_name :: function_name(),
+          function_args :: function_args()
+        ) :: invoke_host_function()
+  defp create_host_function_op(contract_id, function_name, function_args) do
+    function =
+      HostFunction.new(
+        type: :invoke,
+        contract_id: contract_id,
+        function_name: function_name,
+        args: function_args
+      )
+
+    InvokeHostFunction.new(function: function)
+  end
+
   @spec set_invoke_host_function_params(
           invoke_host_function :: invoke_host_function(),
           footprint :: String.t(),
@@ -156,7 +165,9 @@ defmodule Soroban.Contract.InvokeHostFunction do
   defp set_invoke_host_function_params(invoke_host_function_op, footprint, nil, _auth_account),
     do: InvokeHostFunction.set_footprint(invoke_host_function_op, footprint)
 
-  @spec covert_to_sc_val(function_args :: function_args()) :: sc_val_list()
-  defp covert_to_sc_val(function_args),
-    do: Enum.map(function_args, fn %{__struct__: struct} = arg -> struct.to_sc_val(arg) end)
+  @spec covert_to_sc_val(function_args :: function_args()) :: {:ok, sc_val_list()}
+  defp covert_to_sc_val(function_args) do
+    sc_vals = Enum.map(function_args, fn %{__struct__: struct} = arg -> struct.to_sc_val(arg) end)
+    {:ok, sc_vals}
+  end
 end
