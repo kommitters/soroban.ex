@@ -9,7 +9,7 @@ defmodule Soroban.Contract do
                 contract_id,
                 source_secret_key,
                 function_name,
-                function_args,
+                function_args \\ [],
                 auth_accounts \\ []
               ),
               to: InvokeHostFunction,
