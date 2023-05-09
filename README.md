@@ -156,6 +156,85 @@ Soroban.RPC.get_transaction(hash)
 
 ```
 
+## Invoke contracts functions
+
+### Invoke without required authorization 
+
+```elixir
+alias Soroban.Contract
+alias Soroban.Types.Symbol
+
+Contract.invoke(
+  "be4138b31cc5d0d9d91b53193d74316d254406794ec0f81d3ed40f4dc1b86a6e",
+  "SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK",
+  "hello",
+  [Symbol.new("world")]
+)
+
+{:ok,
+ %Soroban.RPC.SendTransactionResponse{
+   status: "PENDING",
+   hash: "f62cb9e20c6d297316f49dca2041be4bf1af6b069c784764e51ac008b313d716",
+   latest_ledger: "570194",
+   latest_ledger_close_time: "1683643419",
+   error_result_xdr: nil
+ }}
+```
+
+### Invoke with required authorization 
+
+- When the invoker is the signer
+
+
+```elixir
+alias Soroban.Contract
+alias Soroban.Types.{Address, UInt128}
+
+Soroban.Contract.invoke(
+  "be4138b31cc5d0d9d91b53193d74316d254406794ec0f81d3ed40f4dc1b86a6e",
+  "SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK",
+  "inc",
+  [Address.new("GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"), UInt128.new(2)]
+)
+
+{:ok,
+ %Soroban.RPC.SendTransactionResponse{
+   status: "PENDING",
+   hash: "e888193b4fed9b3ca6ad2beca3c1ed5bef3e0099e558756de85d03511cbaa00b",
+   latest_ledger: "570253",
+   latest_ledger_close_time: "1683643728",
+   error_result_xdr: nil
+ }}
+``` 
+
+- When the invokers is not the signer 
+
+```elixir
+alias Soroban.Contract
+alias Soroban.Types.{Address, Int128}
+
+Contract.invoke(
+  "be4138b31cc5d0d9d91b53193d74316d254406794ec0f81d3ed40f4dc1b86a6e",
+  "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24",
+  "swap",
+  [
+    Address.new("GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"),
+    Int128.new(100),
+    Int128.new(4500)
+  ],
+  ["SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK"]
+)
+
+{:ok,
+ %Soroban.RPC.SendTransactionResponse{
+   status: "PENDING",
+   hash: "da263f59a8f8b29f415e7e26758cad6e8d88caec875112641b88757ce8e01873",
+   latest_ledger: "570349",
+   latest_ledger_close_time: "1683644240",
+   error_result_xdr: nil
+ }}
+```
+
 ## Development
 
 - Install an Elixir version `v1.14` or lower.
