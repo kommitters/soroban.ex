@@ -1,4 +1,4 @@
-defmodule Stellar.Horizon.Client.ContractCannedAccountRequests do
+defmodule Stellar.Horizon.Client.CannedContractAccountRequests do
   @moduledoc false
 
   @base_url "https://horizon-testnet.stellar.org"
@@ -14,7 +14,7 @@ defmodule Stellar.Horizon.Client.ContractCannedAccountRequests do
   end
 end
 
-defmodule Soroban.RPC.ContractCannedClientImpl do
+defmodule Soroban.RPC.CannedContractClientImpl do
   @moduledoc false
 
   @behaviour Soroban.RPC.Client.Spec
@@ -66,15 +66,15 @@ defmodule Soroban.ContractTest do
   alias Soroban.Types.Symbol
 
   alias Soroban.RPC.{
-    ContractCannedClientImpl,
+    CannedContractClientImpl,
     SendTransactionResponse
   }
 
-  alias Stellar.Horizon.Client.ContractCannedAccountRequests
+  alias Stellar.Horizon.Client.CannedContractAccountRequests
 
   setup do
-    Application.put_env(:stellar_sdk, :http_client, ContractCannedAccountRequests)
-    Application.put_env(:soroban, :http_client_impl, ContractCannedClientImpl)
+    Application.put_env(:stellar_sdk, :http_client, CannedContractAccountRequests)
+    Application.put_env(:soroban, :http_client_impl, CannedContractClientImpl)
 
     on_exit(fn ->
       Application.delete_env(:stellar_sdk, :http_client)

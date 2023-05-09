@@ -34,7 +34,7 @@ defmodule Stellar.Horizon.Client.CannedAccountRequests do
   end
 end
 
-defmodule Soroban.RPC.InvokeHostFunctionCannedClientImpl do
+defmodule Soroban.RPC.CannedInvokeHostFunctionClientImpl do
   @moduledoc false
 
   @behaviour Soroban.RPC.Client.Spec
@@ -139,7 +139,7 @@ defmodule Soroban.Contract.InvokeHostFunctionTest do
   alias Soroban.Types.Symbol
 
   alias Soroban.RPC.{
-    InvokeHostFunctionCannedClientImpl,
+    CannedInvokeHostFunctionClientImpl,
     SendTransactionResponse,
     SimulateTransactionResponse
   }
@@ -148,7 +148,7 @@ defmodule Soroban.Contract.InvokeHostFunctionTest do
 
   setup do
     Application.put_env(:stellar_sdk, :http_client, CannedAccountRequests)
-    Application.put_env(:soroban, :http_client_impl, InvokeHostFunctionCannedClientImpl)
+    Application.put_env(:soroban, :http_client_impl, CannedInvokeHostFunctionClientImpl)
 
     on_exit(fn ->
       Application.delete_env(:stellar_sdk, :http_client)

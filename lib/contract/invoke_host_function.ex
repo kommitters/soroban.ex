@@ -48,7 +48,7 @@ defmodule Soroban.Contract.InvokeHostFunction do
       ) do
     with {public_key, _secret} = keypair <- Stellar.KeyPair.from_secret_seed(source_secret_key),
          {:ok, seq_num} <- Accounts.fetch_next_sequence_number(public_key),
-         {:ok, function_args} <- covert_to_sc_val(function_args),
+         {:ok, function_args} <- convert_to_sc_val(function_args),
          signature <- Signature.new(keypair),
          source_account <- Account.new(public_key),
          sequence_number <- SequenceNumber.new(seq_num),
@@ -165,8 +165,8 @@ defmodule Soroban.Contract.InvokeHostFunction do
   defp set_invoke_host_function_params(invoke_host_function_op, footprint, nil, _auth_account),
     do: InvokeHostFunction.set_footprint(invoke_host_function_op, footprint)
 
-  @spec covert_to_sc_val(function_args :: function_args()) :: {:ok, sc_val_list()}
-  defp covert_to_sc_val(function_args) do
+  @spec convert_to_sc_val(function_args :: function_args()) :: {:ok, sc_val_list()}
+  defp convert_to_sc_val(function_args) do
     sc_vals = Enum.map(function_args, fn %{__struct__: struct} = arg -> struct.to_sc_val(arg) end)
     {:ok, sc_vals}
   end
