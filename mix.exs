@@ -1,7 +1,7 @@
 defmodule Soroban.MixProject do
   use Mix.Project
 
-  @version "0.4.0"
+  @version "0.5.0"
   @github_url "https://github.com/kommitters/soroban.ex"
 
   def project do
@@ -81,7 +81,41 @@ defmodule Soroban.MixProject do
   end
 
   defp groups_for_modules do
-    []
+    [
+      Contract: [
+        Soroban.Contract,
+        Soroban.Contract.InvokeHostFunction
+      ],
+      RPC: [
+        Soroban.RPC,
+        Soroban.RPC.Request,
+        Soroban.RPC.GetTransaction,
+        Soroban.RPC.GetTransactionResponse,
+        Soroban.RPC.SendTransaction,
+        Soroban.RPC.SendTransactionResponse,
+        Soroban.RPC.SimulateTransaction,
+        Soroban.RPC.SimulateTransactionResponse,
+        Soroban.RPC.Error,
+        Soroban.RPC.HTTPError
+      ],
+      Types: [
+        Soroban.Types.Address,
+        Soroban.Types.Bool,
+        Soroban.Types.Bytes,
+        Soroban.Types.Duration,
+        Soroban.Types.Int32,
+        Soroban.Types.Int64,
+        Soroban.Types.Int128,
+        Soroban.Types.Int256,
+        Soroban.Types.String,
+        Soroban.Types.Symbol,
+        Soroban.Types.TimePoint,
+        Soroban.Types.UInt32,
+        Soroban.Types.UInt64,
+        Soroban.Types.UInt128,
+        Soroban.Types.UInt256
+      ]
+    ]
   end
 
   defp extras() do
