@@ -1,4 +1,4 @@
-defmodule Soroban.RPC.RPCSendTransactionCannedClientImpl do
+defmodule Soroban.RPC.CannedRPCSendTransactionClientImpl do
   @moduledoc false
 
   @behaviour Soroban.RPC.Client.Spec
@@ -17,7 +17,7 @@ defmodule Soroban.RPC.RPCSendTransactionCannedClientImpl do
   end
 end
 
-defmodule Soroban.RPC.RPCSimulateTransactionCannedClientImpl do
+defmodule Soroban.RPC.CannedRPCSimulateTransactionClientImpl do
   @moduledoc false
 
   @behaviour Soroban.RPC.Client.Spec
@@ -43,7 +43,23 @@ defmodule Soroban.RPC.RPCSimulateTransactionCannedClientImpl do
   end
 end
 
-defmodule Soroban.RPC.RPCGetTransactionCannedClientImpl do
+defmodule Soroban.RPC.CannedRPCGetHealthClientImpl do
+  @moduledoc false
+
+  @behaviour Soroban.RPC.Client.Spec
+
+  @impl true
+  def request(_endpoint, _url, _headers, _body, _opts) do
+    send(self(), {:request, "RESPONSE"})
+
+    {:ok,
+     %{
+       status: "healthy"
+     }}
+  end
+end
+
+defmodule Soroban.RPC.CannedRPCGetTransactionClientImpl do
   @moduledoc false
 
   @behaviour Soroban.RPC.Client.Spec
@@ -75,19 +91,21 @@ defmodule Soroban.RPCTest do
   use ExUnit.Case
 
   alias Soroban.RPC
+  alias Soroban.RPC.CannedRPCGetHealthClientImpl
 
   alias Soroban.RPC.{
+    CannedRPCGetTransactionClientImpl,
+    CannedRPCSendTransactionClientImpl,
+    CannedRPCSimulateTransactionClientImpl,
+    GetHealthResponse,
     GetTransactionResponse,
-    RPCGetTransactionCannedClientImpl,
-    RPCSendTransactionCannedClientImpl,
-    RPCSimulateTransactionCannedClientImpl,
     SendTransactionResponse,
     SimulateTransactionResponse
   }
 
   describe "simulate_transaction/1" do
     setup do
-      Application.put_env(:soroban, :http_client_impl, RPCSimulateTransactionCannedClientImpl)
+      Application.put_env(:soroban, :http_client_impl, CannedRPCSimulateTransactionClientImpl)
 
       on_exit(fn ->
         Application.delete_env(:soroban, :http_client_impl)
@@ -120,7 +138,7 @@ defmodule Soroban.RPCTest do
 
   describe "send_transaction/1" do
     setup do
-      Application.put_env(:soroban, :http_client_impl, RPCSendTransactionCannedClientImpl)
+      Application.put_env(:soroban, :http_client_impl, CannedRPCSendTransactionClientImpl)
 
       on_exit(fn ->
         Application.delete_env(:soroban, :http_client_impl)
@@ -146,7 +164,7 @@ defmodule Soroban.RPCTest do
 
   describe "get_transaction/1" do
     setup do
-      Application.put_env(:soroban, :http_client_impl, RPCGetTransactionCannedClientImpl)
+      Application.put_env(:soroban, :http_client_impl, CannedRPCGetTransactionClientImpl)
 
       on_exit(fn ->
         Application.delete_env(:soroban, :http_client_impl)
@@ -174,6 +192,20 @@ defmodule Soroban.RPCTest do
            "AAAAAwAAAAIAAAADAAdFBQAAAAAAAAAAwT6e0zIpycpZ5/unUFyQAjXNeSxfmidj8tQWkeD9dCQAAAAXDNwRHAAAUF8AAAAgAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAwAAAAAAB0J+AAAAAGRSydYAAAAAAAAAAQAHRQUAAAAAAAAAAME+ntMyKcnKWef7p1BckAI1zXksX5onY/LUFpHg/XQkAAAAFwzcERwAAFBfAAAAIQAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAMAAAAAAAdFBQAAAABkUtcZAAAAAAAAAAEAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAGQAAAAAAAAAAQAAAAAAAAAYAAAAAAAAABAAAAABAAAAAgAAAA8AAAAFSGVsbG8AAAAAAAAPAAAABXdvcmxkAAAAAAAAAKQ1a84I/mDKy5j2B/YFeyfTCsTBoKJtON5QDfqS06qwy7xIdQ3ruFNQk7Per4isf0z/h0JVdqWN4rrHVKzbRhYD6NIFNZRcltVrmGLx9Y+ku182sxlHjDdsZ28pYul9HwAAAAA=",
          ledger: "476421"
        }} = RPC.get_transaction(hash)
+    end
+  end
+
+  describe "get_health/1" do
+    setup do
+      Application.put_env(:soroban, :http_client_impl, CannedRPCGetHealthClientImpl)
+
+      on_exit(fn ->
+        Application.delete_env(:soroban, :http_client_impl)
+      end)
+    end
+
+    test "request" do
+      {:ok, %GetHealthResponse{status: "healthy"}} = RPC.get_health()
     end
   end
 end
