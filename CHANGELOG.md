@@ -1,6 +1,10 @@
 # Changelog
 
-## 0.4.0 (09.05.2023)
+## 0.6.0 (11.05.2023)
+
+- [Soroban compound types](https://github.com/kommitters/soroban.ex/issues/43)
+
+## 0.5.0 (09.05.2023)
 
 - [Invoke Contract Function](https://github.com/kommitters/soroban.ex/issues/23)
 
