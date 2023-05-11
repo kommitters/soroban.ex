@@ -1,7 +1,7 @@
 defmodule Soroban.MixProject do
   use Mix.Project
 
-  @version "0.5.0"
+  @version "0.6.0"
   @github_url "https://github.com/kommitters/soroban.ex"
 
   def project do
@@ -113,7 +113,15 @@ defmodule Soroban.MixProject do
         Soroban.Types.UInt32,
         Soroban.Types.UInt64,
         Soroban.Types.UInt128,
-        Soroban.Types.UInt256
+        Soroban.Types.UInt256,
+        Soroban.Types.Vec,
+        Soroban.Types.Tuple,
+        Soroban.Types.MapEntry,
+        Soroban.Types.Map,
+        Soroban.Types.Enum,
+        Soroban.Types.StructField,
+        Soroban.Types.Struct,
+        Soroban.Types.Option
       ]
     ]
   end
