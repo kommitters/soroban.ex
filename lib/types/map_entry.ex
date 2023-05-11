@@ -19,14 +19,14 @@ defmodule Soroban.Types.MapEntry do
   def new(_args), do: {:error, :invalid}
 
   @impl true
-  def to_map_entry(%__MODULE__{key: key, value: value}) do
+  def to_sc_map_entry(%__MODULE__{key: key, value: value}) do
     key = param_to_sc_val(key)
     value = param_to_sc_val(value)
 
     SCMapEntry.new(key, value)
   end
 
-  def to_map_entry(_error), do: {:error, :invalid_struct_map_entry}
+  def to_sc_map_entry(_error), do: {:error, :invalid_struct_map_entry}
 
   @spec param_to_sc_val(param :: struct()) :: sc_val()
   defp param_to_sc_val(param) do

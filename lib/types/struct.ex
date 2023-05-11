@@ -7,6 +7,7 @@ defmodule Soroban.Types.Struct do
 
   alias Soroban.Types.StructField
   alias Stellar.TxBuild.SCVal
+
   defstruct [:values]
 
   @type errors :: atom()
@@ -26,7 +27,7 @@ defmodule Soroban.Types.Struct do
   @impl true
   def to_sc_val(%__MODULE__{values: values}) do
     values
-    |> Enum.map(&StructField.to_map_entry/1)
+    |> Enum.map(&StructField.to_sc_map_entry/1)
     |> (&SCVal.new(map: &1)).()
   end
 

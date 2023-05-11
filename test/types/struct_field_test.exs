@@ -30,16 +30,16 @@ defmodule Soroban.Types.StructFieldTest do
     end
   end
 
-  describe "to_map_entry/1" do
+  describe "to_sc_map_entry/1" do
     test "with a valid vec type struct", %{struct: struct} do
       %SCMapEntry{
         key: %SCVal{type: :symbol, value: "foo"},
         val: %SCVal{type: :u32, value: 100}
-      } = StructField.to_map_entry(struct)
+      } = StructField.to_sc_map_entry(struct)
     end
 
     test "with an invalid value" do
-      {:error, :invalid_struct_field} = StructField.to_map_entry(nil)
+      {:error, :invalid_struct_field} = StructField.to_sc_map_entry(nil)
     end
   end
 end

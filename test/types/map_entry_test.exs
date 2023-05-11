@@ -30,16 +30,16 @@ defmodule Soroban.Types.MapEntryTest do
     end
   end
 
-  describe "to_map_entry/1" do
+  describe "to_sc_map_entry/1" do
     test "with a valid vec type struct", %{entry: entry} do
       %SCMapEntry{
         key: %SCVal{type: :symbol, value: "key"},
         val: %SCVal{type: :u32, value: 100}
-      } = MapEntry.to_map_entry(entry)
+      } = MapEntry.to_sc_map_entry(entry)
     end
 
     test "with an invalid value" do
-      {:error, :invalid_struct_map_entry} = MapEntry.to_map_entry(nil)
+      {:error, :invalid_struct_map_entry} = MapEntry.to_sc_map_entry(nil)
     end
   end
 end

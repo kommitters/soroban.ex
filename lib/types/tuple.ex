@@ -25,5 +25,5 @@ defmodule Soroban.Types.Tuple do
     |> (&SCVal.new(vec: &1)).()
   end
 
-  def to_sc_val(_error), do: {:error, :invalid_struct_vec}
+  def to_sc_val(_error), do: {:error, :invalid_struct_tuple}
 end

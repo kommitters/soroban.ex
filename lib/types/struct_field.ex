@@ -21,7 +21,7 @@ defmodule Soroban.Types.StructField do
   def new(_args), do: {:error, :invalid}
 
   @impl true
-  def to_map_entry(%__MODULE__{key: key, value: value}) do
+  def to_sc_map_entry(%__MODULE__{key: key, value: value}) do
     value = param_to_sc_val(value)
 
     key
@@ -30,7 +30,7 @@ defmodule Soroban.Types.StructField do
     |> SCMapEntry.new(value)
   end
 
-  def to_map_entry(_error), do: {:error, :invalid_struct_field}
+  def to_sc_map_entry(_error), do: {:error, :invalid_struct_field}
 
   @spec param_to_sc_val(param :: struct()) :: sc_val()
   defp param_to_sc_val(param) do

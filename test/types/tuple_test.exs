@@ -41,7 +41,7 @@ defmodule Soroban.Types.TupleTest do
     end
 
     test "with an invalid value" do
-      {:error, :invalid_struct_vec} = Tuple.to_sc_val(nil)
+      {:error, :invalid_struct_tuple} = Tuple.to_sc_val(nil)
     end
   end
 end
