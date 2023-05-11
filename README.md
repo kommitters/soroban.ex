@@ -311,6 +311,23 @@ Soroban.RPC.get_health()
 
 ```
 
+#### Get Latest Ledger
+
+For finding out the current latest known ledger of this node. This is a subset of the ledger info from Horizon.
+
+**Example**
+
+```elixir
+Soroban.RPC.get_latest_ledger()
+
+{:ok,
+ %Soroban.RPC.GetLatestLedgerResponse{
+   id: "2a00000000000000000000000000000000000000000000000000000000000000",
+   protocol_version: 20,
+   sequence: 666
+ }}
+
+```
 ### Deploy and Invoke Soroban smart contracts
 
 The deployment and invocation of Soroban smart contracts is done through the `Soroban.Contract` module which provides convenient functions that streamline the process.
