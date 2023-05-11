@@ -3,7 +3,7 @@ defmodule Soroban.Contract do
   Exposes the function to invoke Soroban smart contracts
   """
 
-  alias Soroban.Contract.{InstallContractCode, InvokeContractFunction}
+  alias Soroban.Contract.{DeployContract, InstallContractCode, InvokeContractFunction}
 
   defdelegate invoke(
                 contract_id,
@@ -21,4 +21,11 @@ defmodule Soroban.Contract do
               ),
               to: InstallContractCode,
               as: :install
+
+  defdelegate deploy(
+                wasm_id,
+                source_secret_key
+              ),
+              to: DeployContract,
+              as: :deploy
 end
