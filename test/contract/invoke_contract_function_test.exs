@@ -34,7 +34,7 @@ defmodule Stellar.Horizon.Client.CannedAccountRequests do
   end
 end
 
-defmodule Soroban.RPC.CannedInvokeHostFunctionClientImpl do
+defmodule Soroban.RPC.CannedInvokeContractFunctionClientImpl do
   @moduledoc false
 
   @behaviour Soroban.RPC.Client.Spec
@@ -132,14 +132,14 @@ defmodule Soroban.RPC.CannedInvokeHostFunctionClientImpl do
   end
 end
 
-defmodule Soroban.Contract.InvokeHostFunctionTest do
+defmodule Soroban.Contract.InvokeContractFunctionTest do
   use ExUnit.Case
 
-  alias Soroban.Contract.InvokeHostFunction
+  alias Soroban.Contract.InvokeContractFunction
   alias Soroban.Types.Symbol
 
   alias Soroban.RPC.{
-    CannedInvokeHostFunctionClientImpl,
+    CannedInvokeContractFunctionClientImpl,
     SendTransactionResponse,
     SimulateTransactionResponse
   }
@@ -148,7 +148,7 @@ defmodule Soroban.Contract.InvokeHostFunctionTest do
 
   setup do
     Application.put_env(:stellar_sdk, :http_client, CannedAccountRequests)
-    Application.put_env(:soroban, :http_client_impl, CannedInvokeHostFunctionClientImpl)
+    Application.put_env(:soroban, :http_client_impl, CannedInvokeContractFunctionClientImpl)
 
     on_exit(fn ->
       Application.delete_env(:stellar_sdk, :http_client)
@@ -183,7 +183,7 @@ defmodule Soroban.Contract.InvokeHostFunctionTest do
        latest_ledger_close_time: "1683150612",
        error_result_xdr: nil
      }} =
-      InvokeHostFunction.invoke(
+      InvokeContractFunction.invoke(
         contract_id,
         source_secret,
         function_name,
@@ -206,7 +206,7 @@ defmodule Soroban.Contract.InvokeHostFunctionTest do
        latest_ledger_close_time: "1683150612",
        error_result_xdr: nil
      }} =
-      InvokeHostFunction.invoke(
+      InvokeContractFunction.invoke(
         contract_id,
         source_secret_with_auth,
         function_name,
@@ -229,7 +229,7 @@ defmodule Soroban.Contract.InvokeHostFunctionTest do
        latest_ledger_close_time: "1683150612",
        error_result_xdr: nil
      }} =
-      InvokeHostFunction.invoke(
+      InvokeContractFunction.invoke(
         contract_id,
         source_secret_with_auth,
         function_name,
@@ -247,7 +247,7 @@ defmodule Soroban.Contract.InvokeHostFunctionTest do
      %SimulateTransactionResponse{
        error: "error"
      }} =
-      InvokeHostFunction.invoke(
+      InvokeContractFunction.invoke(
         contract_id,
         source_secret_with_error,
         function_name,

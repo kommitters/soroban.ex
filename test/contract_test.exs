@@ -88,7 +88,11 @@ defmodule Soroban.ContractTest do
       # GDDZSR7Y6TIMSBM72WYVGUH6FB6P7MF6Y6DU7MCNAPFRXI5GCWGWWFRS
       function_name: "function_name",
       function_args: [Symbol.new("Arg")],
-      auth_accounts: ["SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK"]
+      auth_accounts: ["SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK"],
+      wasm:
+        <<0, 97, 115, 109, 1, 0, 0, 0, 1, 65, 12, 96, 1, 126, 1, 126, 96, 2, 126, 126, 1, 126, 96,
+          3, 126, 126, 126, 1, 126, 96, 0, 1, 126, 96, 4, 126, 126, 126, 126, 1, 126, 96, 1, 126,
+          1, 127, 96, 2, 127, 126>>
     }
   end
 
@@ -112,7 +116,7 @@ defmodule Soroban.ContractTest do
       )
   end
 
-  test "invoke/5 aaa", %{
+  test "invoke/5 with args", %{
     contract_id: contract_id,
     source_secret: source_secret,
     function_name: function_name,
@@ -131,6 +135,24 @@ defmodule Soroban.ContractTest do
         source_secret,
         function_name,
         function_args
+      )
+  end
+
+  test "install/2", %{
+    wasm: wasm,
+    source_secret: source_secret
+  } do
+    {:ok,
+     %SendTransactionResponse{
+       status: "PENDING",
+       hash: "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4",
+       latest_ledger: "476420",
+       latest_ledger_close_time: "1683150612",
+       error_result_xdr: nil
+     }} =
+      Contract.install(
+        wasm,
+        source_secret
       )
   end
 end
