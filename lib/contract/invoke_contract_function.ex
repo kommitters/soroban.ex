@@ -1,6 +1,6 @@
-defmodule Soroban.Contract.InvokeHostFunction do
+defmodule Soroban.Contract.InvokeContractFunction do
   @moduledoc """
-  `InvokeHostFunction` implementation to invoke authorized and not authorized contract functions.
+  `InvokeContractFunction` implementation to invoke authorized and not authorized contract functions.
   """
 
   alias Soroban.Contract.RPCCalls

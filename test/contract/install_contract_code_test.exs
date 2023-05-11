@@ -92,10 +92,10 @@ defmodule Soroban.RPC.CannedInstallInvokeHostFunctionClientImpl do
   end
 end
 
-defmodule Soroban.Contract.InstallContractFromWasmTest do
+defmodule Soroban.Contract.InstallContractCodeTest do
   use ExUnit.Case
 
-  alias Soroban.Contract.InstallContractFromWasm
+  alias Soroban.Contract.InstallContractCode
 
   alias Soroban.RPC.{
     CannedInstallInvokeHostFunctionClientImpl,
@@ -160,7 +160,7 @@ defmodule Soroban.Contract.InstallContractFromWasmTest do
        latest_ledger: "602691",
        latest_ledger_close_time: "1683814245",
        error_result_xdr: nil
-     }} = InstallContractFromWasm.install(wasm, source_secret)
+     }} = InstallContractCode.install(wasm, source_secret)
   end
 
   test "install contract with simulate error", %{
@@ -171,7 +171,7 @@ defmodule Soroban.Contract.InstallContractFromWasmTest do
      %SimulateTransactionResponse{
        error: "error"
      }} =
-      InstallContractFromWasm.install(
+      InstallContractCode.install(
         wasm,
         source_secret_with_error
       )
@@ -182,6 +182,6 @@ defmodule Soroban.Contract.InstallContractFromWasmTest do
   } do
     <<66, 208, 35, 40, 82, 63, 24, 62, 0, 161, 91, 200, 46, 101, 45, 24, 216, 140, 130, 169, 254,
       217, 11, 131, 45, 9, 151, 5, 194, 188, 205,
-      26>> = InstallContractFromWasm.get_wasm_id(transaction_response)
+      26>> = InstallContractCode.get_wasm_id(transaction_response)
   end
 end

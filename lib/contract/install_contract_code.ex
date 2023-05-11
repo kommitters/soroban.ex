@@ -1,6 +1,6 @@
-defmodule Soroban.Contract.InstallContractFromWasm do
+defmodule Soroban.Contract.InstallContractCode do
   @moduledoc """
-  `InstallContractFromWasm` implementation to install contract from a wasm file.
+  `InstallContractCode` implementation to install contract from a wasm file.
   """
   alias Soroban.RPC.{GetTransactionResponse, SendTransactionResponse}
   alias Stellar.Horizon.Accounts
