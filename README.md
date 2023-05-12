@@ -9,6 +9,16 @@
 
 **Soroban.ex** is an open source library for Elixir to interact with the Soroban-RPC server, and facilitate the deployment and invocation of Soroban smart contracts.
 
+## What can you do with Soroban.ex ?
+
+- Interact with [Soroban RPC endpoints](#soroban-rpc-endpoints)
+
+  - simulateTransaction
+  - sendTransaction
+  - getTransaction
+
+- [Deploy and invoke Soroban smart contracts](#deploy-and-invoke-soroban-smart-contracts)
+
 > **Warning**
 > Please note that Soroban is still under development, so breaking changes may occur.
 
@@ -156,84 +166,179 @@ Soroban.RPC.get_transaction(hash)
 
 ```
 
-## Invoke contracts functions
+## Deploy and Invoke Soroban smart contracts
 
-### Invoke without required authorization 
+### Invoke contracts functions
 
-```elixir
-alias Soroban.Contract
-alias Soroban.Types.Symbol
+- **Invoke without required authorization**
 
-Contract.invoke(
-  "be4138b31cc5d0d9d91b53193d74316d254406794ec0f81d3ed40f4dc1b86a6e",
-  "SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK",
-  "hello",
-  [Symbol.new("world")]
-)
+  ```elixir
+  alias Soroban.Contract
+  alias Soroban.Types.Symbol
 
-{:ok,
- %Soroban.RPC.SendTransactionResponse{
-   status: "PENDING",
-   hash: "f62cb9e20c6d297316f49dca2041be4bf1af6b069c784764e51ac008b313d716",
-   latest_ledger: "570194",
-   latest_ledger_close_time: "1683643419",
-   error_result_xdr: nil
- }}
-```
+  contract_id = "be4138b31cc5d0d9d91b53193d74316d254406794ec0f81d3ed40f4dc1b86a6e"
+  source_secret_key = "SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK"
+  function_name = "hello"
 
-### Invoke with required authorization 
+  function_args = [Symbol.new("world")]
 
-- When the invoker is the signer
+  Contract.invoke(contract_id, source_secret_key, function_name, function_args)
 
+  {:ok,
+   %Soroban.RPC.SendTransactionResponse{
+     status: "PENDING",
+     hash: "f62cb9e20c6d297316f49dca2041be4bf1af6b069c784764e51ac008b313d716",
+     latest_ledger: "570194",
+     latest_ledger_close_time: "1683643419",
+     error_result_xdr: nil
+   }}
+  ```
 
-```elixir
-alias Soroban.Contract
-alias Soroban.Types.{Address, UInt128}
+- **Invoke with required authorization**
 
-Soroban.Contract.invoke(
-  "be4138b31cc5d0d9d91b53193d74316d254406794ec0f81d3ed40f4dc1b86a6e",
-  "SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK",
-  "inc",
-  [Address.new("GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"), UInt128.new(2)]
-)
+  - When the invoker is the signer
 
-{:ok,
- %Soroban.RPC.SendTransactionResponse{
-   status: "PENDING",
-   hash: "e888193b4fed9b3ca6ad2beca3c1ed5bef3e0099e558756de85d03511cbaa00b",
-   latest_ledger: "570253",
-   latest_ledger_close_time: "1683643728",
-   error_result_xdr: nil
- }}
-``` 
+    ```elixir
+    alias Soroban.Contract
+    alias Soroban.Types.{Address, UInt128}
 
-- When the invokers is not the signer 
+    contract_id = "be4138b31cc5d0d9d91b53193d74316d254406794ec0f81d3ed40f4dc1b86a6e"
+    source_secret_key = "SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK"
+    function_name = "inc"
 
-```elixir
-alias Soroban.Contract
-alias Soroban.Types.{Address, Int128}
+    function_args = [
+      Address.new("GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"),
+      UInt128.new(2)
+    ]
 
-Contract.invoke(
-  "be4138b31cc5d0d9d91b53193d74316d254406794ec0f81d3ed40f4dc1b86a6e",
-  "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24",
-  "swap",
-  [
-    Address.new("GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"),
-    Int128.new(100),
-    Int128.new(4500)
-  ],
-  ["SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK"]
-)
+    Contract.invoke(contract_id, source_secret_key, function_name, function_args)
 
-{:ok,
- %Soroban.RPC.SendTransactionResponse{
-   status: "PENDING",
-   hash: "da263f59a8f8b29f415e7e26758cad6e8d88caec875112641b88757ce8e01873",
-   latest_ledger: "570349",
-   latest_ledger_close_time: "1683644240",
-   error_result_xdr: nil
- }}
-```
+    {:ok,
+     %Soroban.RPC.SendTransactionResponse{
+       status: "PENDING",
+       hash: "e888193b4fed9b3ca6ad2beca3c1ed5bef3e0099e558756de85d03511cbaa00b",
+       latest_ledger: "570253",
+       latest_ledger_close_time: "1683643728",
+       error_result_xdr: nil
+     }}
+    ```
+
+  - When the invokers is not the signer
+
+    ```elixir
+    alias Soroban.Contract
+    alias Soroban.Types.{Address, Int128}
+
+    contract_id = "be4138b31cc5d0d9d91b53193d74316d254406794ec0f81d3ed40f4dc1b86a6e"
+    source_secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
+    function_name = "swap"
+
+    function_args = [
+      Address.new("GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"),
+      Int128.new(100),
+      Int128.new(4500)
+    ]
+
+    auth_accounts = ["SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK"]
+
+    Contract.invoke(contract_id, source_secret_key, function_name, function_args, auth_accounts)
+
+    {:ok,
+     %Soroban.RPC.SendTransactionResponse{
+       status: "PENDING",
+       hash: "da263f59a8f8b29f415e7e26758cad6e8d88caec875112641b88757ce8e01873",
+       latest_ledger: "570349",
+       latest_ledger_close_time: "1683644240",
+       error_result_xdr: nil
+     }}
+    ```
+
+### Deploy contracts
+
+- **Install Contract**
+
+  ```elixir
+  alias Soroban.Contract
+  alias Soroban.RPC.SendTransactionResponse
+  alias Soroban.Contract.InstallContractCode
+
+  wasm = File.read!("../your_wasm_path/hello.wasm")
+  secret_key = "SCA..."
+
+  {:ok, %SendTransactionResponse{hash: hash}} = Contract.install(wasm, secret_key)
+
+  {:ok,
+   %Soroban.RPC.SendTransactionResponse{
+     status: "PENDING",
+     hash: "65d...",
+     latest_ledger: "1",
+     latest_ledger_close_time: "16",
+     error_result_xdr: nil
+   }}
+
+  wasm_id =
+    hash
+    |> RPC.get_transaction()
+    |> InstallContractCode.get_wasm_id()
+
+  "f953..."
+  ```
+
+- **Deploy Contract**
+
+  ```elixir
+  alias Soroban.Contract
+  alias Soroban.RPC.SendTransactionResponse
+  alias Soroban.Contract.DeployContract
+
+  wasm_id = "f953..."
+  secret_key = "SCA..."
+
+  {:ok, %SendTransactionResponse{hash: hash}} = Contract.deploy(wasm_id, secret_key)
+
+  {:ok,
+   %Soroban.RPC.SendTransactionResponse{
+     status: "PENDING",
+     hash: "f95...",
+     latest_ledger: "1",
+     latest_ledger_close_time: "16",
+     error_result_xdr: nil
+   }}
+
+  hash
+  |> RPC.get_transaction()
+  |> DeployContract.get_contract_id()
+
+  "9227..."
+  ```
+
+- **Deploy Asset Contract**
+
+  ```elixir
+  alias Soroban.Contract
+  alias Soroban.RPC.SendTransactionResponse
+  alias Soroban.Contract.DeployAssetContract
+
+  asset_code = "DBZ"
+  secret_key = "SCA..."
+
+  {:ok, %SendTransactionResponse{hash: hash}} = Contract.deploy_asset(asset_code, secret_key)
+
+  {:ok,
+   %Soroban.RPC.SendTransactionResponse{
+     status: "PENDING",
+     hash: "b667...",
+     latest_ledger: "1",
+     latest_ledger_close_time: "16",
+     error_result_xdr: nil
+   }}
+
+  hash
+  |> RPC.get_transaction()
+  |> DeployAssetContract.get_contract_id()
+
+  "c624..."
+  ```
 
 ## Development
 
