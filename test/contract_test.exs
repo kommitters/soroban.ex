@@ -89,6 +89,7 @@ defmodule Soroban.ContractTest do
       function_name: "function_name",
       function_args: [Symbol.new("Arg")],
       auth_accounts: ["SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK"],
+      asset_code: :ZZZ,
       wasm:
         <<0, 97, 115, 109, 1, 0, 0, 0, 1, 65, 12, 96, 1, 126, 1, 126, 96, 2, 126, 126, 1, 126, 96,
           3, 126, 126, 126, 1, 126, 96, 0, 1, 126, 96, 4, 126, 126, 126, 126, 1, 126, 96, 1, 126,
@@ -173,6 +174,24 @@ defmodule Soroban.ContractTest do
      }} =
       Contract.deploy(
         wasm_id,
+        source_secret
+      )
+  end
+
+  test "deploy_asset/2", %{
+    asset_code: asset_code,
+    source_secret: source_secret
+  } do
+    {:ok,
+     %SendTransactionResponse{
+       status: "PENDING",
+       hash: "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4",
+       latest_ledger: "476420",
+       latest_ledger_close_time: "1683150612",
+       error_result_xdr: nil
+     }} =
+      Contract.deploy_asset(
+        asset_code,
         source_secret
       )
   end
