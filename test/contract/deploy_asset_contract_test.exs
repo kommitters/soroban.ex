@@ -12,16 +12,6 @@ defmodule Stellar.Horizon.Client.CannedDeployAssetAccountRequests do
       ) do
     {:ok, 200, [], "{\"sequence\":\"1390916568875069\"}"}
   end
-
-  def request(
-        :get,
-        @base_url <> "/accounts/GASY52GNGVKEMXSGH7VSCZQKRWQMIQD77J53KHXEBAV2BODWH6FDDZ3F",
-        _headers,
-        _body,
-        _opts
-      ) do
-    {:ok, 200, [], "{\"sequence\":\"1390916568875069\"}"}
-  end
 end
 
 defmodule Soroban.RPC.CannedDeployAssetInvokeHostFunctionClientImpl do
