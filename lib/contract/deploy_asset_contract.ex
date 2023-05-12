@@ -18,21 +18,21 @@ defmodule Soroban.Contract.DeployAssetContract do
   alias StellarBase.XDR.TransactionResult
 
   @type asset :: Asset.t()
-  @type code :: atom()
+  @type asset_code :: binary()
   @type invoke_host_function :: InvokeHostFunction.t()
   @type secret_key :: binary()
   @type send_response :: {:ok, SendTransactionResponse.t()}
   @type transaction_response :: {:ok, GetTransactionResponse.t()}
 
-  @spec deploy(code :: code(), secret_key :: secret_key()) :: send_response()
-  def deploy(code, secret_key) do
+  @spec deploy(asset_code :: asset_code(), secret_key :: secret_key()) :: send_response()
+  def deploy(asset_code, secret_key) do
     with {public_key, _secret} = keypair <- Stellar.KeyPair.from_secret_seed(secret_key),
-         source_account <- Account.new(public_key),
          {:ok, seq_num} <- Accounts.fetch_next_sequence_number(public_key),
-         sequence_number <- SequenceNumber.new(seq_num),
-         signature <- Signature.new(keypair),
-         asset <- Asset.new(code: code, issuer: public_key),
-         invoke_host_function_op <- create_host_function_deploy_op(asset) do
+         %Account{} = source_account <- Account.new(public_key),
+         %SequenceNumber{} = sequence_number <- SequenceNumber.new(seq_num),
+         %Signature{} = signature <- Signature.new(keypair),
+         %Asset{} = asset <- Asset.new(code: asset_code, issuer: public_key),
+         %InvokeHostFunction{} = invoke_host_function_op <- create_host_function_deploy_op(asset) do
       invoke_host_function_op
       |> RPCCalls.simulate(source_account, sequence_number)
       |> RPCCalls.send_transaction(

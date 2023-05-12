@@ -46,12 +46,12 @@ defmodule Soroban.Contract.InvokeContractFunction do
     with {public_key, _secret} = keypair <- Stellar.KeyPair.from_secret_seed(source_secret_key),
          {:ok, seq_num} <- Accounts.fetch_next_sequence_number(public_key),
          {:ok, function_args} <- convert_to_sc_val(function_args),
-         signature <- Signature.new(keypair),
-         source_account <- Account.new(public_key),
-         sequence_number <- SequenceNumber.new(seq_num),
+         %Signature{} = signature <- Signature.new(keypair),
+         %Account{} = source_account <- Account.new(public_key),
+         %SequenceNumber{} = sequence_number <- SequenceNumber.new(seq_num),
+         %InvokeHostFunction{} = invoke_host_function_op <-
+           create_host_function_op(contract_id, function_name, function_args),
          auth_account <- Enum.at(auth_accounts, 0) do
-      invoke_host_function_op = create_host_function_op(contract_id, function_name, function_args)
-
       invoke_host_function_op
       |> RPCCalls.simulate(source_account, sequence_number)
       |> RPCCalls.send_transaction(

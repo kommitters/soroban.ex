@@ -24,11 +24,12 @@ defmodule Soroban.Contract.DeployContract do
   @spec deploy(wasm_id :: wasm_id(), secret_key :: binary()) :: send_response()
   def deploy(wasm_id, secret_key) do
     with {public_key, _secret} = keypair <- Stellar.KeyPair.from_secret_seed(secret_key),
-         source_account <- Account.new(public_key),
+         %Account{} = source_account <- Account.new(public_key),
          {:ok, seq_num} <- Accounts.fetch_next_sequence_number(public_key),
-         sequence_number <- SequenceNumber.new(seq_num),
-         signature <- Signature.new(keypair),
-         invoke_host_function_op <- create_host_function_deploy_op(wasm_id) do
+         %SequenceNumber{} = sequence_number <- SequenceNumber.new(seq_num),
+         %Signature{} = signature <- Signature.new(keypair),
+         %InvokeHostFunction{} = invoke_host_function_op <-
+           create_host_function_deploy_op(wasm_id) do
       invoke_host_function_op
       |> RPCCalls.simulate(source_account, sequence_number)
       |> RPCCalls.send_transaction(

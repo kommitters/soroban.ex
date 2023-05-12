@@ -29,10 +29,10 @@ defmodule Soroban.Contract.InstallContractCode do
   def install(wasm, secret_key) do
     with {public_key, _secret} = keypair <- Stellar.KeyPair.from_secret_seed(secret_key),
          {:ok, seq_num} <- Accounts.fetch_next_sequence_number(public_key),
-         source_account <- Account.new(public_key),
-         sequence_number <- SequenceNumber.new(seq_num),
-         signature <- Signature.new(keypair),
-         invoke_host_function_op <- create_host_function_install_op(wasm) do
+         %Account{} = source_account <- Account.new(public_key),
+         %SequenceNumber{} = sequence_number <- SequenceNumber.new(seq_num),
+         %Signature{} = signature <- Signature.new(keypair),
+         %InvokeHostFunction{} = invoke_host_function_op <- create_host_function_install_op(wasm) do
       invoke_host_function_op
       |> RPCCalls.simulate(source_account, sequence_number)
       |> RPCCalls.send_transaction(
