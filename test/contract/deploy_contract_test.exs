@@ -77,8 +77,7 @@ defmodule Soroban.Contract.DeployContractTest do
   alias Soroban.RPC.{
     CannedDeployInvokeHostFunctionClientImpl,
     GetTransactionResponse,
-    SendTransactionResponse,
-    SimulateTransactionResponse
+    SendTransactionResponse
   }
 
   alias Stellar.Horizon.Client.CannedDeployAccountRequests
