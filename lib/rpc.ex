@@ -6,6 +6,7 @@ defmodule Soroban.RPC do
   alias Soroban.RPC.{
     GetHealth,
     GetLatestLedger,
+    GetNetwork,
     GetTransaction,
     SendTransaction,
     SimulateTransaction
@@ -16,4 +17,5 @@ defmodule Soroban.RPC do
   defdelegate get_transaction(hash), to: GetTransaction, as: :request
   defdelegate get_health(), to: GetHealth, as: :request
   defdelegate get_latest_ledger(), to: GetLatestLedger, as: :request
+  defdelegate get_network(), to: GetNetwork, as: :request
 end

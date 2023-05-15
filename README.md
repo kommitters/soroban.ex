@@ -328,6 +328,25 @@ Soroban.RPC.get_latest_ledger()
  }}
 
 ```
+
+#### Get Network
+
+General info about the currently configured network.
+
+**Example**
+
+```elixir
+Soroban.RPC.get_network()
+
+{:ok,
+ %Soroban.RPC.GetNetworkResponse{
+   friendbot_url: "https://friendbot-futurenet.stellar.org/",
+   passphrase: "Test SDF Future Network ; October 2022",
+   protocol_version: "20"
+ }}
+
+```
+
 ### Deploy and Invoke Soroban smart contracts
 
 The deployment and invocation of Soroban smart contracts is done through the `Soroban.Contract` module which provides convenient functions that streamline the process.
