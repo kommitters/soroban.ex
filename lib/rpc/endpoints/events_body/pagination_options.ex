@@ -7,7 +7,7 @@ defmodule Soroban.RPC.PaginationOptions do
   @type cursor_validation :: {:ok, cursor()}
   @type limit :: number() | nil
   @type limit_validation :: {:ok, limit()}
-  @type request_args :: map()
+  @type request_args :: map() | :error
   @type t :: %__MODULE__{
           cursor: cursor(),
           limit: limit()
@@ -29,6 +29,8 @@ defmodule Soroban.RPC.PaginationOptions do
   @spec to_request_args(t()) :: request_args()
   def to_request_args(%__MODULE__{cursor: cursor, limit: limit}),
     do: %{cursor: cursor, limit: limit}
+
+  def to_request_args(_struct), do: :error
 
   @spec validate_cursor(cursor :: cursor()) :: cursor_validation()
   defp validate_cursor(cursor) when is_binary(cursor), do: {:ok, cursor}

@@ -3,6 +3,7 @@ defmodule Soroban.RPC.EventFilter do
   `EventFilter` struct definition.
   """
   alias Soroban.RPC.TopicFilter
+
   @type args :: Keyword.t()
   @type error :: {:error, atom()}
   @type type :: :system | :contract | :diagnostic | nil
@@ -11,11 +12,11 @@ defmodule Soroban.RPC.EventFilter do
   @type contract_ids_validation :: {:ok, contract_ids()} | error()
   @type topics :: list(TopicFilter.t()) | nil
   @type topics_validation :: {:ok, topics()} | error()
-  @type request_args :: map()
+  @type request_args :: map() | :error
   @type t :: %__MODULE__{
           type: type(),
           contract_ids: contract_ids(),
-          topics: topics
+          topics: topics()
         }
 
   @allowed_types [:system, :contract, :diagnostic]
@@ -23,7 +24,7 @@ defmodule Soroban.RPC.EventFilter do
   defstruct [:type, :contract_ids, :topics]
 
   @spec new(args :: args()) :: t()
-  def new(args) do
+  def new(args) when is_list(args) do
     type = Keyword.get(args, :type)
     contract_ids = Keyword.get(args, :contract_ids)
     topics = Keyword.get(args, :topics)
@@ -39,9 +40,15 @@ defmodule Soroban.RPC.EventFilter do
     end
   end
 
+  def new(_args), do: {:error, :invalid_args}
+
   @spec to_request_args(t()) :: request_args()
-  def to_request_args(%__MODULE__{type: type, contract_ids: contract_ids, topics: topics}),
-    do: %{type: type, contractIds: contract_ids, topics: topics}
+  def to_request_args(%__MODULE__{type: type, contract_ids: contract_ids, topics: topics}) do
+    topics = Enum.map(topics, &TopicFilter.to_request_args/1)
+    %{type: type, contractIds: contract_ids, topics: topics}
+  end
+
+  def to_request_args(_topic_filter), do: :error
 
   @spec validate_type(type :: type()) :: type_validation()
   defp validate_type(type) when type in @allowed_types, do: {:ok, type}

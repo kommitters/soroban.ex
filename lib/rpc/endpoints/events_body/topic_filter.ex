@@ -4,7 +4,8 @@ defmodule Soroban.RPC.TopicFilter do
   """
 
   @type segments :: list(String.t() | struct())
-  @type segments_validation :: {:ok, segments()}
+  @type segments_validation :: {:ok, segments()} | {:error, atom()}
+  @type request_args :: segments() | :error
   @type xdr :: String.t()
   @type t :: %__MODULE__{
           segments: segments()
@@ -12,7 +13,7 @@ defmodule Soroban.RPC.TopicFilter do
 
   defstruct [:segments]
 
-  @spec new(args :: segments()) :: t()
+  @spec new(args :: segments()) :: t() | {:error, atom()}
   def new(args) when is_list(args) and length(args) <= 4 do
     with {:ok, segments} <- validate_segments(args) do
       %__MODULE__{
@@ -20,6 +21,12 @@ defmodule Soroban.RPC.TopicFilter do
       }
     end
   end
+
+  def new(_args), do: {:error, :invalid_args}
+
+  @spec to_request_args(t()) :: request_args()
+  def to_request_args(%__MODULE__{segments: segments}), do: segments
+  def to_request_args(_struct), do: :error
 
   @spec validate_segments(args :: segments(), segments :: segments()) :: segments_validation()
   defp validate_segments(_args, segments \\ [])
@@ -41,6 +48,8 @@ defmodule Soroban.RPC.TopicFilter do
   end
 
   defp validate_segments([], segments), do: {:ok, segments}
+
+  defp validate_segments(_args, _segments), do: {:error, :invalid_segments}
 
   @spec param_to_xdr(param :: struct()) :: xdr()
   defp param_to_xdr(%{__struct__: struct} = param) when is_struct(param) do
