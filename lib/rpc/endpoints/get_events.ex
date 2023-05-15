@@ -11,7 +11,7 @@ defmodule Soroban.RPC.GetEvents do
 
   @impl true
   def request(%EventsBody{} = events) do
-    events = EventsBody.format(events)
+    events = EventsBody.to_request_args(events)
 
     @endpoint
     |> Request.new()

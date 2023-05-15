@@ -1,22 +1,29 @@
 defmodule Soroban.RPC.EventsBody do
-  alias Soroban.RPC.PaginationOptions
-  alias Soroban.RPC.EventFilter
+  @moduledoc """
+  `EventsBody` struct definition.
+  """
+  alias Soroban.RPC.{EventFilter, PaginationOptions}
 
-  @type key :: atom()
-  @type string_value :: String.t()
-  @type value :: any()
-  @type words :: list(string_value())
+  @type args :: Keyword.t()
+  @type cursor :: binary() | nil
+  @type limit :: number() | nil
+  @type error :: {:error, atom()}
   @type start_ledger :: String.t()
-  @type filters :: list(EventFilter.t())
-  @type pagination :: struct()
+  @type start_ledger_validation() :: {:ok, start_ledger()} | error()
+  @type filters :: list(EventFilter.t()) | nil
+  @type filters_validation :: {:ok, filters()} | error()
+  @type pagination :: PaginationOptions.t() | nil
+  @type pagination_validation :: {:ok, pagination()} | error()
+  @type request_args :: map()
   @type t :: %__MODULE__{
           start_ledger: start_ledger(),
           filters: filters(),
-          pagination: pagination
+          pagination: pagination()
         }
 
   defstruct [:start_ledger, :filters, :pagination]
 
+  @spec new(args :: args()) :: t()
   def new(args) do
     start_ledger = Keyword.get(args, :start_ledger)
     filters = Keyword.get(args, :filters)
@@ -34,43 +41,32 @@ defmodule Soroban.RPC.EventsBody do
     end
   end
 
-  def format(body) when is_struct(body) do
-    body
-    |> Map.from_struct()
-    |> Enum.map(fn {k, v} -> {format_key(k), format(v)} end)
-    |> Enum.into(%{})
+  @spec to_request_args(t()) :: request_args()
+  def to_request_args(%__MODULE__{
+        start_ledger: start_ledger,
+        filters: filters,
+        pagination: pagination
+      }) do
+    filters = Enum.map(filters, &EventFilter.to_request_args/1)
+    pagination = PaginationOptions.to_request_args(pagination)
+    %{startLedger: start_ledger, filters: filters, pagination: pagination}
   end
 
-  def format(value), do: value
-
-  @spec format_key(key :: atom()) :: String.t()
-  defp format_key(key) when is_atom(key) do
-    key = Atom.to_string(key)
-
-    if String.contains?(key, "_") do
-      [first_word | rest] = String.split(key, "_")
-      first_word <> camelize(rest)
-    else
-      key
-    end
-  end
-
-  @spec camelize(words :: words()) :: string_value()
-  defp camelize([]), do: ""
-  defp camelize([word | rest]), do: Macro.camelize(word) <> camelize(rest)
-
+  @spec validate_start_ledger(start_ledger :: start_ledger()) :: start_ledger_validation()
   defp validate_start_ledger(start_ledger) when is_binary(start_ledger), do: {:ok, start_ledger}
   defp validate_start_ledger(_start_ledger), do: {:error, :invalid_start_ledger}
 
-  defp validate_pagination(cursor, limit) do
-    case PaginationOptions.new(cursor: cursor, limit: limit) do
-      %PaginationOptions{} = pagination -> {:ok, pagination}
-      error -> error
-    end
+  @spec validate_pagination(cursor :: cursor(), limit :: limit()) :: pagination_validation()
+  defp validate_pagination(cursor, limit),
+    do: {:ok, PaginationOptions.new(cursor: cursor, limit: limit)}
+
+  @spec validate_filters(filters :: filters()) :: filters_validation()
+  defp validate_filters([%EventFilter{} = filter | _] = filters) do
+    if Enum.any?(filters, fn f -> f.__struct__ != filter.__struct__ end),
+      do: {:error, :invalid_filter},
+      else: {:ok, filters}
   end
 
-  #TODO list of EventF
-  defp validate_filters(%EventFilter{} = filters), do: {:ok, filters}
   defp validate_filters(nil), do: {:ok, nil}
   defp validate_filters(_filters), do: {:error, :invalid_filters}
 end
