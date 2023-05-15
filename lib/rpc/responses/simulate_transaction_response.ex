@@ -14,6 +14,7 @@ defmodule Soroban.RPC.SimulateTransactionResponse do
           latest_ledger: latest_ledger(),
           error: error()
         }
+
   defstruct [:results, :cost, :latest_ledger, :error]
 
   @impl true

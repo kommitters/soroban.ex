@@ -347,6 +347,28 @@ Soroban.RPC.get_network()
 
 ```
 
+#### Get Ledger Entry
+
+For reading the current value of ledger entries directly.
+
+Allows you to directly inspect the current state of a contract, a contract's code, or any other ledger entry. This is a backup way to access your contract data which may not be available via events or simulateTransaction.
+
+**Example**
+
+```elixir
+Soroban.RPC.get_ledger_entry(
+  "AAAABvrOGFv9hxq4ke1yjqrbfSQPrggCrdo12YvueQldm8h8AAAADwAAAAdDT1VOVEVSAA=="
+)
+
+{:ok,
+ %Soroban.RPC.GetLedgerEntryResponse{
+   xdr: "AAAABvrOGFv9hxq4ke1yjqrbfSQPrggCrdo12YvueQldm8h8AAAADwAAAAdDT1VOVEVSAAAAAAMAAAAC",
+   last_modified_ledger_seq: "684751",
+   latest_ledger: "684754"
+ }}
+
+```
+
 ### Deploy and Invoke Soroban smart contracts
 
 The deployment and invocation of Soroban smart contracts is done through the `Soroban.Contract` module which provides convenient functions that streamline the process.

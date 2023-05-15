@@ -95,6 +95,24 @@ defmodule Soroban.RPC.CannedRPCGetNetworkClientImpl do
   end
 end
 
+defmodule Soroban.RPC.CannedRPCGetLedgerEntryClientImpl do
+  @moduledoc false
+
+  @behaviour Soroban.RPC.Client.Spec
+
+  @impl true
+  def request(_endpoint, _url, _headers, _body, _opts) do
+    send(self(), {:request, "RESPONSE"})
+
+    {:ok,
+     %{
+       xdr: "AAAABhv6ziOnWcVRdGMZjtFKSWnLSndMp9JPVLLXxQqAvKqJAAAABQAAAAdDT1VOVEVSAAAAAAEAAAAD",
+       last_modified_ledger_seq: "164986",
+       latest_ledger: "179436"
+     }}
+  end
+end
+
 defmodule Soroban.RPC.CannedRPCGetTransactionClientImpl do
   @moduledoc false
 
@@ -131,12 +149,14 @@ defmodule Soroban.RPCTest do
 
   alias Soroban.RPC.{
     CannedRPCGetLatestLedgerClientImpl,
+    CannedRPCGetLedgerEntryClientImpl,
     CannedRPCGetNetworkClientImpl,
     CannedRPCGetTransactionClientImpl,
     CannedRPCSendTransactionClientImpl,
     CannedRPCSimulateTransactionClientImpl,
     GetHealthResponse,
     GetLatestLedgerResponse,
+    GetLedgerEntryResponse,
     GetNetworkResponse,
     GetTransactionResponse,
     SendTransactionResponse,
@@ -284,6 +304,27 @@ defmodule Soroban.RPCTest do
          passphrase: "Test SDF Future Network ; October 2022",
          protocol_version: "20"
        }} = RPC.get_network()
+    end
+  end
+
+  describe "get_ledger_entry/1" do
+    setup do
+      Application.put_env(:soroban, :http_client_impl, CannedRPCGetLedgerEntryClientImpl)
+
+      on_exit(fn ->
+        Application.delete_env(:soroban, :http_client_impl)
+      end)
+
+      %{key: "AAAABhv6ziOnWcVRdGMZjtFKSWnLSndMp9JPVLLXxQqAvKqJAAAABQAAAAdDT1VOVEVSAA"}
+    end
+
+    test "request/1", %{key: key} do
+      {:ok,
+       %GetLedgerEntryResponse{
+         xdr: "AAAABhv6ziOnWcVRdGMZjtFKSWnLSndMp9JPVLLXxQqAvKqJAAAABQAAAAdDT1VOVEVSAAAAAAEAAAAD",
+         last_modified_ledger_seq: "164986",
+         latest_ledger: "179436"
+       }} = RPC.get_ledger_entry(key)
     end
   end
 end
