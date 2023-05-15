@@ -31,7 +31,7 @@ defmodule Soroban.RPC.Endpoints.GetHealthTest do
     end)
   end
 
-  test "request/1" do
+  test "request/0" do
     {:ok,
      %GetHealthResponse{
        status: "healthy"

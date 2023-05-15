@@ -59,6 +59,24 @@ defmodule Soroban.RPC.CannedRPCGetHealthClientImpl do
   end
 end
 
+defmodule Soroban.RPC.CannedRPCGetLatestLedgerClientImpl do
+  @moduledoc false
+
+  @behaviour Soroban.RPC.Client.Spec
+
+  @impl true
+  def request(_endpoint, _url, _headers, _body, _opts) do
+    send(self(), {:request, "RESPONSE"})
+
+    {:ok,
+     %{
+       id: "2a00000000000000000000000000000000000000000000000000000000000000",
+       protocol_version: 20,
+       sequence: 666
+     }}
+  end
+end
+
 defmodule Soroban.RPC.CannedRPCGetTransactionClientImpl do
   @moduledoc false
 
@@ -94,10 +112,12 @@ defmodule Soroban.RPCTest do
   alias Soroban.RPC.CannedRPCGetHealthClientImpl
 
   alias Soroban.RPC.{
+    CannedRPCGetLatestLedgerClientImpl,
     CannedRPCGetTransactionClientImpl,
     CannedRPCSendTransactionClientImpl,
     CannedRPCSimulateTransactionClientImpl,
     GetHealthResponse,
+    GetLatestLedgerResponse,
     GetTransactionResponse,
     SendTransactionResponse,
     SimulateTransactionResponse
@@ -206,6 +226,25 @@ defmodule Soroban.RPCTest do
 
     test "request/0" do
       {:ok, %GetHealthResponse{status: "healthy"}} = RPC.get_health()
+    end
+  end
+
+  describe "get_latest_ledger/0" do
+    setup do
+      Application.put_env(:soroban, :http_client_impl, CannedRPCGetLatestLedgerClientImpl)
+
+      on_exit(fn ->
+        Application.delete_env(:soroban, :http_client_impl)
+      end)
+    end
+
+    test "request/0" do
+      {:ok,
+       %GetLatestLedgerResponse{
+         id: "2a00000000000000000000000000000000000000000000000000000000000000",
+         protocol_version: 20,
+         sequence: 666
+       }} = RPC.get_latest_ledger()
     end
   end
 end
