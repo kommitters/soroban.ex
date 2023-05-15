@@ -16,7 +16,7 @@ defmodule Soroban.RPC.CannedGetNetworkClientImpl do
   end
 end
 
-defmodule Soroban.RPC.Endpoints.GetNetworkTest do
+defmodule Soroban.RPC.GetNetworkTest do
   use ExUnit.Case
 
   alias Soroban.RPC.{
