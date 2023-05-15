@@ -298,6 +298,19 @@ Soroban.RPC.get_transaction(hash)
 
 ```
 
+#### Get Health
+
+General node health check.
+
+**Example**
+
+```elixir
+Soroban.RPC.get_health()
+
+{:ok, %Soroban.RPC.GetHealthResponse{status: "healthy"}}
+
+```
+
 ### Deploy and Invoke Soroban smart contracts
 
 The deployment and invocation of Soroban smart contracts is done through the `Soroban.Contract` module which provides convenient functions that streamline the process.
