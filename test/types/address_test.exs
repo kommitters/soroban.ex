@@ -5,10 +5,10 @@ defmodule Soroban.Types.AddressTest do
   alias Stellar.TxBuild.{SCAddress, SCVal}
 
   setup do
-    address_account = Address.new("GB6FIXFOEK46VBDAG5USXRKKDJYFOBQZDMAPOYY6MC4KMRTSPVUH3X2A")
+    account_address = Address.new("GB6FIXFOEK46VBDAG5USXRKKDJYFOBQZDMAPOYY6MC4KMRTSPVUH3X2A")
 
-    address_contract = Address.new("CCEMOFO5TE7FGOAJOA3RDHPC6RW3CFXRVIGOFQPFE4ZGOKA2QEA636SN")
-    %{address_account: address_account, address_contract: address_contract}
+    contract_address = Address.new("CCEMOFO5TE7FGOAJOA3RDHPC6RW3CFXRVIGOFQPFE4ZGOKA2QEA636SN")
+    %{account_address: account_address, contract_address: contract_address}
   end
 
   describe "new/1" do
@@ -31,24 +31,24 @@ defmodule Soroban.Types.AddressTest do
   end
 
   describe "to_sc_val/1" do
-    test "with a valid account type struct", %{address_account: address_account} do
+    test "with a valid account type struct", %{account_address: account_address} do
       %SCVal{
         type: :address,
         value: %SCAddress{
           type: :account,
           value: "GB6FIXFOEK46VBDAG5USXRKKDJYFOBQZDMAPOYY6MC4KMRTSPVUH3X2A"
         }
-      } = Address.to_sc_val(address_account)
+      } = Address.to_sc_val(account_address)
     end
 
-    test "with a valid contract type struct", %{address_contract: address_contract} do
+    test "with a valid contract type struct", %{contract_address: contract_address} do
       %SCVal{
         type: :address,
         value: %SCAddress{
           type: :contract,
           value: "CCEMOFO5TE7FGOAJOA3RDHPC6RW3CFXRVIGOFQPFE4ZGOKA2QEA636SN"
         }
-      } = Address.to_sc_val(address_contract)
+      } = Address.to_sc_val(contract_address)
     end
 
     test "with an invalid value" do
