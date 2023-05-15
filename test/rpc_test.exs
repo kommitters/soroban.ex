@@ -195,7 +195,7 @@ defmodule Soroban.RPCTest do
     end
   end
 
-  describe "get_health/1" do
+  describe "get_health/0" do
     setup do
       Application.put_env(:soroban, :http_client_impl, CannedRPCGetHealthClientImpl)
 
@@ -204,7 +204,7 @@ defmodule Soroban.RPCTest do
       end)
     end
 
-    test "request" do
+    test "request/0" do
       {:ok, %GetHealthResponse{status: "healthy"}} = RPC.get_health()
     end
   end

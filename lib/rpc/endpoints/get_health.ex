@@ -9,9 +9,7 @@ defmodule Soroban.RPC.GetHealth do
   @endpoint "getHealth"
 
   @impl true
-  def request(params \\ nil)
-
-  def request(nil) do
+  def request(_params \\ nil) do
     @endpoint
     |> Request.new()
     |> Request.add_headers([{"Content-Type", "application/json"}])
