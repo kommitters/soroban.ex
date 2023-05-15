@@ -1,7 +1,7 @@
 defmodule Soroban.MixProject do
   use Mix.Project
 
-  @version "0.6.0"
+  @version "0.7.0"
   @github_url "https://github.com/kommitters/soroban.ex"
 
   def project do
@@ -84,7 +84,11 @@ defmodule Soroban.MixProject do
     [
       Contract: [
         Soroban.Contract,
-        Soroban.Contract.InvokeHostFunction
+        Soroban.Contract.RPCCalls,
+        Soroban.Contract.InvokeContractFunction,
+        Soroban.Contract.InstallContractCode,
+        Soroban.Contract.DeployContract,
+        Soroban.Contract.DeployAssetContract
       ],
       RPC: [
         Soroban.RPC,
