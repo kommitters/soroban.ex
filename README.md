@@ -126,7 +126,8 @@ Soroban.Types.Option.new()
 ```elixir
 values = [
   Soroban.Types.Symbol.new("A"),
-  Symbol.Types.UInt32.new(100)
+  Soroban.Types.Symbol.new("B"),
+  Soroban.Types.Symbol.new("C")
 ]
 
 Soroban.Types.Vec.new(values)
