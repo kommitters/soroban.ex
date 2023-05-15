@@ -71,7 +71,7 @@ defmodule Soroban.RPC.RPCGetTransactionCannedClientImpl do
   end
 end
 
-defmodule Soroban.RPC.RPCTest do
+defmodule Soroban.RPCTest do
   use ExUnit.Case
 
   alias Soroban.RPC

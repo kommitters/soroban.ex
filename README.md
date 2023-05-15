@@ -14,49 +14,192 @@
 
 ## Installation
 
-Add `soroban` to your list of dependencies in `mix.exs`:
+[**Available in Hex**][hex], add `soroban` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:soroban, "~> 0.6.0"}
+    {:soroban, "~> 0.7.0"}
   ]
 end
 ```
 
-## Configuration
+## Documentation
 
-The default HTTP Client is `:hackney`. Options can be passed to `:hackney` via configuration parameters.
+Soroban.ex is made up of three components:
 
-```elixir
-config :soroban, hackney_options: [{:connect_timeout, 1000}, {:recv_timeout, 5000}]
-```
+- [**`Types`**](#types): Soroban types that can be utilized as function arguments when invoking a smart contract.
+- [**`RPC`**](#soroban-rpc-endpoints): Interface to interact with the Soroban-RPC server.
+- [**`Contract`**](#deploy-and-invoke-soroban-smart-contracts): Deploy and invoke Soroban smart contracts with ease. No need to worry about transaction building.
 
-You can also change the default HTTP Client library.
+### Types
 
-```elixir
-config :soroban, http_client: YourApp.CustomHTTPClient
-```
+The `Soroban.Types` context defines a comprehensive set of types that are crucial since they can be utilized as function arguments when invoking a smart contract.
 
-### Custom HTTP Client
+The types provided by **Soroban.ex** aim to replicate the experience of working with types in smart contract development. They range from scalar types (such as Bool, Int32, etc.) to compound types (such as Map, Struct, Tuple, etc.).
 
-`soroban.ex` allows you to use the HTTP client implementation of your choice. See [**Soroban.RPC.Client.Spec**][http_client_spec] for details.
+#### Bool
 
 ```elixir
-config :soroban, :http_client_impl, YourApp.CustomClientImpl
+Soroban.Types.Bool.new(true)
+Soroban.Types.Bool.new(false)
 ```
 
-### Custom JSON library
+#### Integers
 
-Following the same approach as the HTTP client, the JSON parsing library can also be configured. Defaults to [`Jason`][jason_url].
+These types include signed integers (`Int32`, `Int64`, `Int128`, `Int256`) and unsigned integers (`UInt32`, `UInt64`, `UInt128`, `UInt256`).
 
 ```elixir
-config :soroban, :json_library, YourApp.CustomJSONLibrary
+Soroban.Types.Int32.new(1)
+Soroban.Types.Int64.new(1)
+Soroban.Types.Int128.new(1)
+Soroban.Types.Int256.new(1)
+
+Soroban.Types.UInt32.new(1)
+Soroban.Types.UInt64.new(1)
+Soroban.Types.UInt128.new(1)
+Soroban.Types.UInt256.new(1)
 ```
 
-## Soroban RPC endpoints
+#### TimePoint
 
-### Simulate Transaction
+```elixir
+Soroban.Types.TimePoint.new(12_345)
+```
+
+#### Duration
+
+```elixir
+Soroban.Types.Duration.new(12_345)
+```
+
+#### Bytes
+
+```elixir
+# From raw bytes
+Soroban.Types.Bytes.new(<<1, 2, 3>>)
+
+# From string
+Soroban.Types.Bytes.new("Hello World!")
+```
+
+#### Symbol
+
+```elixir
+Soroban.Types.Symbol.new("symbol")
+```
+
+#### String
+
+```elixir
+Soroban.Types.String.new("Hello World!")
+```
+
+#### Address
+
+```elixir
+# Account address
+Soroban.Types.Address.new("GB6FIXFOEK46VBDAG5USXRKKDJYFOBQZDMAPOYY6MC4KMRTSPVUH3X2A")
+
+# Contract address
+Soroban.Types.Address.new("CCEMOFO5TE7FGOAJOA3RDHPC6RW3CFXRVIGOFQPFE4ZGOKA2QEA636SN")
+```
+
+#### Option
+
+`Option` is a type that represents an optional value. It can hold any `Soroban.Types` type.
+
+```elixir
+# When the value is not present
+Soroban.Types.Option.new()
+
+# When the value is present
+100
+|> Soroban.Types.UInt32.new()
+|> Soroban.Types.Option.new()
+```
+
+#### Vec
+
+`Vec` is a type that represents a vector of values. It can hold any `Soroban.Types` type as long as all the values are of the same type.
+
+```elixir
+values = [
+  Soroban.Types.Symbol.new("A"),
+  Soroban.Types.Symbol.new("B"),
+  Soroban.Types.Symbol.new("C")
+]
+
+Soroban.Types.Vec.new(values)
+```
+
+#### Tuple
+
+`Tuple` is a type that represents a tuple of values. It can hold any `Soroban.Types` type.
+
+```elixir
+alias Soroban.Types.{Tuple, Symbol, Int32}
+
+values = [Symbol.new("A"), Symbol.new("B"), Int32.new(1)]
+
+Tuple.new(values)
+```
+
+#### Map
+
+`Map` is a type that represents a map of key-value pairs. It can hold any `Soroban.Types` type as key and value.
+
+```elixir
+alias Soroban.Types.{Map, MapEntry, Symbol, UInt32, Bool}
+
+key1 = Symbol.new("key1")
+value1 = UInt32.new(100)
+entry1 = MapEntry.new({key1, value1})
+
+key2 = Symbol.new("key2")
+value2 = Bool.new(true)
+entry2 = MapEntry.new({key2, value2})
+
+Map.new([entry1, entry2])
+```
+
+#### Enum
+
+The `Enum` type supports both unit and tuple variants. More info can be found [here](https://soroban.stellar.org/docs/learn/custom-types#enum-unit-and-tuple-variants).
+
+```elixir
+alias Soroban.Types.{Enum, UInt32}
+
+# Unit variant
+Enum.new("A")
+
+# Tuple variant
+Enum.new({"B", UInt32.new(100)})
+```
+
+#### Struct
+
+`Struct` is a type that represents a custom struct. It can hold any `Soroban.Types` type.
+
+```elixir
+alias Soroban.Types.{Struct, StructField, UInt32, Address}
+
+key1 = "key1"
+value1 = UInt32.new(100)
+field1 = StructField.new({key1, value1})
+
+key2 = "key2"
+value2 = Address.new("GB6FIXFOEK46VBDAG5USXRKKDJYFOBQZDMAPOYY6MC4KMRTSPVUH3X2A")
+field2 = StructField.new({key2, value2})
+
+Struct.new([field1, field2])
+```
+
+### Soroban RPC endpoints
+
+Interaction with the Soroban-RPC server is done through the `Soroban.RPC` module.
+
+#### Simulate Transaction
 
 Submit a trial contract invocation to get back return values, expected ledger footprint, and expected costs.
 
@@ -88,10 +231,9 @@ Soroban.RPC.simulate_transaction(base64_envelope)
    error: nil
  }}
 
-
 ```
 
-### Send Transaction
+#### Send Transaction
 
 Submit a real transaction to the Stellar network. This is the only way to make changes "on-chain".
 
@@ -121,7 +263,7 @@ Soroban.RPC.send_transaction(base64_envelope)
  }}
 ```
 
-### Get Transaction
+#### Get Transaction
 
 Clients will poll this to tell when the transaction has been completed.
 
@@ -156,83 +298,210 @@ Soroban.RPC.get_transaction(hash)
 
 ```
 
-## Invoke contracts functions
+### Deploy and Invoke Soroban smart contracts
 
-### Invoke without required authorization 
+The deployment and invocation of Soroban smart contracts is done through the `Soroban.Contract` module which provides convenient functions that streamline the process.
+
+#### Invoke contract function
+
+##### Simple invocation - no authorization required
 
 ```elixir
 alias Soroban.Contract
 alias Soroban.Types.Symbol
 
-Contract.invoke(
-  "be4138b31cc5d0d9d91b53193d74316d254406794ec0f81d3ed40f4dc1b86a6e",
-  "SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK",
-  "hello",
-  [Symbol.new("world")]
-)
+contract_id = "be4138b31cc5d0d9d91b53193d74316d254406794ec0f81d3ed40f4dc1b86a6e"
+source_secret_key = "SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK"
+function_name = "hello"
+
+function_args = [Symbol.new("world")]
+
+Contract.invoke(contract_id, source_secret_key, function_name, function_args)
 
 {:ok,
- %Soroban.RPC.SendTransactionResponse{
-   status: "PENDING",
-   hash: "f62cb9e20c6d297316f49dca2041be4bf1af6b069c784764e51ac008b313d716",
-   latest_ledger: "570194",
-   latest_ledger_close_time: "1683643419",
-   error_result_xdr: nil
- }}
+  %Soroban.RPC.SendTransactionResponse{
+    status: "PENDING",
+    hash: "f62cb9e20c6d297316f49dca2041be4bf1af6b069c784764e51ac008b313d716",
+    latest_ledger: "570194",
+    latest_ledger_close_time: "1683643419",
+    error_result_xdr: nil
+  }}
 ```
 
-### Invoke with required authorization 
+##### Invocation with required authorization
 
 - When the invoker is the signer
 
+  ```elixir
+  alias Soroban.Contract
+  alias Soroban.Types.{Address, UInt128}
 
-```elixir
-alias Soroban.Contract
-alias Soroban.Types.{Address, UInt128}
+  contract_id = "be4138b31cc5d0d9d91b53193d74316d254406794ec0f81d3ed40f4dc1b86a6e"
+  source_secret_key = "SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK"
+  function_name = "inc"
 
-Soroban.Contract.invoke(
-  "be4138b31cc5d0d9d91b53193d74316d254406794ec0f81d3ed40f4dc1b86a6e",
-  "SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK",
-  "inc",
-  [Address.new("GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"), UInt128.new(2)]
-)
+  function_args = [
+    Address.new("GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"),
+    UInt128.new(2)
+  ]
 
-{:ok,
- %Soroban.RPC.SendTransactionResponse{
-   status: "PENDING",
-   hash: "e888193b4fed9b3ca6ad2beca3c1ed5bef3e0099e558756de85d03511cbaa00b",
-   latest_ledger: "570253",
-   latest_ledger_close_time: "1683643728",
-   error_result_xdr: nil
- }}
-``` 
+  Contract.invoke(contract_id, source_secret_key, function_name, function_args)
 
-- When the invokers is not the signer 
+  {:ok,
+    %Soroban.RPC.SendTransactionResponse{
+      status: "PENDING",
+      hash: "e888193b4fed9b3ca6ad2beca3c1ed5bef3e0099e558756de85d03511cbaa00b",
+      latest_ledger: "570253",
+      latest_ledger_close_time: "1683643728",
+      error_result_xdr: nil
+    }}
+  ```
 
-```elixir
-alias Soroban.Contract
-alias Soroban.Types.{Address, Int128}
+- When the invoker is not the signer
 
-Contract.invoke(
-  "be4138b31cc5d0d9d91b53193d74316d254406794ec0f81d3ed40f4dc1b86a6e",
-  "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24",
-  "swap",
-  [
+  ```elixir
+  alias Soroban.Contract
+  alias Soroban.Types.{Address, Int128}
+
+  contract_id = "be4138b31cc5d0d9d91b53193d74316d254406794ec0f81d3ed40f4dc1b86a6e"
+  source_secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
+  function_name = "swap"
+
+  function_args = [
     Address.new("GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"),
     Int128.new(100),
     Int128.new(4500)
-  ],
-  ["SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK"]
-)
+  ]
+
+  auth_accounts = ["SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK"]
+
+  Contract.invoke(contract_id, source_secret_key, function_name, function_args, auth_accounts)
+
+  {:ok,
+    %Soroban.RPC.SendTransactionResponse{
+      status: "PENDING",
+      hash: "da263f59a8f8b29f415e7e26758cad6e8d88caec875112641b88757ce8e01873",
+      latest_ledger: "570349",
+      latest_ledger_close_time: "1683644240",
+      error_result_xdr: nil
+    }}
+  ```
+
+#### Deploy contracts
+
+##### Install Contract Code
+
+```elixir
+alias Soroban.Contract
+alias Soroban.RPC.SendTransactionResponse
+alias Soroban.Contract.InstallContractCode
+
+wasm = File.read!("../your_wasm_path/hello.wasm")
+secret_key = "SCA..."
+
+{:ok, %SendTransactionResponse{hash: hash}} = Contract.install(wasm, secret_key)
 
 {:ok,
- %Soroban.RPC.SendTransactionResponse{
-   status: "PENDING",
-   hash: "da263f59a8f8b29f415e7e26758cad6e8d88caec875112641b88757ce8e01873",
-   latest_ledger: "570349",
-   latest_ledger_close_time: "1683644240",
-   error_result_xdr: nil
- }}
+  %Soroban.RPC.SendTransactionResponse{
+    status: "PENDING",
+    hash: "65d...",
+    latest_ledger: "1",
+    latest_ledger_close_time: "16",
+    error_result_xdr: nil
+  }}
+
+wasm_id =
+  hash
+  |> RPC.get_transaction()
+  |> InstallContractCode.get_wasm_id()
+
+"f953..."
+```
+
+##### Deploy Contract from WASM
+
+```elixir
+alias Soroban.Contract
+alias Soroban.RPC.SendTransactionResponse
+alias Soroban.Contract.DeployContract
+
+wasm_id = "f953..."
+secret_key = "SCA..."
+
+{:ok, %SendTransactionResponse{hash: hash}} = Contract.deploy(wasm_id, secret_key)
+
+{:ok,
+  %Soroban.RPC.SendTransactionResponse{
+    status: "PENDING",
+    hash: "f95...",
+    latest_ledger: "1",
+    latest_ledger_close_time: "16",
+    error_result_xdr: nil
+  }}
+
+hash
+|> RPC.get_transaction()
+|> DeployContract.get_contract_id()
+
+"9227..."
+```
+
+##### Deploy Asset Contract
+
+```elixir
+alias Soroban.Contract
+alias Soroban.RPC.SendTransactionResponse
+alias Soroban.Contract.DeployAssetContract
+
+asset_code = "DBZ"
+secret_key = "SCA..."
+
+{:ok, %SendTransactionResponse{hash: hash}} = Contract.deploy_asset(asset_code, secret_key)
+
+{:ok,
+%Soroban.RPC.SendTransactionResponse{
+  status: "PENDING",
+  hash: "b667...",
+  latest_ledger: "1",
+  latest_ledger_close_time: "16",
+  error_result_xdr: nil
+}}
+
+hash
+|> RPC.get_transaction()
+|> DeployAssetContract.get_contract_id()
+
+"c624..."
+```
+
+## Configuration
+
+The default HTTP Client is `:hackney`. Options can be passed to `:hackney` via configuration parameters.
+
+```elixir
+config :soroban, hackney_options: [{:connect_timeout, 1000}, {:recv_timeout, 5000}]
+```
+
+You can also change the default HTTP Client library.
+
+```elixir
+config :soroban, http_client: YourApp.CustomHTTPClient
+```
+
+### Custom HTTP Client
+
+`soroban.ex` allows you to use the HTTP client implementation of your choice. See [**Soroban.RPC.Client.Spec**][http_client_spec] for details.
+
+```elixir
+config :soroban, :http_client_impl, YourApp.CustomClientImpl
+```
+
+### Custom JSON library
+
+Following the same approach as the HTTP client, the JSON parsing library can also be configured. Defaults to [`Jason`][jason_url].
+
+```elixir
+config :soroban, :json_library, YourApp.CustomJSONLibrary
 ```
 
 ## Development
@@ -267,3 +536,4 @@ Made with 💙 by [kommitters Open Source](https://kommit.co)
 [contributing]: https://github.com/kommitters/soroban.ex/blob/main/CONTRIBUTING.md
 [http_client_spec]: https://github.com/kommitters/soroban.ex/blob/main/lib/rpc/client/spec.ex
 [jason_url]: https://github.com/michalmuskala/jason
+[hex]: https://hex.pm/packages/soroban
