@@ -353,12 +353,16 @@ For reading the current value of ledger entries directly.
 
 Allows you to directly inspect the current state of a contract, a contract's code, or any other ledger entry. This is a backup way to access your contract data which may not be available via events or simulateTransaction.
 
+**Parameters**
+
+- `key`: The key of the ledger entry you wish to retrieve (serialized in a base64 string).
+
 **Example**
 
 ```elixir
-Soroban.RPC.get_ledger_entry(
-  "AAAABvrOGFv9hxq4ke1yjqrbfSQPrggCrdo12YvueQldm8h8AAAADwAAAAdDT1VOVEVSAA=="
-)
+key = "AAAABvrOGFv9hxq4ke1yjqrbfSQPrggCrdo12YvueQldm8h8AAAADwAAAAdDT1VOVEVSAA=="
+
+Soroban.RPC.get_ledger_entry(key)
 
 {:ok,
  %Soroban.RPC.GetLedgerEntryResponse{
