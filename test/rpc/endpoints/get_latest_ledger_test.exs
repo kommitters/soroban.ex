@@ -16,7 +16,7 @@ defmodule Soroban.RPC.CannedGetLatestLedgerClientImpl do
   end
 end
 
-defmodule Soroban.RPC.Endpoints.GetLatestLedgerTest do
+defmodule Soroban.RPC.GetLatestLedgerTest do
   use ExUnit.Case
 
   alias Soroban.RPC.{

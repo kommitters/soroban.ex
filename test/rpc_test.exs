@@ -77,6 +77,24 @@ defmodule Soroban.RPC.CannedRPCGetLatestLedgerClientImpl do
   end
 end
 
+defmodule Soroban.RPC.CannedRPCGetNetworkClientImpl do
+  @moduledoc false
+
+  @behaviour Soroban.RPC.Client.Spec
+
+  @impl true
+  def request(_endpoint, _url, _headers, _body, _opts) do
+    send(self(), {:request, "RESPONSE"})
+
+    {:ok,
+     %{
+       friendbot_url: "https://friendbot-futurenet.stellar.org/",
+       passphrase: "Test SDF Future Network ; October 2022",
+       protocol_version: "20"
+     }}
+  end
+end
+
 defmodule Soroban.RPC.CannedRPCGetTransactionClientImpl do
   @moduledoc false
 
@@ -113,11 +131,13 @@ defmodule Soroban.RPCTest do
 
   alias Soroban.RPC.{
     CannedRPCGetLatestLedgerClientImpl,
+    CannedRPCGetNetworkClientImpl,
     CannedRPCGetTransactionClientImpl,
     CannedRPCSendTransactionClientImpl,
     CannedRPCSimulateTransactionClientImpl,
     GetHealthResponse,
     GetLatestLedgerResponse,
+    GetNetworkResponse,
     GetTransactionResponse,
     SendTransactionResponse,
     SimulateTransactionResponse
@@ -245,6 +265,25 @@ defmodule Soroban.RPCTest do
          protocol_version: 20,
          sequence: 666
        }} = RPC.get_latest_ledger()
+    end
+  end
+
+  describe "get_network/0" do
+    setup do
+      Application.put_env(:soroban, :http_client_impl, CannedRPCGetNetworkClientImpl)
+
+      on_exit(fn ->
+        Application.delete_env(:soroban, :http_client_impl)
+      end)
+    end
+
+    test "request/0" do
+      {:ok,
+       %GetNetworkResponse{
+         friendbot_url: "https://friendbot-futurenet.stellar.org/",
+         passphrase: "Test SDF Future Network ; October 2022",
+         protocol_version: "20"
+       }} = RPC.get_network()
     end
   end
 end

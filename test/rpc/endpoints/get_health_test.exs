@@ -14,7 +14,7 @@ defmodule Soroban.RPC.CannedGetHealthClientImpl do
   end
 end
 
-defmodule Soroban.RPC.Endpoints.GetHealthTest do
+defmodule Soroban.RPC.GetHealthTest do
   use ExUnit.Case
 
   alias Soroban.RPC.{
