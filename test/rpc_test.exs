@@ -189,8 +189,8 @@ defmodule Soroban.RPCTest do
     CannedRPCGetTransactionClientImpl,
     CannedRPCSendTransactionClientImpl,
     CannedRPCSimulateTransactionClientImpl,
-    EventsBody,
     EventFilter,
+    EventsBody,
     GetEventsResponse,
     GetHealthResponse,
     GetLatestLedgerResponse,
@@ -384,7 +384,7 @@ defmodule Soroban.RPCTest do
       contract_ids = ["7d9defe0ccf9b680014a343b8880c22b160c2ea2c9a69df876decb28ddbd03dc"]
 
       filters = [
-        EventFilter.new(type: :contract, contract_ids: contract_ids, topics: topic_filter)
+        EventFilter.new(type: [:contract], contract_ids: contract_ids, topics: topic_filter)
       ]
 
       event =

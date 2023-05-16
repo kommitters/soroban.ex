@@ -10,10 +10,10 @@ defmodule Soroban.RPC.EventFilterTest do
     contract_ids = ["6e34123e6328b38075f4e670175221452db7535ceeb3def1af6dddc232c1eae4"]
 
     event_filter =
-      EventFilter.new(type: :contract, contract_ids: contract_ids, topics: topic_filter)
+      EventFilter.new(type: [:contract], contract_ids: contract_ids, topics: topic_filter)
 
     %{
-      type: :contract,
+      type: [:contract],
       contract_ids: contract_ids,
       topic_filter: topic_filter,
       event_filter: event_filter
@@ -47,8 +47,12 @@ defmodule Soroban.RPC.EventFilterTest do
       {:error, :invalid_args} = EventFilter.new("Invalid")
     end
 
-    test "with an invalid type" do
-      {:error, :invalid_type} = EventFilter.new(type: :invalid)
+    test "with invalid type" do
+      {:error, :invalid_type} = EventFilter.new(type: [:invalid])
+    end
+
+    test "with an invalid types" do
+      {:error, :invalid_types} = EventFilter.new(type: :invalid)
     end
 
     test "with an invalid contract_ids" do
@@ -67,11 +71,10 @@ defmodule Soroban.RPC.EventFilterTest do
   describe "to_request_args/1" do
     test "with a valid struct", %{
       event_filter: event_filter,
-      type: type,
       contract_ids: contract_ids
     } do
       %{
-        type: ^type,
+        type: "contract",
         contractIds: ^contract_ids,
         topics: [["AAAADwAAABJpbmNyZWFzZV9hbGxvd2FuY2UAAA==", "*", "*", "*"]]
       } = EventFilter.to_request_args(event_filter)

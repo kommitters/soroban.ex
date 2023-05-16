@@ -1,7 +1,7 @@
 defmodule Soroban.RPC.EventBodyTest do
   use ExUnit.Case
 
-  alias Soroban.RPC.{EventsBody, EventFilter, PaginationOptions, TopicFilter}
+  alias Soroban.RPC.{EventFilter, EventsBody, PaginationOptions, TopicFilter}
   alias Soroban.Types.Symbol
 
   setup do
@@ -13,7 +13,7 @@ defmodule Soroban.RPC.EventBodyTest do
     contract_ids = ["7d9defe0ccf9b680014a343b8880c22b160c2ea2c9a69df876decb28ddbd03dc"]
 
     filters = [
-      EventFilter.new(type: :contract, contract_ids: contract_ids, topics: topic_filter)
+      EventFilter.new(type: [:contract], contract_ids: contract_ids, topics: topic_filter)
     ]
 
     event =
@@ -87,7 +87,6 @@ defmodule Soroban.RPC.EventBodyTest do
     end
   end
 
-  # TODO!
   describe "to_request_args/1" do
     test "with a valid struct", %{
       event: event,
@@ -101,7 +100,7 @@ defmodule Soroban.RPC.EventBodyTest do
           %{
             contractIds: ["7d9defe0ccf9b680014a343b8880c22b160c2ea2c9a69df876decb28ddbd03dc"],
             topics: [["AAAADwAAAAh0cmFuc2Zlcg==", "*", "*", "*"]],
-            type: :contract
+            type: "contract"
           }
         ],
         pagination: %{cursor: ^cursor, limit: ^limit}

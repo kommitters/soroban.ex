@@ -373,6 +373,93 @@ Soroban.RPC.get_ledger_entry(key)
 
 ```
 
+#### Get Events
+
+Clients can request a filtered list of events emitted by a given ledger range.
+
+Soroban-RPC will support querying within a maximum 24 hours of recent ledgers.
+
+> **Note:**
+> This could be used by the client to only prompt a refresh when there is a new ledger with relevant events. It should also be used by backend Dapp components to "ingest" events into their own database for querying and serving.
+
+If making multiple requests, clients should deduplicate any events received, based on the event's unique id field. This prevents double-processing in the case of duplicate events being received.
+
+By default soroban-rpc retains the most recent 24 hours of events.
+
+**Parameters**
+
+`EventsBody`:
+
+- `startLedger`: Stringified ledger sequence number to fetch events after (inclusive). This method will return an error if startLedger is less than the oldest ledger stored in this node, or greater than the latest ledger seen by this node. If a cursor is included in the request, startLedger must be omitted.
+
+- `filters`: List of `EventFilter` for the returned events. Events matching any of the filters are included. To match a filter, an event must match both a contractId and a topic. Maximum 5 filters are allowed per request.
+
+  - `type`: (optional) A list of event types (`:system`, `:contract`, or `:diagnostic`) used to filter events. If omitted, all event types are included.
+  - `contractIds`: (optional) List of contract ids to query for events. If omitted, return events for all contracts. Maximum 5 contract IDs are allowed per request.
+  - `pagination`: (optional) Pagination in soroban-rpc is similar to pagination in Horizon.
+    - `cursor`: (optional) A string ID that points to a specific location in a collection of responses and is pulled from the paging_token value of a record. When a cursor is provided Soroban-RPC will not include the element whose id matches the cursor in the response. Only elements which appear after the cursor are included.
+    - `limit`: (optional) The maximum number of records returned. The limit for getEvents can range from 1 to 10000 - an upper limit that is hardcoded in Soroban-RPC for performance reasons. If this argument isn't designated, it defaults to 100.
+  - `topics`: (optional) List of `TopicFilter`. If omitted, query for all events. If multiple filters are specified, events will be included if they match any of the filters. Maximum 5 filters are allowed per request.      
+    - `TopicFilter`: is a SegmentMatcher[]. The list can be 1-4 SegmentMatchers long. 
+    - `SegmentMatcher`:
+      - For an exact segment match, a string containing base64-encoded ScVal
+      - For a wildcard single-segment match, the string "*", matches exactly one segment.
+    - E.g: `[Symbol("transfer"), "*", "*", "*"]`
+
+**Example**
+
+```elixir
+alias Soroban.RPC.{
+  EventsBody,
+  EventFilter,
+  TopicFilter
+}
+
+alias Soroban.Types.Symbol
+
+limit = 1
+start_ledger = "674736"
+args = [Symbol.new("transfer"), "*", "*", "*"]
+topic_filter = [TopicFilter.new(args)]
+contract_ids = ["7d9defe0ccf9b680014a343b8880c22b160c2ea2c9a69df876decb28ddbd03dc"]
+
+filters = [
+  EventFilter.new(type: [:contract], contract_ids: contract_ids, topics: topic_filter)
+]
+
+body =
+  EventsBody.new(
+    start_ledger: start_ledger,
+    filters: filters,
+    limit: limit
+  )
+
+Soroban.RPC.get_events(body)
+
+{:ok,
+ %Soroban.RPC.GetEventsResponse{
+   latest_ledger: "685870",
+   events: [
+     %{
+       contract_id: "7d9defe0ccf9b680014a343b8880c22b160c2ea2c9a69df876decb28ddbd03dc",
+       id: "0002917807507378176-0000000000",
+       in_successful_contract_call: true,
+       ledger: "679355",
+       ledger_closed_at: "2023-05-16T06:02:47Z",
+       paging_token: "0002917807507378176-0000000000",
+       topic: [
+         "AAAADwAAAAh0cmFuc2Zlcg==",
+         "AAAAEwAAAAAAAAAAVAw2XIf/C6hPQZ2EgaY6R7RKuLfchP7836ZvBjZxdVY=",
+         "AAAAEwAAAAG2UFHmWnQeBKU73RLX7AQKCktEUE/F/bKqVy+ejoC/YQ==",
+         "AAAADQAAACVVU0RDOl3dfLGIo7lPPO+E0KPPSVxWCQ1qOen8umo/g+Jx8baEAAAA"
+       ],
+       type: "contract",
+       value: %{xdr: "AAAACgAAAAAF9eEAAAAAAAAAAAA="}
+     }
+   ]
+ }}
+```
+
 ### Deploy and Invoke Soroban smart contracts
 
 The deployment and invocation of Soroban smart contracts is done through the `Soroban.Contract` module which provides convenient functions that streamline the process.

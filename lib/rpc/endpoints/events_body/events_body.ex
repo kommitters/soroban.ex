@@ -67,7 +67,7 @@ defmodule Soroban.RPC.EventsBody do
     do: {:ok, PaginationOptions.new(cursor: cursor, limit: limit)}
 
   @spec validate_filters(filters :: filters()) :: filters_validation()
-  defp validate_filters([%EventFilter{} = filter | _] = filters) do
+  defp validate_filters([%EventFilter{} = filter | _] = filters) when length(filters) <= 5 do
     if Enum.any?(filters, fn f -> f.__struct__ != filter.__struct__ end),
       do: {:error, :invalid_filters},
       else: {:ok, filters}
