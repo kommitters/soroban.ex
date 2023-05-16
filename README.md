@@ -388,29 +388,29 @@ By default soroban-rpc retains the most recent 24 hours of events.
 
 **Parameters**
 
-`EventsBody`:
+`EventsPayload`:
 
-- `startLedger`: Stringified ledger sequence number to fetch events after (inclusive). This method will return an error if startLedger is less than the oldest ledger stored in this node, or greater than the latest ledger seen by this node. If a cursor is included in the request, startLedger must be omitted.
+- `start_ledger`: Stringified ledger sequence number to fetch events after (inclusive). This method will return an error if start_ledger is less than the oldest ledger stored in this node, or greater than the latest ledger seen by this node. If a cursor is included in the request, start_ledger must be omitted.
+
+- `cursor`: (optional) A string ID that points to a specific location in a collection of responses and is pulled from the paging_token value of a record. When a cursor is provided Soroban-RPC will not include the element whose id matches the cursor in the response. Only elements which appear after the cursor are included.
+- `limit`: (optional) The maximum number of records returned. The limit for getEvents can range from 1 to 10000 - an upper limit that is hardcoded in Soroban-RPC for performance reasons. If this argument isn't designated, it defaults to 100.
 
 - `filters`: List of `EventFilter` for the returned events. Events matching any of the filters are included. To match a filter, an event must match both a contractId and a topic. Maximum 5 filters are allowed per request.
 
   - `type`: (optional) A list of event types (`:system`, `:contract`, or `:diagnostic`) used to filter events. If omitted, all event types are included.
-  - `contractIds`: (optional) List of contract ids to query for events. If omitted, return events for all contracts. Maximum 5 contract IDs are allowed per request.
-  - `pagination`: (optional) Pagination in soroban-rpc is similar to pagination in Horizon.
-    - `cursor`: (optional) A string ID that points to a specific location in a collection of responses and is pulled from the paging_token value of a record. When a cursor is provided Soroban-RPC will not include the element whose id matches the cursor in the response. Only elements which appear after the cursor are included.
-    - `limit`: (optional) The maximum number of records returned. The limit for getEvents can range from 1 to 10000 - an upper limit that is hardcoded in Soroban-RPC for performance reasons. If this argument isn't designated, it defaults to 100.
-  - `topics`: (optional) List of `TopicFilter`. If omitted, query for all events. If multiple filters are specified, events will be included if they match any of the filters. Maximum 5 filters are allowed per request.      
-    - `TopicFilter`: is a SegmentMatcher[]. The list can be 1-4 SegmentMatchers long. 
+  - `contract_ids`: (optional) List of contract ids to query for events. If omitted, return events for all contracts. Maximum 5 contract IDs are allowed per request.
+  - `topics`: (optional) List of `TopicFilter`. If omitted, query for all events. If multiple filters are specified, events will be included if they match any of the filters. Maximum 5 filters are allowed per request.
+    - `TopicFilter`: is a SegmentMatcher[]. The list can be 1-4 SegmentMatchers long.
     - `SegmentMatcher`:
-      - For an exact segment match, a string containing base64-encoded ScVal
-      - For a wildcard single-segment match, the string "*", matches exactly one segment.
-    - E.g: `[Symbol("transfer"), "*", "*", "*"]`
+      - For an exact segment match, use Soroban.ex Types that will be converted into string base64-encoded ScVal values.
+      - For a wildcard single-segment match, the string "\*", matches exactly one segment.
+    - E.g: `[Symbol.new("transfer"), "*", "*", "*"]`
 
 **Example**
 
 ```elixir
 alias Soroban.RPC.{
-  EventsBody,
+  EventsPayload,
   EventFilter,
   TopicFilter
 }
@@ -427,14 +427,14 @@ filters = [
   EventFilter.new(type: [:contract], contract_ids: contract_ids, topics: topic_filter)
 ]
 
-body =
-  EventsBody.new(
+events_payload =
+  EventsPayload.new(
     start_ledger: start_ledger,
     filters: filters,
     limit: limit
   )
 
-Soroban.RPC.get_events(body)
+Soroban.RPC.get_events(events_payload)
 
 {:ok,
  %Soroban.RPC.GetEventsResponse{

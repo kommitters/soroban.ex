@@ -38,7 +38,7 @@ defmodule Soroban.RPC.GetEventsTest do
   alias Soroban.RPC.{
     CannedGetEventsClientImpl,
     EventFilter,
-    EventsBody,
+    EventsPayload,
     GetEvents,
     GetEventsResponse,
     TopicFilter
@@ -64,7 +64,7 @@ defmodule Soroban.RPC.GetEventsTest do
     ]
 
     event =
-      EventsBody.new(
+      EventsPayload.new(
         start_ledger: start_ledger,
         filters: filters,
         limit: limit

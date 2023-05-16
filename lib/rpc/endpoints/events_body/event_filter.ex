@@ -23,7 +23,7 @@ defmodule Soroban.RPC.EventFilter do
 
   defstruct [:type, :contract_ids, :topics]
 
-  @spec new(args :: args()) :: t()
+  @spec new(args :: args()) :: t() | error()
   def new(args) when is_list(args) do
     type = Keyword.get(args, :type)
     contract_ids = Keyword.get(args, :contract_ids)
@@ -45,7 +45,11 @@ defmodule Soroban.RPC.EventFilter do
   @spec to_request_args(t()) :: request_args()
   def to_request_args(%__MODULE__{type: type, contract_ids: contract_ids, topics: topics}) do
     topics = Enum.map(topics, &TopicFilter.to_request_args/1)
-    type = Enum.join(type, ", ")
+
+    type =
+      if type != nil,
+        do: Enum.join(type, ", ")
+
     %{type: type, contractIds: contract_ids, topics: topics}
   end
 
@@ -65,11 +69,10 @@ defmodule Soroban.RPC.EventFilter do
   defp validate_contract_ids(nil), do: {:ok, nil}
 
   defp validate_contract_ids(contract_ids)
-       when is_list(contract_ids) and length(contract_ids) <= 5 do
-    case Enum.all?(contract_ids, &is_binary/1) do
-      true -> {:ok, contract_ids}
-      false -> {:error, :invalid_contract_ids}
-    end
+       when is_list(contract_ids) and length(contract_ids) in 1..5 do
+    if Enum.all?(contract_ids, &is_binary/1),
+      do: {:ok, contract_ids},
+      else: {:error, :invalid_contract_ids}
   end
 
   defp validate_contract_ids(_contract_ids), do: {:error, :invalid_contract_ids}

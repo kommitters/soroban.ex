@@ -190,7 +190,7 @@ defmodule Soroban.RPCTest do
     CannedRPCSendTransactionClientImpl,
     CannedRPCSimulateTransactionClientImpl,
     EventFilter,
-    EventsBody,
+    EventsPayload,
     GetEventsResponse,
     GetHealthResponse,
     GetLatestLedgerResponse,
@@ -388,7 +388,7 @@ defmodule Soroban.RPCTest do
       ]
 
       event =
-        EventsBody.new(
+        EventsPayload.new(
           start_ledger: start_ledger,
           filters: filters,
           limit: limit

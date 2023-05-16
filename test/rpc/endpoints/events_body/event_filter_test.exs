@@ -21,7 +21,7 @@ defmodule Soroban.RPC.EventFilterTest do
   end
 
   describe "new/1" do
-    test "with a valid values", %{
+    test "with valid values", %{
       type: type,
       contract_ids: contract_ids,
       topic_filter: topic_filter
@@ -34,7 +34,7 @@ defmodule Soroban.RPC.EventFilterTest do
         )
     end
 
-    test "with a nil" do
+    test "with nil values" do
       %EventFilter{type: nil, contract_ids: nil, topics: nil} =
         EventFilter.new(
           type: nil,
@@ -43,7 +43,7 @@ defmodule Soroban.RPC.EventFilterTest do
         )
     end
 
-    test "with an invalid args" do
+    test "with invalid args" do
       {:error, :invalid_args} = EventFilter.new("Invalid")
     end
 
@@ -51,19 +51,19 @@ defmodule Soroban.RPC.EventFilterTest do
       {:error, :invalid_type} = EventFilter.new(type: [:invalid])
     end
 
-    test "with an invalid types" do
+    test "with invalid types" do
       {:error, :invalid_types} = EventFilter.new(type: :invalid)
     end
 
-    test "with an invalid contract_ids" do
+    test "with invalid contract_ids" do
       {:error, :invalid_contract_ids} = EventFilter.new(contract_ids: :invalid)
     end
 
-    test "with an invalid contract_ids values" do
+    test "with invalid contract_ids values" do
       {:error, :invalid_contract_ids} = EventFilter.new(contract_ids: [:invalid])
     end
 
-    test "with an invalid topics" do
+    test "with invalid topics" do
       {:error, :invalid_topics} = EventFilter.new(topics: [:invalid])
     end
   end

@@ -16,11 +16,11 @@ defmodule Soroban.RPC.TopicFilterTest do
       %TopicFilter{segments: ^segments} = TopicFilter.new(args)
     end
 
-    test "with an invalid args" do
+    test "with invalid args" do
       {:error, :invalid_args} = TopicFilter.new("Invalid")
     end
 
-    test "with an invalid value" do
+    test "with invalid value" do
       {:error, :invalid_segments} = TopicFilter.new(["invalid"])
     end
   end

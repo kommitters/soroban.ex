@@ -4,19 +4,19 @@ defmodule Soroban.RPC.GetEvents do
   """
   @behaviour Soroban.RPC.Endpoint.Spec
 
-  alias Soroban.RPC.EventsBody
+  alias Soroban.RPC.EventsPayload
   alias Soroban.RPC.{GetEventsResponse, Request}
 
   @endpoint "getEvents"
 
   @impl true
-  def request(%EventsBody{} = body) do
-    body = EventsBody.to_request_args(body)
+  def request(%EventsPayload{} = payload) do
+    payload = EventsPayload.to_request_args(payload)
 
     @endpoint
     |> Request.new()
     |> Request.add_headers([{"Content-Type", "application/json"}])
-    |> Request.add_params(body)
+    |> Request.add_params(payload)
     |> Request.perform()
     |> Request.results(as: GetEventsResponse)
   end

@@ -1,7 +1,7 @@
-defmodule Soroban.RPC.EventBodyTest do
+defmodule Soroban.RPC.EventsPayloadTest do
   use ExUnit.Case
 
-  alias Soroban.RPC.{EventFilter, EventsBody, PaginationOptions, TopicFilter}
+  alias Soroban.RPC.{EventFilter, EventsPayload, TopicFilter}
   alias Soroban.Types.Symbol
 
   setup do
@@ -17,7 +17,7 @@ defmodule Soroban.RPC.EventBodyTest do
     ]
 
     event =
-      EventsBody.new(
+      EventsPayload.new(
         start_ledger: start_ledger,
         filters: filters,
         cursor: cursor,
@@ -41,15 +41,12 @@ defmodule Soroban.RPC.EventBodyTest do
       cursor: cursor,
       limit: limit
     } do
-      %EventsBody{
+      %EventsPayload{
         start_ledger: ^start_ledger,
         filters: ^filters,
-        pagination: %PaginationOptions{
-          cursor: ^cursor,
-          limit: ^limit
-        }
+        pagination: %{cursor: ^cursor, limit: ^limit}
       } =
-        EventsBody.new(
+        EventsPayload.new(
           start_ledger: start_ledger,
           filters: filters,
           cursor: cursor,
@@ -58,32 +55,40 @@ defmodule Soroban.RPC.EventBodyTest do
     end
 
     test "with nil values", %{start_ledger: start_ledger} do
-      %EventsBody{
+      %EventsPayload{
         start_ledger: ^start_ledger,
         filters: nil,
-        pagination: nil
-      } = EventsBody.new(start_ledger: start_ledger)
+        pagination: %{cursor: nil, limit: nil}
+      } = EventsPayload.new(start_ledger: start_ledger)
     end
 
-    test "with an invalid args" do
-      {:error, :invalid_args} = EventsBody.new("Invalid")
+    test "with invalid args" do
+      {:error, :invalid_args} = EventsPayload.new("Invalid")
     end
 
     test "with an invalid start_ledger" do
-      {:error, :invalid_start_ledger} = EventsBody.new(start_ledger: :invalid)
+      {:error, :invalid_start_ledger} = EventsPayload.new(start_ledger: :invalid)
     end
 
-    test "with an invalid filters", %{start_ledger: start_ledger} do
+    test "with invalid filters", %{start_ledger: start_ledger} do
       {:error, :invalid_filters} =
-        EventsBody.new(start_ledger: start_ledger, filters: :invalid_filters)
+        EventsPayload.new(start_ledger: start_ledger, filters: :invalid_filters)
     end
 
-    test "with an invalid filter in list", %{
+    test "with invalid filter in list", %{
       start_ledger: start_ledger,
       invalid_filters: invalid_filters
     } do
       {:error, :invalid_filters} =
-        EventsBody.new(start_ledger: start_ledger, filters: invalid_filters)
+        EventsPayload.new(start_ledger: start_ledger, filters: invalid_filters)
+    end
+
+    test "with an invalid cursor", %{limit: limit} do
+      {:error, :invalid_cursor} = EventsPayload.new(cursor: 10, limit: limit)
+    end
+
+    test "with an invalid limit", %{cursor: cursor} do
+      {:error, :invalid_limit} = EventsPayload.new(cursor: cursor, limit: "invalid")
     end
   end
 
@@ -104,11 +109,11 @@ defmodule Soroban.RPC.EventBodyTest do
           }
         ],
         pagination: %{cursor: ^cursor, limit: ^limit}
-      } = EventsBody.to_request_args(event)
+      } = EventsPayload.to_request_args(event)
     end
 
     test "with an invalid struct" do
-      :error = EventsBody.to_request_args(nil)
+      :error = EventsPayload.to_request_args(nil)
     end
   end
 end

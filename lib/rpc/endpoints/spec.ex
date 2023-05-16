@@ -3,11 +3,10 @@ defmodule Soroban.RPC.Endpoint.Spec do
   Specifies the callbacks to build the Soroban's endpoints.
   """
 
-  alias Soroban.RPC.EventsBody
-  alias Soroban.RPC.{Error, HTTPError}
+  alias Soroban.RPC.{Error, EventsPayload, HTTPError}
 
   @type response :: {:ok, struct()} | {:error, Error.t() | HTTPError.t()}
-  @type params :: String.t() | Keyword.t() | EventsBody.t() | nil
+  @type params :: String.t() | EventsPayload.t() | nil
 
   @callback request(params :: params()) :: response()
 end

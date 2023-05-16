@@ -14,7 +14,7 @@ defmodule Soroban.RPC.TopicFilter do
   defstruct [:segments]
 
   @spec new(args :: segments()) :: t() | {:error, atom()}
-  def new(args) when is_list(args) and length(args) <= 4 do
+  def new(args) when is_list(args) and length(args) in 1..4 do
     with {:ok, segments} <- validate_segments(args) do
       %__MODULE__{
         segments: segments
