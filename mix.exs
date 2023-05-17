@@ -1,7 +1,7 @@
 defmodule Soroban.MixProject do
   use Mix.Project
 
-  @version "0.7.0"
+  @version "0.8.0"
   @github_url "https://github.com/kommitters/soroban.ex"
 
   def project do
@@ -99,6 +99,19 @@ defmodule Soroban.MixProject do
         Soroban.RPC.SendTransactionResponse,
         Soroban.RPC.SimulateTransaction,
         Soroban.RPC.SimulateTransactionResponse,
+        Soroban.RPC.GetHealth,
+        Soroban.RPC.GetHealthResponse,
+        Soroban.RPC.GetLatestLedger,
+        Soroban.RPC.GetLatestLedgerResponse,
+        Soroban.RPC.GetNetwork,
+        Soroban.RPC.GetNetworkResponse,
+        Soroban.RPC.GetLedgerEntry,
+        Soroban.RPC.GetLedgerEntryResponse,
+        Soroban.RPC.GetEvents,
+        Soroban.RPC.GetEventsResponse,
+        Soroban.RPC.EventFilter,
+        Soroban.RPC.EventsPayload,
+        Soroban.RPC.TopicFilter,
         Soroban.RPC.Error,
         Soroban.RPC.HTTPError
       ],
