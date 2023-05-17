@@ -16,6 +16,7 @@ defmodule Soroban.Contract.DeployContract do
   alias Soroban.Contract.RPCCalls
   alias StellarBase.XDR.TransactionResult
 
+  @type envelope_xdr :: String.t()
   @type wasm_id :: binary()
   @type invoke_host_function :: InvokeHostFunction.t()
   @type get_response :: {:ok, GetTransactionResponse.t()}
@@ -38,6 +39,22 @@ defmodule Soroban.Contract.DeployContract do
         signature,
         invoke_host_function_op
       )
+    end
+  end
+
+  @spec retrieve_unsigned_xdr_to_deploy(
+          wasm_id :: wasm_id(),
+          source_public_key :: binary()
+        ) :: envelope_xdr()
+  def retrieve_unsigned_xdr_to_deploy(wasm_id, source_public_key) do
+    with {:ok, seq_num} <- Accounts.fetch_next_sequence_number(source_public_key),
+         %Account{} = source_account <- Account.new(source_public_key),
+         %SequenceNumber{} = sequence_number <- SequenceNumber.new(seq_num),
+         %InvokeHostFunction{} = invoke_host_function_op <-
+           create_host_function_deploy_op(wasm_id) do
+      invoke_host_function_op
+      |> RPCCalls.simulate(source_account, sequence_number)
+      |> RPCCalls.retrieve_unsigned_xdr(source_account, sequence_number, invoke_host_function_op)
     end
   end
 

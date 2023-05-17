@@ -113,9 +113,9 @@ defmodule Soroban.Contract.DeployContractTest do
 
     %{
       contract_id: "be4138b31cc5d0d9d91b53193d74316d254406794ec0f81d3ed40f4dc1b86a6e",
-      # GBNDWIM7DPYZJ2RLJ3IESXBIO4C2SVF6PWZXS3DLODJSBQWBMKY5U4M3
+      source_public: "GBNDWIM7DPYZJ2RLJ3IESXBIO4C2SVF6PWZXS3DLODJSBQWBMKY5U4M3",
       source_secret: "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24",
-      # GASY52GNGVKEMXSGH7VSCZQKRWQMIQD77J53KHXEBAV2BODWH6FDDZ3F
+      source_public_with_error: "GASY52GNGVKEMXSGH7VSCZQKRWQMIQD77J53KHXEBAV2BODWH6FDDZ3F",
       source_secret_with_error: "SDXKY6TSBNS7T2UJMHLIH4BWTP4EHR52HZTRNEKH33ML3ARJI2AKIPEC",
       wasm_id:
         <<66, 208, 35, 40, 82, 63, 24, 62, 0, 161, 91, 200, 46, 101, 45, 24, 216, 140, 130, 169,
@@ -136,6 +136,19 @@ defmodule Soroban.Contract.DeployContractTest do
        latest_ledger_close_time: "1683814245",
        error_result_xdr: nil
      }} = DeployContract.deploy(wasm_id, source_secret)
+  end
+
+  test "retrieve_xdr_to_sign/2", %{
+    wasm_id: wasm_id,
+    source_public_with_error: source_public
+  } do
+    assert String.contains?(
+             DeployContract.retrieve_unsigned_xdr_to_deploy(
+               wasm_id,
+               source_public
+             ),
+             "AAAAAgAAAAAlj"
+           )
   end
 
   test "get_contract_id/1", %{
