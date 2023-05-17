@@ -19,7 +19,7 @@
 ```elixir
 def deps do
   [
-    {:soroban, "~> 0.7.0"}
+    {:soroban, "~> 0.8.0"}
   ]
 end
 ```
@@ -296,6 +296,168 @@ Soroban.RPC.get_transaction(hash)
    ledger: "476421"
  }}
 
+```
+
+#### Get Health
+
+General node health check.
+
+**Example**
+
+```elixir
+Soroban.RPC.get_health()
+
+{:ok, %Soroban.RPC.GetHealthResponse{status: "healthy"}}
+
+```
+
+#### Get Latest Ledger
+
+For finding out the current latest known ledger of this node. This is a subset of the ledger info from Horizon.
+
+**Example**
+
+```elixir
+Soroban.RPC.get_latest_ledger()
+
+{:ok,
+ %Soroban.RPC.GetLatestLedgerResponse{
+   id: "2a00000000000000000000000000000000000000000000000000000000000000",
+   protocol_version: 20,
+   sequence: 666
+ }}
+
+```
+
+#### Get Network
+
+General info about the currently configured network.
+
+**Example**
+
+```elixir
+Soroban.RPC.get_network()
+
+{:ok,
+ %Soroban.RPC.GetNetworkResponse{
+   friendbot_url: "https://friendbot-futurenet.stellar.org/",
+   passphrase: "Test SDF Future Network ; October 2022",
+   protocol_version: "20"
+ }}
+
+```
+
+#### Get Ledger Entry
+
+For reading the current value of ledger entries directly.
+
+Allows you to directly inspect the current state of a contract, a contract's code, or any other ledger entry. This is a backup way to access your contract data which may not be available via events or simulateTransaction.
+
+**Parameters**
+
+- `key`: The key of the ledger entry you wish to retrieve (serialized in a base64 string).
+
+**Example**
+
+```elixir
+key = "AAAABvrOGFv9hxq4ke1yjqrbfSQPrggCrdo12YvueQldm8h8AAAADwAAAAdDT1VOVEVSAA=="
+
+Soroban.RPC.get_ledger_entry(key)
+
+{:ok,
+ %Soroban.RPC.GetLedgerEntryResponse{
+   xdr: "AAAABvrOGFv9hxq4ke1yjqrbfSQPrggCrdo12YvueQldm8h8AAAADwAAAAdDT1VOVEVSAAAAAAMAAAAC",
+   last_modified_ledger_seq: "684751",
+   latest_ledger: "684754"
+ }}
+
+```
+
+#### Get Events
+
+Clients can request a filtered list of events emitted by a given ledger range.
+
+Soroban-RPC will support querying within a maximum 24 hours of recent ledgers.
+
+> **Note:**
+> This could be used by the client to only prompt a refresh when there is a new ledger with relevant events. It should also be used by backend Dapp components to "ingest" events into their own database for querying and serving.
+
+If making multiple requests, clients should deduplicate any events received, based on the event's unique id field. This prevents double-processing in the case of duplicate events being received.
+
+By default soroban-rpc retains the most recent 24 hours of events.
+
+**Parameters**
+
+`EventsPayload`:
+
+- `start_ledger`: Stringified ledger sequence number to fetch events after (inclusive). This method will return an error if start_ledger is less than the oldest ledger stored in this node, or greater than the latest ledger seen by this node. If a cursor is included in the request, start_ledger must be omitted.
+
+- `cursor`: (optional) A string ID that points to a specific location in a collection of responses and is pulled from the paging_token value of a record. When a cursor is provided Soroban-RPC will not include the element whose id matches the cursor in the response. Only elements which appear after the cursor are included.
+- `limit`: (optional) The maximum number of records returned. The limit for getEvents can range from 1 to 10000 - an upper limit that is hardcoded in Soroban-RPC for performance reasons. If this argument isn't designated, it defaults to 100.
+
+- `filters`: List of `EventFilter` for the returned events. Events matching any of the filters are included. To match a filter, an event must match both a contractId and a topic. Maximum 5 filters are allowed per request.
+
+  - `type`: (optional) A list of event types (`:system`, `:contract`, or `:diagnostic`) used to filter events. If omitted, all event types are included.
+  - `contract_ids`: (optional) List of contract ids to query for events. If omitted, return events for all contracts. Maximum 5 contract IDs are allowed per request.
+  - `topics`: (optional) List of `TopicFilter`. If omitted, query for all events. If multiple filters are specified, events will be included if they match any of the filters. Maximum 5 filters are allowed per request.
+    - `TopicFilter`: is a SegmentMatcher[]. The list can be 1-4 SegmentMatchers long.
+    - `SegmentMatcher`:
+      - For an exact segment match, use Soroban.ex Types that will be converted into string base64-encoded ScVal values.
+      - For a wildcard single-segment match, the string "\*", matches exactly one segment.
+    - E.g: `[Symbol.new("transfer"), "*", "*", "*"]`
+
+**Example**
+
+```elixir
+alias Soroban.RPC.{
+  EventsPayload,
+  EventFilter,
+  TopicFilter
+}
+
+alias Soroban.Types.Symbol
+
+limit = 1
+start_ledger = "674736"
+args = [Symbol.new("transfer"), "*", "*", "*"]
+topic_filter = [TopicFilter.new(args)]
+contract_ids = ["7d9defe0ccf9b680014a343b8880c22b160c2ea2c9a69df876decb28ddbd03dc"]
+
+filters = [
+  EventFilter.new(type: [:contract], contract_ids: contract_ids, topics: topic_filter)
+]
+
+events_payload =
+  EventsPayload.new(
+    start_ledger: start_ledger,
+    filters: filters,
+    limit: limit
+  )
+
+Soroban.RPC.get_events(events_payload)
+
+{:ok,
+ %Soroban.RPC.GetEventsResponse{
+   latest_ledger: "685870",
+   events: [
+     %{
+       contract_id: "7d9defe0ccf9b680014a343b8880c22b160c2ea2c9a69df876decb28ddbd03dc",
+       id: "0002917807507378176-0000000000",
+       in_successful_contract_call: true,
+       ledger: "679355",
+       ledger_closed_at: "2023-05-16T06:02:47Z",
+       paging_token: "0002917807507378176-0000000000",
+       topic: [
+         "AAAADwAAAAh0cmFuc2Zlcg==",
+         "AAAAEwAAAAAAAAAAVAw2XIf/C6hPQZ2EgaY6R7RKuLfchP7836ZvBjZxdVY=",
+         "AAAAEwAAAAG2UFHmWnQeBKU73RLX7AQKCktEUE/F/bKqVy+ejoC/YQ==",
+         "AAAADQAAACVVU0RDOl3dfLGIo7lPPO+E0KPPSVxWCQ1qOen8umo/g+Jx8baEAAAA"
+       ],
+       type: "contract",
+       value: %{xdr: "AAAACgAAAAAF9eEAAAAAAAAAAAA="}
+     }
+   ]
+ }}
 ```
 
 ### Deploy and Invoke Soroban smart contracts

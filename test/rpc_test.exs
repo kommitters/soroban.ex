@@ -1,4 +1,4 @@
-defmodule Soroban.RPC.RPCSendTransactionCannedClientImpl do
+defmodule Soroban.RPC.CannedRPCSendTransactionClientImpl do
   @moduledoc false
 
   @behaviour Soroban.RPC.Client.Spec
@@ -17,7 +17,7 @@ defmodule Soroban.RPC.RPCSendTransactionCannedClientImpl do
   end
 end
 
-defmodule Soroban.RPC.RPCSimulateTransactionCannedClientImpl do
+defmodule Soroban.RPC.CannedRPCSimulateTransactionClientImpl do
   @moduledoc false
 
   @behaviour Soroban.RPC.Client.Spec
@@ -43,7 +43,111 @@ defmodule Soroban.RPC.RPCSimulateTransactionCannedClientImpl do
   end
 end
 
-defmodule Soroban.RPC.RPCGetTransactionCannedClientImpl do
+defmodule Soroban.RPC.CannedRPCGetHealthClientImpl do
+  @moduledoc false
+
+  @behaviour Soroban.RPC.Client.Spec
+
+  @impl true
+  def request(_endpoint, _url, _headers, _body, _opts) do
+    send(self(), {:request, "RESPONSE"})
+
+    {:ok,
+     %{
+       status: "healthy"
+     }}
+  end
+end
+
+defmodule Soroban.RPC.CannedRPCGetLatestLedgerClientImpl do
+  @moduledoc false
+
+  @behaviour Soroban.RPC.Client.Spec
+
+  @impl true
+  def request(_endpoint, _url, _headers, _body, _opts) do
+    send(self(), {:request, "RESPONSE"})
+
+    {:ok,
+     %{
+       id: "2a00000000000000000000000000000000000000000000000000000000000000",
+       protocol_version: 20,
+       sequence: 666
+     }}
+  end
+end
+
+defmodule Soroban.RPC.CannedRPCGetNetworkClientImpl do
+  @moduledoc false
+
+  @behaviour Soroban.RPC.Client.Spec
+
+  @impl true
+  def request(_endpoint, _url, _headers, _body, _opts) do
+    send(self(), {:request, "RESPONSE"})
+
+    {:ok,
+     %{
+       friendbot_url: "https://friendbot-futurenet.stellar.org/",
+       passphrase: "Test SDF Future Network ; October 2022",
+       protocol_version: "20"
+     }}
+  end
+end
+
+defmodule Soroban.RPC.CannedRPCGetLedgerEntryClientImpl do
+  @moduledoc false
+
+  @behaviour Soroban.RPC.Client.Spec
+
+  @impl true
+  def request(_endpoint, _url, _headers, _body, _opts) do
+    send(self(), {:request, "RESPONSE"})
+
+    {:ok,
+     %{
+       xdr: "AAAABhv6ziOnWcVRdGMZjtFKSWnLSndMp9JPVLLXxQqAvKqJAAAABQAAAAdDT1VOVEVSAAAAAAEAAAAD",
+       last_modified_ledger_seq: "164986",
+       latest_ledger: "179436"
+     }}
+  end
+end
+
+defmodule Soroban.RPC.CannedRPCGetEventsClientImpl do
+  @moduledoc false
+
+  @behaviour Soroban.RPC.Client.Spec
+
+  @impl true
+  def request(_endpoint, _url, _headers, _body, _opts) do
+    send(self(), {:request, "RESPONSE"})
+
+    {:ok,
+     %{
+       latest_ledger: "685196",
+       events: [
+         %{
+           contract_id: "7d9defe0ccf9b680014a343b8880c22b160c2ea2c9a69df876decb28ddbd03dc",
+           id: "0002917807507378176-0000000000",
+           in_successful_contract_call: true,
+           ledger: "679355",
+           ledger_closed_at: "2023-05-16T06:02:47Z",
+           paging_token: "0002917807507378176-0000000000",
+           topic: [
+             "AAAADwAAAAh0cmFuc2Zlcg==",
+             "AAAAEwAAAAAAAAAAVAw2XIf/C6hPQZ2EgaY6R7RKuLfchP7836ZvBjZxdVY=",
+             "AAAAEwAAAAG2UFHmWnQeBKU73RLX7AQKCktEUE/F/bKqVy+ejoC/YQ==",
+             "AAAADQAAACVVU0RDOl3dfLGIo7lPPO+E0KPPSVxWCQ1qOen8umo/g+Jx8baEAAAA"
+           ],
+           type: "contract",
+           value: %{xdr: "AAAACgAAAAAF9eEAAAAAAAAAAAA="}
+         }
+       ]
+     }}
+  end
+end
+
+defmodule Soroban.RPC.CannedRPCGetTransactionClientImpl do
   @moduledoc false
 
   @behaviour Soroban.RPC.Client.Spec
@@ -77,17 +181,32 @@ defmodule Soroban.RPCTest do
   alias Soroban.RPC
 
   alias Soroban.RPC.{
+    CannedRPCGetEventsClientImpl,
+    CannedRPCGetHealthClientImpl,
+    CannedRPCGetLatestLedgerClientImpl,
+    CannedRPCGetLedgerEntryClientImpl,
+    CannedRPCGetNetworkClientImpl,
+    CannedRPCGetTransactionClientImpl,
+    CannedRPCSendTransactionClientImpl,
+    CannedRPCSimulateTransactionClientImpl,
+    EventFilter,
+    EventsPayload,
+    GetEventsResponse,
+    GetHealthResponse,
+    GetLatestLedgerResponse,
+    GetLedgerEntryResponse,
+    GetNetworkResponse,
     GetTransactionResponse,
-    RPCGetTransactionCannedClientImpl,
-    RPCSendTransactionCannedClientImpl,
-    RPCSimulateTransactionCannedClientImpl,
     SendTransactionResponse,
-    SimulateTransactionResponse
+    SimulateTransactionResponse,
+    TopicFilter
   }
+
+  alias Soroban.Types.Symbol
 
   describe "simulate_transaction/1" do
     setup do
-      Application.put_env(:soroban, :http_client_impl, RPCSimulateTransactionCannedClientImpl)
+      Application.put_env(:soroban, :http_client_impl, CannedRPCSimulateTransactionClientImpl)
 
       on_exit(fn ->
         Application.delete_env(:soroban, :http_client_impl)
@@ -120,7 +239,7 @@ defmodule Soroban.RPCTest do
 
   describe "send_transaction/1" do
     setup do
-      Application.put_env(:soroban, :http_client_impl, RPCSendTransactionCannedClientImpl)
+      Application.put_env(:soroban, :http_client_impl, CannedRPCSendTransactionClientImpl)
 
       on_exit(fn ->
         Application.delete_env(:soroban, :http_client_impl)
@@ -146,7 +265,7 @@ defmodule Soroban.RPCTest do
 
   describe "get_transaction/1" do
     setup do
-      Application.put_env(:soroban, :http_client_impl, RPCGetTransactionCannedClientImpl)
+      Application.put_env(:soroban, :http_client_impl, CannedRPCGetTransactionClientImpl)
 
       on_exit(fn ->
         Application.delete_env(:soroban, :http_client_impl)
@@ -174,6 +293,133 @@ defmodule Soroban.RPCTest do
            "AAAAAwAAAAIAAAADAAdFBQAAAAAAAAAAwT6e0zIpycpZ5/unUFyQAjXNeSxfmidj8tQWkeD9dCQAAAAXDNwRHAAAUF8AAAAgAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAwAAAAAAB0J+AAAAAGRSydYAAAAAAAAAAQAHRQUAAAAAAAAAAME+ntMyKcnKWef7p1BckAI1zXksX5onY/LUFpHg/XQkAAAAFwzcERwAAFBfAAAAIQAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAMAAAAAAAdFBQAAAABkUtcZAAAAAAAAAAEAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAGQAAAAAAAAAAQAAAAAAAAAYAAAAAAAAABAAAAABAAAAAgAAAA8AAAAFSGVsbG8AAAAAAAAPAAAABXdvcmxkAAAAAAAAAKQ1a84I/mDKy5j2B/YFeyfTCsTBoKJtON5QDfqS06qwy7xIdQ3ruFNQk7Per4isf0z/h0JVdqWN4rrHVKzbRhYD6NIFNZRcltVrmGLx9Y+ku182sxlHjDdsZ28pYul9HwAAAAA=",
          ledger: "476421"
        }} = RPC.get_transaction(hash)
+    end
+  end
+
+  describe "get_health/0" do
+    setup do
+      Application.put_env(:soroban, :http_client_impl, CannedRPCGetHealthClientImpl)
+
+      on_exit(fn ->
+        Application.delete_env(:soroban, :http_client_impl)
+      end)
+    end
+
+    test "request/0" do
+      {:ok, %GetHealthResponse{status: "healthy"}} = RPC.get_health()
+    end
+  end
+
+  describe "get_latest_ledger/0" do
+    setup do
+      Application.put_env(:soroban, :http_client_impl, CannedRPCGetLatestLedgerClientImpl)
+
+      on_exit(fn ->
+        Application.delete_env(:soroban, :http_client_impl)
+      end)
+    end
+
+    test "request/0" do
+      {:ok,
+       %GetLatestLedgerResponse{
+         id: "2a00000000000000000000000000000000000000000000000000000000000000",
+         protocol_version: 20,
+         sequence: 666
+       }} = RPC.get_latest_ledger()
+    end
+  end
+
+  describe "get_network/0" do
+    setup do
+      Application.put_env(:soroban, :http_client_impl, CannedRPCGetNetworkClientImpl)
+
+      on_exit(fn ->
+        Application.delete_env(:soroban, :http_client_impl)
+      end)
+    end
+
+    test "request/0" do
+      {:ok,
+       %GetNetworkResponse{
+         friendbot_url: "https://friendbot-futurenet.stellar.org/",
+         passphrase: "Test SDF Future Network ; October 2022",
+         protocol_version: "20"
+       }} = RPC.get_network()
+    end
+  end
+
+  describe "get_ledger_entry/1" do
+    setup do
+      Application.put_env(:soroban, :http_client_impl, CannedRPCGetLedgerEntryClientImpl)
+
+      on_exit(fn ->
+        Application.delete_env(:soroban, :http_client_impl)
+      end)
+
+      %{key: "AAAABhv6ziOnWcVRdGMZjtFKSWnLSndMp9JPVLLXxQqAvKqJAAAABQAAAAdDT1VOVEVSAA"}
+    end
+
+    test "request/1", %{key: key} do
+      {:ok,
+       %GetLedgerEntryResponse{
+         xdr: "AAAABhv6ziOnWcVRdGMZjtFKSWnLSndMp9JPVLLXxQqAvKqJAAAABQAAAAdDT1VOVEVSAAAAAAEAAAAD",
+         last_modified_ledger_seq: "164986",
+         latest_ledger: "179436"
+       }} = RPC.get_ledger_entry(key)
+    end
+  end
+
+  describe "get_events/1" do
+    setup do
+      Application.put_env(:soroban, :http_client_impl, CannedRPCGetEventsClientImpl)
+
+      on_exit(fn ->
+        Application.delete_env(:soroban, :http_client_impl)
+      end)
+
+      limit = 1
+      start_ledger = "674736"
+      args = [Symbol.new("transfer"), "*", "*", "*"]
+      topic_filter = [TopicFilter.new(args)]
+      contract_ids = ["7d9defe0ccf9b680014a343b8880c22b160c2ea2c9a69df876decb28ddbd03dc"]
+
+      filters = [
+        EventFilter.new(type: [:contract], contract_ids: contract_ids, topics: topic_filter)
+      ]
+
+      event =
+        EventsPayload.new(
+          start_ledger: start_ledger,
+          filters: filters,
+          limit: limit
+        )
+
+      %{event: event}
+    end
+
+    test "request/1", %{event: event} do
+      {:ok,
+       %GetEventsResponse{
+         latest_ledger: "685196",
+         events: [
+           %{
+             contract_id: "7d9defe0ccf9b680014a343b8880c22b160c2ea2c9a69df876decb28ddbd03dc",
+             id: "0002917807507378176-0000000000",
+             in_successful_contract_call: true,
+             ledger: "679355",
+             ledger_closed_at: "2023-05-16T06:02:47Z",
+             paging_token: "0002917807507378176-0000000000",
+             topic: [
+               "AAAADwAAAAh0cmFuc2Zlcg==",
+               "AAAAEwAAAAAAAAAAVAw2XIf/C6hPQZ2EgaY6R7RKuLfchP7836ZvBjZxdVY=",
+               "AAAAEwAAAAG2UFHmWnQeBKU73RLX7AQKCktEUE/F/bKqVy+ejoC/YQ==",
+               "AAAADQAAACVVU0RDOl3dfLGIo7lPPO+E0KPPSVxWCQ1qOen8umo/g+Jx8baEAAAA"
+             ],
+             type: "contract",
+             value: %{xdr: "AAAACgAAAAAF9eEAAAAAAAAAAAA="}
+           }
+         ]
+       }} = RPC.get_events(event)
     end
   end
 end
