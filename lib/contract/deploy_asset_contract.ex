@@ -19,6 +19,7 @@ defmodule Soroban.Contract.DeployAssetContract do
 
   @type asset :: Asset.t()
   @type asset_code :: binary()
+  @type envelope_xdr :: String.t()
   @type invoke_host_function :: InvokeHostFunction.t()
   @type secret_key :: binary()
   @type send_response :: {:ok, SendTransactionResponse.t()}
@@ -41,6 +42,23 @@ defmodule Soroban.Contract.DeployAssetContract do
         signature,
         invoke_host_function_op
       )
+    end
+  end
+
+  @spec retrieve_unsigned_xdr_to_asset_deploy(
+          asset_code :: asset_code(),
+          source_public_key :: binary()
+        ) :: envelope_xdr()
+  def retrieve_unsigned_xdr_to_asset_deploy(asset_code, source_public_key) do
+    with {:ok, seq_num} <- Accounts.fetch_next_sequence_number(source_public_key),
+         %Account{} = source_account <- Account.new(source_public_key),
+         %SequenceNumber{} = sequence_number <- SequenceNumber.new(seq_num),
+         %Asset{} = asset <- Asset.new(code: asset_code, issuer: source_public_key),
+         %InvokeHostFunction{} = invoke_host_function_op <-
+           create_host_function_deploy_op(asset) do
+      invoke_host_function_op
+      |> RPCCalls.simulate(source_account, sequence_number)
+      |> RPCCalls.retrieve_unsigned_xdr(source_account, sequence_number, invoke_host_function_op)
     end
   end
 

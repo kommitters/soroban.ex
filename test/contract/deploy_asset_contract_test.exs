@@ -107,9 +107,12 @@ defmodule Soroban.Contract.DeployAssetContractTest do
        }}
 
     %{
+      source_public: "GBNDWIM7DPYZJ2RLJ3IESXBIO4C2SVF6PWZXS3DLODJSBQWBMKY5U4M3",
       source_secret: "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24",
-      asset_code: :ZZZ,
-      transaction_response: transaction_response
+      asset_code: "ZZZ",
+      transaction_response: transaction_response,
+      envelope_xdr:
+        "AAAAAgAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gAAAGQABPEIAAAAPgAAAAAAAAAAAAAAAQAAAAAAAAAYAAAAAQAAAAIAAAABWlpaAAAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gAAAAEAAAACAAAABhTQS5msIqCAyBxge3Ay6IeqetjCGSw7XuR+PAnyHaXdAAAAFAAAAAcKgqu2qDFNzEEn4X0lf7ca+XDc21gbAK7yHPFSxu6nAgAAAAAAAAAAAAAAAAAAAAA="
     }
   end
 
@@ -125,6 +128,15 @@ defmodule Soroban.Contract.DeployAssetContractTest do
        latest_ledger_close_time: "1683814245",
        error_result_xdr: nil
      }} = DeployAssetContract.deploy(asset_code, source_secret)
+  end
+
+  test "retrieve_unsigned_xdr_to_asset_deploy/2", %{
+    asset_code: asset_code,
+    source_public: source_public,
+    envelope_xdr: envelope_xdr
+  } do
+    ^envelope_xdr =
+      DeployAssetContract.retrieve_unsigned_xdr_to_asset_deploy(asset_code, source_public)
   end
 
   test "get_contract_id/1", %{
