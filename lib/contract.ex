@@ -49,4 +49,11 @@ defmodule Soroban.Contract do
               ),
               to: InvokeContractFunction,
               as: :retrieve_unsigned_xdr_to_invoke
+
+  defdelegate retrieve_unsigned_xdr_to_install(
+                wasm,
+                source_public_key
+              ),
+              to: InstallContractCode,
+              as: :retrieve_unsigned_xdr_to_install
 end

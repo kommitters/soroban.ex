@@ -667,6 +667,22 @@ Contract.retrieve_unsigned_xdr_to_invoke(
 
 ```
 
+#### Install contract code
+
+```elixir
+alias Soroban.Contract
+alias Soroban.Types.Symbol
+alias Soroban.RPC
+
+wasm = File.read!("../your_wasm_path/hello.wasm")
+source_public_key = "GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"
+
+Contract.retrieve_unsigned_xdr_to_install(wasm, source_public_key)
+
+"AAAAAgAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gAAAGQAADg8AAAAOgAAAAAAAAAAAAAAAQAAAAAAAAAYAA..."
+
+```
+
 ## Configuration
 
 The default HTTP Client is `:hackney`. Options can be passed to `:hackney` via configuration parameters.

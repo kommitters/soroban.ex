@@ -137,15 +137,17 @@ defmodule Soroban.Contract.InstallContractCodeTest do
 
     %{
       contract_id: "be4138b31cc5d0d9d91b53193d74316d254406794ec0f81d3ed40f4dc1b86a6e",
-      # GBNDWIM7DPYZJ2RLJ3IESXBIO4C2SVF6PWZXS3DLODJSBQWBMKY5U4M3
+      source_public: "GBNDWIM7DPYZJ2RLJ3IESXBIO4C2SVF6PWZXS3DLODJSBQWBMKY5U4M3",
       source_secret: "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24",
-      # GASY52GNGVKEMXSGH7VSCZQKRWQMIQD77J53KHXEBAV2BODWH6FDDZ3F
+      source_public_with_error: "GASY52GNGVKEMXSGH7VSCZQKRWQMIQD77J53KHXEBAV2BODWH6FDDZ3F",
       source_secret_with_error: "SDXKY6TSBNS7T2UJMHLIH4BWTP4EHR52HZTRNEKH33ML3ARJI2AKIPEC",
       wasm:
         <<0, 97, 115, 109, 1, 0, 0, 0, 1, 65, 12, 96, 1, 126, 1, 126, 96, 2, 126, 126, 1, 126, 96,
           3, 126, 126, 126, 1, 126, 96, 0, 1, 126, 96, 4, 126, 126, 126, 126, 1, 126, 96, 1, 126,
           1, 127, 96, 2, 127, 126>>,
-      transaction_response: transaction_response
+      transaction_response: transaction_response,
+      envelope_xdr:
+        "AAAAAgAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gAAAGQABPEIAAAAPgAAAAAAAAAAAAAAAQAAAAAAAAAYAAAAAgAAADIAYXNtAQAAAAFBDGABfgF+YAJ+fgF+YAN+fn4BfmAAAX5gBH5+fn4BfmABfgF/YAJ/fgAAAAAAAgAAAAYU0EuZrCKggMgcYHtwMuiHqnrYwhksO17kfjwJ8h2l3QAAABQAAAAHCoKrtqgxTcxBJ+F9JX+3Gvlw3NtYGwCu8hzxUsbupwIAAAAAAAAAAAAAAAAAAAAA"
     }
   end
 
@@ -174,6 +176,28 @@ defmodule Soroban.Contract.InstallContractCodeTest do
       InstallContractCode.install(
         wasm,
         source_secret_with_error
+      )
+  end
+
+  test "retrieve_unsigned_xdr_to_install/2", %{
+    wasm: wasm,
+    source_public: source_public,
+    envelope_xdr: envelope_xdr
+  } do
+    ^envelope_xdr = InstallContractCode.retrieve_unsigned_xdr_to_install(wasm, source_public)
+  end
+
+  test "retrieve_unsigned_xdr_to_install contract with simulate error", %{
+    wasm: wasm,
+    source_public_with_error: source_public_with_error
+  } do
+    {:ok,
+     %SimulateTransactionResponse{
+       error: "error"
+     }} =
+      InstallContractCode.retrieve_unsigned_xdr_to_install(
+        wasm,
+        source_public_with_error
       )
   end
 
