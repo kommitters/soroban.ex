@@ -636,6 +636,37 @@ hash
 "c624..."
 ```
 
+### Retrieve unsigned Transaction Envelope XDR
+
+In order to facilitate seamless integration with wallets, we have developed functions that enable the retrieval of the unsigned Transaction Envelope XDR for each type of interaction with contracts: invocation, installation, and deployment.
+
+This XDR is required by wallets to sign transactions before they can be submitted to the network. Once the wallet returns the signed XDR, the `Soroban.RPC.send_transaction/1` function can be used to submit the transaction.
+
+#### Invoke contract function
+
+```elixir
+
+alias Soroban.Contract
+alias Soroban.Types.Symbol
+alias Soroban.RPC
+
+contract_id = "be4138b31cc5d0d9d91b53193d74316d254406794ec0f81d3ed40f4dc1b86a6e"
+source_public_key = "GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"
+function_name = "hello"
+
+function_args = [Symbol.new("world")]
+
+Contract.retrieve_unsigned_xdr_to_invoke(
+  contract_id,
+  source_public_key,
+  function_name,
+  function_args
+)
+
+"AAAAAgAAAAD...QAAAAAAAAAAAAAAAAAAAAA="
+
+```
+
 ## Configuration
 
 The default HTTP Client is `:hackney`. Options can be passed to `:hackney` via configuration parameters.
