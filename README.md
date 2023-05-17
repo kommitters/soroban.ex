@@ -645,10 +645,8 @@ This XDR is required by wallets to sign transactions before they can be submitte
 #### Invoke contract function
 
 ```elixir
-
 alias Soroban.Contract
 alias Soroban.Types.Symbol
-alias Soroban.RPC
 
 contract_id = "be4138b31cc5d0d9d91b53193d74316d254406794ec0f81d3ed40f4dc1b86a6e"
 source_public_key = "GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"
@@ -664,6 +662,20 @@ Contract.retrieve_unsigned_xdr_to_invoke(
 )
 
 "AAAAAgAAAAD...QAAAAAAAAAAAAAAAAAAAAA="
+
+```
+
+#### Install contract code
+
+```elixir
+alias Soroban.Contract
+
+wasm = File.read!("../your_wasm_path/hello.wasm")
+source_public_key = "GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"
+
+Contract.retrieve_unsigned_xdr_to_install(wasm, source_public_key)
+
+"AAAAAgAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gAAAGQAADg8AAAAOgAAAAAAAAAAAAAAAQAAAAAAAAAYAA..."
 
 ```
 
