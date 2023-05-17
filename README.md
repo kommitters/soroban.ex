@@ -636,6 +636,41 @@ hash
 "c624..."
 ```
 
+### Retrieve xdr for wallet signing
+
+#### Invoke contract function
+
+```elixir
+alias Soroban.Contract
+alias Soroban.Types.Symbol
+alias Soroban.RPC
+
+contract_id = "be4138b31cc5d0d9d91b53193d74316d254406794ec0f81d3ed40f4dc1b86a6e"
+source_public_key = "GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"
+function_name = "hello"
+
+function_args = [Symbol.new("world")]
+
+Contract.retrieve_xdr_to_sign(contract_id, source_public_key, function_name, function_args)
+
+"AAAAAgAAAAD...QAAAAAAAAAAAAAAAAAAAAA="
+
+# Wallet signTransaction...
+
+signed_transaction = "AAAAAgAAAAD...tpgvG8T4nAJX3vYg8="
+
+RPC.send_transaction(signed_transaction)
+
+{:ok,
+ %Soroban.RPC.SendTransactionResponse{
+   status: "PENDING",
+   hash: "0933...",
+   latest_ledger: "1",
+   latest_ledger_close_time: "16",
+   error_result_xdr: nil
+ }}
+```
+
 ## Configuration
 
 The default HTTP Client is `:hackney`. Options can be passed to `:hackney` via configuration parameters.
