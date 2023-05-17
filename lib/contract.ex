@@ -40,4 +40,13 @@ defmodule Soroban.Contract do
               ),
               to: DeployAssetContract,
               as: :deploy
+
+  defdelegate retrieve_xdr_to_sign(
+                contract_id,
+                source_public_key,
+                function_name,
+                function_args \\ []
+              ),
+              to: InvokeContractFunction,
+              as: :retrieve_xdr_to_sign
 end

@@ -83,7 +83,7 @@ defmodule Soroban.ContractTest do
 
     %{
       contract_id: "be4138b31cc5d0d9d91b53193d74316d254406794ec0f81d3ed40f4dc1b86a6e",
-      # GBNDWIM7DPYZJ2RLJ3IESXBIO4C2SVF6PWZXS3DLODJSBQWBMKY5U4M3
+      source_public: "GBNDWIM7DPYZJ2RLJ3IESXBIO4C2SVF6PWZXS3DLODJSBQWBMKY5U4M3",
       source_secret: "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24",
       # GDDZSR7Y6TIMSBM72WYVGUH6FB6P7MF6Y6DU7MCNAPFRXI5GCWGWWFRS
       function_name: "function_name",
@@ -96,7 +96,11 @@ defmodule Soroban.ContractTest do
           1, 127, 96, 2, 127, 126>>,
       wasm_id:
         <<66, 208, 35, 40, 82, 63, 24, 62, 0, 161, 91, 200, 46, 101, 45, 24, 216, 140, 130, 169,
-          254, 217, 11, 131, 45, 9, 151, 5, 194, 188, 205, 26>>
+          254, 217, 11, 131, 45, 9, 151, 5, 194, 188, 205, 26>>,
+      xdr_envelope:
+        "AAAAAgAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gAAAGQABPEIAAAAPgAAAAAAAAAAAAAAAQAAAAAAAAAYAAAAAAAAAAMAAAANAAAAIL5BOLMcxdDZ2RtTGT10MW0lRAZ5TsD4HT7UD03BuGpuAAAADwAAAA1mdW5jdGlvbl9uYW1lAAAAAAAADwAAAANBcmcAAAAAAgAAAAYU0EuZrCKggMgcYHtwMuiHqnrYwhksO17kfjwJ8h2l3QAAABQAAAAHCoKrtqgxTcxBJ+F9JX+3Gvlw3NtYGwCu8hzxUsbupwIAAAAAAAAAAAAAAAAAAAAA",
+      no_args_xdr_envelope:
+        "AAAAAgAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gAAAGQABPEIAAAAPgAAAAAAAAAAAAAAAQAAAAAAAAAYAAAAAAAAAAIAAAANAAAAIL5BOLMcxdDZ2RtTGT10MW0lRAZ5TsD4HT7UD03BuGpuAAAADwAAAA1mdW5jdGlvbl9uYW1lAAAAAAAAAgAAAAYU0EuZrCKggMgcYHtwMuiHqnrYwhksO17kfjwJ8h2l3QAAABQAAAAHCoKrtqgxTcxBJ+F9JX+3Gvlw3NtYGwCu8hzxUsbupwIAAAAAAAAAAAAAAAAAAAAA"
     }
   end
 
@@ -193,6 +197,36 @@ defmodule Soroban.ContractTest do
       Contract.deploy_asset(
         asset_code,
         source_secret
+      )
+  end
+
+  test "retrieve_xdr_to_sign/4", %{
+    contract_id: contract_id,
+    source_public: source_public,
+    function_name: function_name,
+    function_args: function_args,
+    xdr_envelope: xdr_envelope
+  } do
+    ^xdr_envelope =
+      Contract.retrieve_xdr_to_sign(
+        contract_id,
+        source_public,
+        function_name,
+        function_args
+      )
+  end
+
+  test "retrieve_xdr_to_sign/4 without args", %{
+    contract_id: contract_id,
+    source_public: source_public,
+    function_name: function_name,
+    no_args_xdr_envelope: no_args_xdr_envelope
+  } do
+    ^no_args_xdr_envelope =
+      Contract.retrieve_xdr_to_sign(
+        contract_id,
+        source_public,
+        function_name
       )
   end
 end

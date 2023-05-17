@@ -21,9 +21,11 @@ defmodule Soroban.Contract.InvokeContractFunction do
   @type function_args :: list(struct())
   @type auth_accounts :: list(binary())
   @type invoke_host_function :: InvokeHostFunction.t()
+  @type envelope_xdr :: String.t()
   @type function_name :: String.t()
   @type contract_id :: binary()
   @type source_secret_key :: binary()
+  @type source_public_key :: binary()
   @type send_response :: {:ok, SendTransactionResponse.t()}
   @type signature :: Signature.t()
   @type sequence_number :: SequenceNumber.t()
@@ -61,6 +63,25 @@ defmodule Soroban.Contract.InvokeContractFunction do
         invoke_host_function_op,
         auth_account
       )
+    end
+  end
+
+  @spec retrieve_xdr_to_sign(
+          contract_id :: contract_id(),
+          source_public_key :: source_public_key(),
+          function_name :: function_name(),
+          function_args :: function_args()
+        ) :: envelope_xdr()
+  def retrieve_xdr_to_sign(contract_id, source_public_key, function_name, function_args) do
+    with {:ok, seq_num} <- Accounts.fetch_next_sequence_number(source_public_key),
+         {:ok, function_args} <- convert_to_sc_val(function_args),
+         %Account{} = source_account <- Account.new(source_public_key),
+         %SequenceNumber{} = sequence_number <- SequenceNumber.new(seq_num),
+         %InvokeHostFunction{} = invoke_host_function_op <-
+           create_host_function_op(contract_id, function_name, function_args) do
+      invoke_host_function_op
+      |> RPCCalls.simulate(source_account, sequence_number)
+      |> RPCCalls.retrieve_xdr_to_sign(source_account, sequence_number, invoke_host_function_op)
     end
   end
 
