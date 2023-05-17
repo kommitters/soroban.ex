@@ -200,7 +200,7 @@ defmodule Soroban.ContractTest do
       )
   end
 
-  test "retrieve_xdr_to_sign/4", %{
+  test "retrieve_unsigned_xdr_to_invoke/4", %{
     contract_id: contract_id,
     source_public: source_public,
     function_name: function_name,
@@ -208,7 +208,7 @@ defmodule Soroban.ContractTest do
     xdr_envelope: xdr_envelope
   } do
     ^xdr_envelope =
-      Contract.retrieve_xdr_to_sign(
+      Contract.retrieve_unsigned_xdr_to_invoke(
         contract_id,
         source_public,
         function_name,
@@ -216,14 +216,14 @@ defmodule Soroban.ContractTest do
       )
   end
 
-  test "retrieve_xdr_to_sign/4 without args", %{
+  test "retrieve_unsigned_xdr_to_invoke/4 without args", %{
     contract_id: contract_id,
     source_public: source_public,
     function_name: function_name,
     no_args_xdr_envelope: no_args_xdr_envelope
   } do
     ^no_args_xdr_envelope =
-      Contract.retrieve_xdr_to_sign(
+      Contract.retrieve_unsigned_xdr_to_invoke(
         contract_id,
         source_public,
         function_name

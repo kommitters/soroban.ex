@@ -297,7 +297,7 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
       )
   end
 
-  test "retrieve_xdr_to_sign without authorization", %{
+  test "retrieve_unsigned_xdr_to_invoke without authorization", %{
     contract_id: contract_id,
     source_public: source_public,
     function_name: function_name,
@@ -305,7 +305,7 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
     xdr_envelope: xdr_envelope
   } do
     ^xdr_envelope =
-      InvokeContractFunction.retrieve_xdr_to_sign(
+      InvokeContractFunction.retrieve_unsigned_xdr_to_invoke(
         contract_id,
         source_public,
         function_name,
@@ -313,7 +313,7 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
       )
   end
 
-  test "retrieve_xdr_to_sign host function with simulate error", %{
+  test "retrieve_unsigned_xdr_to_invoke host function with simulate error", %{
     contract_id: contract_id,
     source_public_with_error: source_public_with_error,
     function_name: function_name,
@@ -323,7 +323,7 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
      %SimulateTransactionResponse{
        error: "error"
      }} =
-      InvokeContractFunction.retrieve_xdr_to_sign(
+      InvokeContractFunction.retrieve_unsigned_xdr_to_invoke(
         contract_id,
         source_public_with_error,
         function_name,

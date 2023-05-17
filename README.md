@@ -641,6 +641,7 @@ hash
 #### Invoke contract function
 
 ```elixir
+
 alias Soroban.Contract
 alias Soroban.Types.Symbol
 alias Soroban.RPC
@@ -651,7 +652,12 @@ function_name = "hello"
 
 function_args = [Symbol.new("world")]
 
-Contract.retrieve_xdr_to_sign(contract_id, source_public_key, function_name, function_args)
+Contract.retrieve_unsigned_xdr_to_invoke(
+  contract_id,
+  source_public_key,
+  function_name,
+  function_args
+)
 
 "AAAAAgAAAAD...QAAAAAAAAAAAAAAAAAAAAA="
 

@@ -66,13 +66,18 @@ defmodule Soroban.Contract.InvokeContractFunction do
     end
   end
 
-  @spec retrieve_xdr_to_sign(
+  @spec retrieve_unsigned_xdr_to_invoke(
           contract_id :: contract_id(),
           source_public_key :: source_public_key(),
           function_name :: function_name(),
           function_args :: function_args()
         ) :: envelope_xdr()
-  def retrieve_xdr_to_sign(contract_id, source_public_key, function_name, function_args) do
+  def retrieve_unsigned_xdr_to_invoke(
+        contract_id,
+        source_public_key,
+        function_name,
+        function_args
+      ) do
     with {:ok, seq_num} <- Accounts.fetch_next_sequence_number(source_public_key),
          {:ok, function_args} <- convert_to_sc_val(function_args),
          %Account{} = source_account <- Account.new(source_public_key),
@@ -81,7 +86,7 @@ defmodule Soroban.Contract.InvokeContractFunction do
            create_host_function_op(contract_id, function_name, function_args) do
       invoke_host_function_op
       |> RPCCalls.simulate(source_account, sequence_number)
-      |> RPCCalls.retrieve_xdr_to_sign(source_account, sequence_number, invoke_host_function_op)
+      |> RPCCalls.retrieve_unsigned_xdr(source_account, sequence_number, invoke_host_function_op)
     end
   end
 

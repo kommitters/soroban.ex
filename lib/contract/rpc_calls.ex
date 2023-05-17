@@ -91,13 +91,13 @@ defmodule Soroban.Contract.RPCCalls do
       ),
       do: response
 
-  @spec retrieve_xdr_to_sign(
+  @spec retrieve_unsigned_xdr(
           simulate_response :: simulate_response(),
           source_account :: account(),
           sequence_number :: sequence_number(),
           invoke_host_function_op :: invoke_host_function()
         ) :: envelope_xdr() | simulate_response()
-  def retrieve_xdr_to_sign(
+  def retrieve_unsigned_xdr(
         {:ok, %SimulateTransactionResponse{results: [%{footprint: footprint, auth: auth}]}},
         source_account,
         sequence_number,
@@ -115,7 +115,7 @@ defmodule Soroban.Contract.RPCCalls do
     envelope_xdr
   end
 
-  def retrieve_xdr_to_sign(
+  def retrieve_unsigned_xdr(
         {:ok, %SimulateTransactionResponse{}} = response,
         _source_account,
         _sequence_number,
