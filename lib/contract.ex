@@ -56,4 +56,11 @@ defmodule Soroban.Contract do
               ),
               to: InstallContractCode,
               as: :retrieve_unsigned_xdr_to_install
+
+  defdelegate retrieve_unsigned_xdr_to_deploy(
+                wasm_id,
+                source_public_key
+              ),
+              to: DeployContract,
+              as: :retrieve_unsigned_xdr_to_deploy
 end

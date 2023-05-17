@@ -679,6 +679,21 @@ Contract.retrieve_unsigned_xdr_to_install(wasm, source_public_key)
 
 ```
 
+#### Deploy Contract
+
+```elixir
+alias Soroban.Contract
+
+wasm_id = <<43, 175, 217, 68, 182, 222, 246, 123, 230, 77, 134, 236, 60, 179, 45, 137, 54,
+  44, 8, 19, 0, 134, 104, 112, 90, 233, 87, 199, 60, 136, 151, 169>>
+source_public_key = "GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"
+
+Contract.retrieve_unsigned_xdr_to_deploy(wasm_id, source_public_key)
+
+"AAAAAgAAAAD...ZAAAAFAAAAAAAAAAAAAAAAA=="
+
+```
+
 ## Configuration
 
 The default HTTP Client is `:hackney`. Options can be passed to `:hackney` via configuration parameters.

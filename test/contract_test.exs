@@ -243,4 +243,17 @@ defmodule Soroban.ContractTest do
         source_public
       )
   end
+
+  test "retrieve_unsigned_xdr_to_deploy/2", %{
+    wasm_id: wasm_id,
+    source_public: source_public
+  } do
+    assert String.contains?(
+             Contract.retrieve_unsigned_xdr_to_deploy(
+               wasm_id,
+               source_public
+             ),
+             "AAAAAgAAAABaOyGfG"
+           )
+  end
 end
