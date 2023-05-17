@@ -138,7 +138,7 @@ defmodule Soroban.Contract.DeployContractTest do
      }} = DeployContract.deploy(wasm_id, source_secret)
   end
 
-  test "retrieve_xdr_to_sign/2", %{
+  test "retrieve_unsigned_xdr_to_deploy/2", %{
     wasm_id: wasm_id,
     source_public_with_error: source_public
   } do
