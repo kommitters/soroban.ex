@@ -636,7 +636,11 @@ hash
 "c624..."
 ```
 
-### Retrieve xdr for wallet signing
+### Retrieve unsigned Transaction Envelope XDR
+
+In order to facilitate seamless integration with wallets, we have developed functions that enable the retrieval of the unsigned Transaction Envelope XDR for each type of interaction with contracts: invocation, installation, and deployment.
+
+This XDR is required by wallets to sign transactions before they can be submitted to the network. Once the wallet returns the signed XDR, the `Soroban.RPC.send_transaction/1` function can be used to submit the transaction.
 
 #### Invoke contract function
 
@@ -661,20 +665,6 @@ Contract.retrieve_unsigned_xdr_to_invoke(
 
 "AAAAAgAAAAD...QAAAAAAAAAAAAAAAAAAAAA="
 
-# Wallet signTransaction...
-
-signed_transaction = "AAAAAgAAAAD...tpgvG8T4nAJX3vYg8="
-
-RPC.send_transaction(signed_transaction)
-
-{:ok,
- %Soroban.RPC.SendTransactionResponse{
-   status: "PENDING",
-   hash: "0933...",
-   latest_ledger: "1",
-   latest_ledger_close_time: "16",
-   error_result_xdr: nil
- }}
 ```
 
 ## Configuration
