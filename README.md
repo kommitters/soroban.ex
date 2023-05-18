@@ -466,6 +466,14 @@ The deployment and invocation of Soroban smart contracts is done through the `So
 
 #### Invoke contract function
 
+**Parameters**
+
+- `contract_id`: Identifier of the contract to be invoked.
+- `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
+- `function_name`: String indicating the name of the function to be invoked.
+- `function_args`: List of `Soroban.Types` representing the arguments required by the indicated function (`function_name`). They should be provided in the specific order expected by the function.
+- `auth_secret_key`: (optional) Secret key used to authorize the function invocation when the function invoker is not the same function authorizer.
+
 ##### Simple invocation - no authorization required
 
 ```elixir
@@ -492,7 +500,7 @@ Contract.invoke(contract_id, source_secret_key, function_name, function_args)
 
 ##### Invocation with required authorization
 
-- When the invoker is the signer
+- When the function invoker authorizes the function invocation
 
   ```elixir
   alias Soroban.Contract
@@ -519,7 +527,7 @@ Contract.invoke(contract_id, source_secret_key, function_name, function_args)
     }}
   ```
 
-- When the invoker is not the signer
+- When the function invoker is not the function authorizer.
 
   ```elixir
   alias Soroban.Contract
@@ -553,6 +561,11 @@ Contract.invoke(contract_id, source_secret_key, function_name, function_args)
 
 ##### Install Contract Code
 
+**Parameters**
+
+- `wasm`: Binary of the web assembly (WASM) file resulting from building the contract.
+- `secret_key`: Secret key of the function invoker responsible for signing the transaction.
+
 ```elixir
 alias Soroban.Contract
 alias Soroban.RPC.SendTransactionResponse
@@ -582,6 +595,11 @@ wasm_id =
 
 ##### Deploy Contract from WASM
 
+**Parameters**
+
+- `wasm_id`: Binary identification of the installed contract to deploy.
+- `secret_key`: Secret key of the function invoker responsible for signing the transaction.
+
 ```elixir
 alias Soroban.Contract
 alias Soroban.RPC.SendTransactionResponse
@@ -609,6 +627,11 @@ hash
 ```
 
 ##### Deploy Asset Contract
+
+**Parameters**
+
+- `asset_code`: String from 1 to 12 characters indicating the asset symbol.
+- `secret_key`: Secret key of the function invoker responsible for signing the transaction.
 
 ```elixir
 alias Soroban.Contract
@@ -644,6 +667,13 @@ This XDR is required by wallets to sign transactions before they can be submitte
 
 #### Invoke contract function
 
+**Parameters**
+
+- `contract_id`: Identifier of the contract to be invoked.
+- `source_public_key`: Public key of the function invoker responsible for signing the transaction.
+- `function_name`: String value indicating the name of the function to be invoked.
+- `function_args`: List of `Soroban.Types` representing the arguments required by the indicated function (`function_name`). They should be provided in the specific order expected by the function.
+
 ```elixir
 alias Soroban.Contract
 alias Soroban.Types.Symbol
@@ -667,6 +697,11 @@ Contract.retrieve_unsigned_xdr_to_invoke(
 
 #### Install contract code
 
+**Parameters**
+
+- `wasm`: Binary of the web assembly (WASM) file resulting from building the contract.
+- `source_public_key`: Public key of the function invoker responsible for signing the transaction.
+
 ```elixir
 alias Soroban.Contract
 
@@ -680,6 +715,11 @@ Contract.retrieve_unsigned_xdr_to_install(wasm, source_public_key)
 ```
 
 #### Deploy Contract
+
+**Parameters**
+
+- `wasm_id`: Binary identification of the installed contract to deploy.
+- `source_public_key`: Public key of the function invoker responsible for signing the transaction.
 
 ```elixir
 alias Soroban.Contract
@@ -695,6 +735,11 @@ Contract.retrieve_unsigned_xdr_to_deploy(wasm_id, source_public_key)
 ```
 
 #### Deploy Asset Contract
+
+**Parameters**
+
+- `asset_code`: String from 1 to 12 characters indicating the asset symbol.
+- `source_public_key`: Public key of the function invoker responsible for signing the transaction.
 
 ```elixir
 alias Soroban.Contract
