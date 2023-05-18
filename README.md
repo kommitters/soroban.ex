@@ -19,7 +19,7 @@
 ```elixir
 def deps do
   [
-    {:soroban, "~> 0.8.0"}
+    {:soroban, "~> 0.9.0"}
   ]
 end
 ```
@@ -634,6 +634,78 @@ hash
 |> DeployAssetContract.get_contract_id()
 
 "c624..."
+```
+
+### Retrieve unsigned Transaction Envelope XDR
+
+In order to facilitate seamless integration with wallets, we have developed functions that enable the retrieval of the unsigned Transaction Envelope XDR for each type of interaction with contracts: invocation, installation, and deployment.
+
+This XDR is required by wallets to sign transactions before they can be submitted to the network. Once the wallet returns the signed XDR, the `Soroban.RPC.send_transaction/1` function can be used to submit the transaction.
+
+#### Invoke contract function
+
+```elixir
+alias Soroban.Contract
+alias Soroban.Types.Symbol
+
+contract_id = "be4138b31cc5d0d9d91b53193d74316d254406794ec0f81d3ed40f4dc1b86a6e"
+source_public_key = "GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"
+function_name = "hello"
+
+function_args = [Symbol.new("world")]
+
+Contract.retrieve_unsigned_xdr_to_invoke(
+  contract_id,
+  source_public_key,
+  function_name,
+  function_args
+)
+
+"AAAAAgAAAAD...QAAAAAAAAAAAAAAAAAAAAA="
+
+```
+
+#### Install contract code
+
+```elixir
+alias Soroban.Contract
+
+wasm = File.read!("../your_wasm_path/hello.wasm")
+source_public_key = "GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"
+
+Contract.retrieve_unsigned_xdr_to_install(wasm, source_public_key)
+
+"AAAAAgAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gAAAGQAADg8AAAAOgAAAAAAAAAAAAAAAQAAAAAAAAAYAA..."
+
+```
+
+#### Deploy Contract
+
+```elixir
+alias Soroban.Contract
+
+wasm_id = <<43, 175, 217, 68, 182, 222, 246, 123, 230, 77, 134, 236, 60, 179, 45, 137, 54,
+  44, 8, 19, 0, 134, 104, 112, 90, 233, 87, 199, 60, 136, 151, 169>>
+source_public_key = "GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"
+
+Contract.retrieve_unsigned_xdr_to_deploy(wasm_id, source_public_key)
+
+"AAAAAgAAAAD...ZAAAAFAAAAAAAAAAAAAAAAA=="
+
+```
+
+#### Deploy Asset Contract
+
+```elixir
+alias Soroban.Contract
+
+asset_code = "DBZ"
+source_public_key = "GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"
+
+Contract.retrieve_unsigned_xdr_to_deploy_asset(asset_code, source_public_key)
+
+"AAAAAgAAAADJ...d4kfn7AAAAFAAAAAAAAAAAAAAAAA=="
+
 ```
 
 ## Configuration

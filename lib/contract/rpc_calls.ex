@@ -18,6 +18,7 @@ defmodule Soroban.Contract.RPCCalls do
   @type account :: Account.t()
   @type auth :: String.t() | nil
   @type auth_account :: String.t() | nil
+  @type envelope_xdr :: String.t()
   @type invoke_host_function :: InvokeHostFunction.t()
   @type simulate_response :: {:ok, SimulateTransactionResponse.t()}
   @type send_response :: {:ok, SendTransactionResponse.t()}
@@ -87,6 +88,38 @@ defmodule Soroban.Contract.RPCCalls do
         _signature,
         _invoke_host_function_op,
         _auth_account
+      ),
+      do: response
+
+  @spec retrieve_unsigned_xdr(
+          simulate_response :: simulate_response(),
+          source_account :: account(),
+          sequence_number :: sequence_number(),
+          invoke_host_function_op :: invoke_host_function()
+        ) :: envelope_xdr() | simulate_response()
+  def retrieve_unsigned_xdr(
+        {:ok, %SimulateTransactionResponse{results: [%{footprint: footprint, auth: auth}]}},
+        source_account,
+        sequence_number,
+        invoke_host_function_op
+      ) do
+    invoke_host_function_op =
+      set_invoke_host_function_params(invoke_host_function_op, footprint, auth, nil)
+
+    {:ok, envelope_xdr} =
+      source_account
+      |> TxBuild.new(sequence_number: sequence_number)
+      |> TxBuild.add_operation(invoke_host_function_op)
+      |> TxBuild.envelope()
+
+    envelope_xdr
+  end
+
+  def retrieve_unsigned_xdr(
+        {:ok, %SimulateTransactionResponse{}} = response,
+        _source_account,
+        _sequence_number,
+        _invoke_host_function_op
       ),
       do: response
 

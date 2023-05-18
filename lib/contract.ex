@@ -40,4 +40,34 @@ defmodule Soroban.Contract do
               ),
               to: DeployAssetContract,
               as: :deploy
+
+  defdelegate retrieve_unsigned_xdr_to_invoke(
+                contract_id,
+                source_public_key,
+                function_name,
+                function_args \\ []
+              ),
+              to: InvokeContractFunction,
+              as: :retrieve_unsigned_xdr_to_invoke
+
+  defdelegate retrieve_unsigned_xdr_to_install(
+                wasm,
+                source_public_key
+              ),
+              to: InstallContractCode,
+              as: :retrieve_unsigned_xdr_to_install
+
+  defdelegate retrieve_unsigned_xdr_to_deploy(
+                wasm_id,
+                source_public_key
+              ),
+              to: DeployContract,
+              as: :retrieve_unsigned_xdr_to_deploy
+
+  defdelegate retrieve_unsigned_xdr_to_deploy_asset(
+                asset_code,
+                source_public_key
+              ),
+              to: DeployAssetContract,
+              as: :retrieve_unsigned_xdr_to_deploy_asset
 end

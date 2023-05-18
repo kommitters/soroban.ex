@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.0 (18.05.2023)
+
+- [Retrieve unsigned transactions](https://github.com/kommitters/soroban.ex/issues/70)
+
 ## 0.8.0 (17.05.2023)
 
 - [Soroban RPC Endpoints](https://github.com/kommitters/soroban.ex/issues/48)

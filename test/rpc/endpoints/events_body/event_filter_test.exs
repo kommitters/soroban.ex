@@ -12,11 +12,14 @@ defmodule Soroban.RPC.EventFilterTest do
     event_filter =
       EventFilter.new(type: [:contract], contract_ids: contract_ids, topics: topic_filter)
 
+    event_filter_without_type = EventFilter.new(contract_ids: contract_ids, topics: topic_filter)
+
     %{
       type: [:contract],
       contract_ids: contract_ids,
       topic_filter: topic_filter,
-      event_filter: event_filter
+      event_filter: event_filter,
+      event_filter_without_type: event_filter_without_type
     }
   end
 
@@ -78,6 +81,17 @@ defmodule Soroban.RPC.EventFilterTest do
         contractIds: ^contract_ids,
         topics: [["AAAADwAAABJpbmNyZWFzZV9hbGxvd2FuY2UAAA==", "*", "*", "*"]]
       } = EventFilter.to_request_args(event_filter)
+    end
+
+    test "with a valid struct and type nil", %{
+      event_filter_without_type: event_filter_without_type,
+      contract_ids: contract_ids
+    } do
+      %{
+        type: nil,
+        contractIds: ^contract_ids,
+        topics: [["AAAADwAAABJpbmNyZWFzZV9hbGxvd2FuY2UAAA==", "*", "*", "*"]]
+      } = EventFilter.to_request_args(event_filter_without_type)
     end
 
     test "with an invalid value" do
