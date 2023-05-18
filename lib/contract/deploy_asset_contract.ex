@@ -45,11 +45,11 @@ defmodule Soroban.Contract.DeployAssetContract do
     end
   end
 
-  @spec retrieve_unsigned_xdr_to_asset_deploy(
+  @spec retrieve_unsigned_xdr_to_deploy_asset(
           asset_code :: asset_code(),
           source_public_key :: binary()
         ) :: envelope_xdr()
-  def retrieve_unsigned_xdr_to_asset_deploy(asset_code, source_public_key) do
+  def retrieve_unsigned_xdr_to_deploy_asset(asset_code, source_public_key) do
     with {:ok, seq_num} <- Accounts.fetch_next_sequence_number(source_public_key),
          %Account{} = source_account <- Account.new(source_public_key),
          %SequenceNumber{} = sequence_number <- SequenceNumber.new(seq_num),

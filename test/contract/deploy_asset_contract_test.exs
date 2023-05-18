@@ -130,13 +130,13 @@ defmodule Soroban.Contract.DeployAssetContractTest do
      }} = DeployAssetContract.deploy(asset_code, source_secret)
   end
 
-  test "retrieve_unsigned_xdr_to_asset_deploy/2", %{
+  test "retrieve_unsigned_xdr_to_deploy_asset/2", %{
     asset_code: asset_code,
     source_public: source_public,
     envelope_xdr: envelope_xdr
   } do
     ^envelope_xdr =
-      DeployAssetContract.retrieve_unsigned_xdr_to_asset_deploy(asset_code, source_public)
+      DeployAssetContract.retrieve_unsigned_xdr_to_deploy_asset(asset_code, source_public)
   end
 
   test "get_contract_id/1", %{

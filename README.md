@@ -699,10 +699,10 @@ Contract.retrieve_unsigned_xdr_to_deploy(wasm_id, source_public_key)
 ```elixir
 alias Soroban.Contract
 
-wasm_id = "DBZ"
+asset_code = "DBZ"
 source_public_key = "GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"
 
-Contract.retrieve_unsigned_xdr_to_asset_deploy(wasm_id, source_public_key)
+Contract.retrieve_unsigned_xdr_to_deploy_asset(asset_code, source_public_key)
 
 "AAAAAgAAAADJ...d4kfn7AAAAFAAAAAAAAAAAAAAAAA=="
 
