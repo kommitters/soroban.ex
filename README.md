@@ -694,6 +694,20 @@ Contract.retrieve_unsigned_xdr_to_deploy(wasm_id, source_public_key)
 
 ```
 
+#### Deploy Asset Contract
+
+```elixir
+alias Soroban.Contract
+
+asset_code = "DBZ"
+source_public_key = "GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"
+
+Contract.retrieve_unsigned_xdr_to_deploy_asset(asset_code, source_public_key)
+
+"AAAAAgAAAADJ...d4kfn7AAAAFAAAAAAAAAAAAAAAAA=="
+
+```
+
 ## Configuration
 
 The default HTTP Client is `:hackney`. Options can be passed to `:hackney` via configuration parameters.

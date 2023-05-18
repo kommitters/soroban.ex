@@ -63,4 +63,11 @@ defmodule Soroban.Contract do
               ),
               to: DeployContract,
               as: :retrieve_unsigned_xdr_to_deploy
+
+  defdelegate retrieve_unsigned_xdr_to_deploy_asset(
+                asset_code,
+                source_public_key
+              ),
+              to: DeployAssetContract,
+              as: :retrieve_unsigned_xdr_to_deploy_asset
 end
