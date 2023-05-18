@@ -535,9 +535,9 @@ Contract.invoke(contract_id, source_secret_key, function_name, function_args)
     Int128.new(4500)
   ]
 
-  auth_accounts = ["SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK"]
+  auth_secret_key = "SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK"
 
-  Contract.invoke(contract_id, source_secret_key, function_name, function_args, auth_accounts)
+  Contract.invoke(contract_id, source_secret_key, function_name, function_args, auth_secret_key)
 
   {:ok,
     %Soroban.RPC.SendTransactionResponse{

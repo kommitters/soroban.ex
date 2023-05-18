@@ -205,7 +205,7 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
       source_secret_with_error: "SDXKY6TSBNS7T2UJMHLIH4BWTP4EHR52HZTRNEKH33ML3ARJI2AKIPEC",
       function_name: "function_name",
       function_args: [Symbol.new("Arg")],
-      auth_accounts: ["SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK"],
+      auth_secret_key: "SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK",
       xdr_envelope:
         "AAAAAgAAAADJTnjlYcJxSKDat78jbEyDkVqo2uhpNX4BdBtqGrx+1gAAAGQABPEIAAAAPgAAAAAAAAAAAAAAAQAAAAAAAAAYAAAAAAAAAAMAAAANAAAAIL5BOLMcxdDZ2RtTGT10MW0lRAZ5TsD4HT7UD03BuGpuAAAADwAAAA1mdW5jdGlvbl9uYW1lAAAAAAAADwAAAANBcmcAAAAAAgAAAAbRT4ReAkUa6lMq9OExKvhlyTk7tBFtSkBT/PaIo3WjUgAAABQAAAAHQtAjKFI/GD4AoVvILmUtGNiMgqn+2QuDLQmXBcK8zRoAAAAAAAAAAAAAAAAAAAAA"
     }
@@ -238,7 +238,7 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
     source_secret_with_auth: source_secret_with_auth,
     function_name: function_name,
     function_args: function_args,
-    auth_accounts: auth_accounts
+    auth_secret_key: auth_secret_key
   } do
     {:ok,
      %SendTransactionResponse{
@@ -253,7 +253,7 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
         source_secret_with_auth,
         function_name,
         function_args,
-        auth_accounts
+        auth_secret_key
       )
   end
 

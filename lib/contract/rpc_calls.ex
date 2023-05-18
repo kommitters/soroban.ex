@@ -17,7 +17,7 @@ defmodule Soroban.Contract.RPCCalls do
 
   @type account :: Account.t()
   @type auth :: String.t() | nil
-  @type auth_account :: String.t() | nil
+  @type auth_secret_key :: String.t() | nil
   @type envelope_xdr :: String.t()
   @type invoke_host_function :: InvokeHostFunction.t()
   @type simulate_response :: {:ok, SimulateTransactionResponse.t()}
@@ -57,7 +57,7 @@ defmodule Soroban.Contract.RPCCalls do
         _sequence_number,
         _signature,
         _invoke_host_function_op,
-        auth_account \\ nil
+        auth_secret_key \\ nil
       )
 
   def send_transaction(
@@ -66,10 +66,10 @@ defmodule Soroban.Contract.RPCCalls do
         sequence_number,
         signature,
         invoke_host_function_op,
-        auth_account
+        auth_secret_key
       ) do
     invoke_host_function_op =
-      set_invoke_host_function_params(invoke_host_function_op, footprint, auth, auth_account)
+      set_invoke_host_function_params(invoke_host_function_op, footprint, auth, auth_secret_key)
 
     {:ok, envelope_xdr} =
       source_account
@@ -87,7 +87,7 @@ defmodule Soroban.Contract.RPCCalls do
         _sequence_number,
         _signature,
         _invoke_host_function_op,
-        _auth_account
+        _auth_secret_key
       ),
       do: response
 
@@ -127,7 +127,7 @@ defmodule Soroban.Contract.RPCCalls do
           invoke_host_function :: invoke_host_function(),
           footprint :: String.t(),
           auth :: auth(),
-          auth_account :: auth_account()
+          auth_secret_key :: auth_secret_key()
         ) :: invoke_host_function() | {:error, :required_auth}
   defp set_invoke_host_function_params(invoke_host_function_op, footprint, [auth], nil) do
     invoke_host_function_op
@@ -135,14 +135,19 @@ defmodule Soroban.Contract.RPCCalls do
     |> InvokeHostFunction.set_contract_auth(auth)
   end
 
-  defp set_invoke_host_function_params(invoke_host_function_op, footprint, [auth], auth_account) do
-    authorization = ContractAuth.sign_xdr(auth, auth_account)
+  defp set_invoke_host_function_params(
+         invoke_host_function_op,
+         footprint,
+         [auth],
+         auth_secret_key
+       ) do
+    authorization = ContractAuth.sign_xdr(auth, auth_secret_key)
 
     invoke_host_function_op
     |> InvokeHostFunction.set_footprint(footprint)
     |> InvokeHostFunction.set_contract_auth(authorization)
   end
 
-  defp set_invoke_host_function_params(invoke_host_function_op, footprint, nil, _auth_account),
+  defp set_invoke_host_function_params(invoke_host_function_op, footprint, nil, _auth_secret_key),
     do: InvokeHostFunction.set_footprint(invoke_host_function_op, footprint)
 end
