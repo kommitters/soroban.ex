@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10.0 (18.05.2023)
+
+- [Soroban.ex improvements](https://github.com/kommitters/soroban.ex/issues/84)
+
 ## 0.9.0 (18.05.2023)
 
 - [Retrieve unsigned transactions](https://github.com/kommitters/soroban.ex/issues/70)

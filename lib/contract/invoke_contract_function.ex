@@ -19,7 +19,7 @@ defmodule Soroban.Contract.InvokeContractFunction do
 
   @type account :: Account.t()
   @type function_args :: list(struct())
-  @type auth_accounts :: list(binary())
+  @type auth_secret_key :: binary() | nil
   @type invoke_host_function :: InvokeHostFunction.t()
   @type envelope_xdr :: String.t()
   @type function_name :: String.t()
@@ -36,14 +36,14 @@ defmodule Soroban.Contract.InvokeContractFunction do
           source_secret_key :: source_secret_key(),
           function_name :: function_name(),
           function_args :: function_args(),
-          auth_accounts :: auth_accounts()
+          auth_secret_key :: auth_secret_key()
         ) :: send_response()
   def invoke(
         contract_id,
         source_secret_key,
         function_name,
         function_args,
-        auth_accounts \\ []
+        auth_secret_key \\ nil
       ) do
     with {public_key, _secret} = keypair <- Stellar.KeyPair.from_secret_seed(source_secret_key),
          {:ok, seq_num} <- Accounts.fetch_next_sequence_number(public_key),
@@ -52,8 +52,7 @@ defmodule Soroban.Contract.InvokeContractFunction do
          %Account{} = source_account <- Account.new(public_key),
          %SequenceNumber{} = sequence_number <- SequenceNumber.new(seq_num),
          %InvokeHostFunction{} = invoke_host_function_op <-
-           create_host_function_op(contract_id, function_name, function_args),
-         auth_account <- Enum.at(auth_accounts, 0) do
+           create_host_function_op(contract_id, function_name, function_args) do
       invoke_host_function_op
       |> RPCCalls.simulate(source_account, sequence_number)
       |> RPCCalls.send_transaction(
@@ -61,7 +60,7 @@ defmodule Soroban.Contract.InvokeContractFunction do
         sequence_number,
         signature,
         invoke_host_function_op,
-        auth_account
+        auth_secret_key
       )
     end
   end
