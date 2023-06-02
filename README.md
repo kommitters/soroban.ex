@@ -559,7 +559,7 @@ Contract.invoke(contract_id, source_secret_key, function_name, function_args)
 
 #### Deploy contracts
 
-##### Install Contract Code
+##### Upload Contract Code
 
 **Parameters**
 
@@ -568,13 +568,14 @@ Contract.invoke(contract_id, source_secret_key, function_name, function_args)
 
 ```elixir
 alias Soroban.Contract
+alias Soroban.Contract.UploadContractCode
+alias Soroban.RPC
 alias Soroban.RPC.SendTransactionResponse
-alias Soroban.Contract.InstallContractCode
 
 wasm = File.read!("../your_wasm_path/hello.wasm")
 secret_key = "SCA..."
 
-{:ok, %SendTransactionResponse{hash: hash}} = Contract.install(wasm, secret_key)
+{:ok, %SendTransactionResponse{hash: hash}} = Contract.upload(wasm, secret_key)
 
 {:ok,
   %Soroban.RPC.SendTransactionResponse{
@@ -588,9 +589,9 @@ secret_key = "SCA..."
 wasm_id =
   hash
   |> RPC.get_transaction()
-  |> InstallContractCode.get_wasm_id()
+  |> UploadContractCode.get_wasm_id()
 
-"f953..."
+<<187, 187, 69, ...>>
 ```
 
 ##### Deploy Contract from WASM
@@ -605,7 +606,7 @@ alias Soroban.Contract
 alias Soroban.RPC.SendTransactionResponse
 alias Soroban.Contract.DeployContract
 
-wasm_id = "f953..."
+wasm_id = <<187, 187, 69, ...>>
 secret_key = "SCA..."
 
 {:ok, %SendTransactionResponse{hash: hash}} = Contract.deploy(wasm_id, secret_key)

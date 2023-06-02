@@ -1,4 +1,4 @@
-defmodule Stellar.Horizon.Client.CannedInstallAccountRequests do
+defmodule Stellar.Horizon.Client.CannedUploadAccountRequests do
   @moduledoc false
 
   @base_url "https://horizon-testnet.stellar.org"
@@ -24,7 +24,7 @@ defmodule Stellar.Horizon.Client.CannedInstallAccountRequests do
   end
 end
 
-defmodule Soroban.RPC.CannedInstallInvokeHostFunctionClientImpl do
+defmodule Soroban.RPC.CannedUploadInvokeHostFunctionClientImpl do
   @moduledoc false
 
   @behaviour Soroban.RPC.Client.Spec
@@ -92,23 +92,23 @@ defmodule Soroban.RPC.CannedInstallInvokeHostFunctionClientImpl do
   end
 end
 
-defmodule Soroban.Contract.InstallContractCodeTest do
+defmodule Soroban.Contract.UploadContractCodeTest do
   use ExUnit.Case
 
-  alias Soroban.Contract.InstallContractCode
+  alias Soroban.Contract.UploadContractCode
 
   alias Soroban.RPC.{
-    CannedInstallInvokeHostFunctionClientImpl,
+    CannedUploadInvokeHostFunctionClientImpl,
     GetTransactionResponse,
     SendTransactionResponse,
     SimulateTransactionResponse
   }
 
-  alias Stellar.Horizon.Client.CannedInstallAccountRequests
+  alias Stellar.Horizon.Client.CannedUploadAccountRequests
 
   setup do
-    Application.put_env(:stellar_sdk, :http_client, CannedInstallAccountRequests)
-    Application.put_env(:soroban, :http_client_impl, CannedInstallInvokeHostFunctionClientImpl)
+    Application.put_env(:stellar_sdk, :http_client, CannedUploadAccountRequests)
+    Application.put_env(:soroban, :http_client_impl, CannedUploadInvokeHostFunctionClientImpl)
 
     on_exit(fn ->
       Application.delete_env(:stellar_sdk, :http_client)
@@ -151,7 +151,7 @@ defmodule Soroban.Contract.InstallContractCodeTest do
     }
   end
 
-  test "install/2", %{
+  test "upload/2", %{
     wasm: wasm,
     source_secret: source_secret
   } do
@@ -162,10 +162,10 @@ defmodule Soroban.Contract.InstallContractCodeTest do
        latest_ledger: "602691",
        latest_ledger_close_time: "1683814245",
        error_result_xdr: nil
-     }} = InstallContractCode.install(wasm, source_secret)
+     }} = UploadContractCode.upload(wasm, source_secret)
   end
 
-  test "install contract with simulate error", %{
+  test "upload contract with simulate error", %{
     wasm: wasm,
     source_secret_with_error: source_secret_with_error
   } do
@@ -173,21 +173,21 @@ defmodule Soroban.Contract.InstallContractCodeTest do
      %SimulateTransactionResponse{
        error: "error"
      }} =
-      InstallContractCode.install(
+      UploadContractCode.upload(
         wasm,
         source_secret_with_error
       )
   end
 
-  test "retrieve_unsigned_xdr_to_install/2", %{
+  test "retrieve_unsigned_xdr_to_upload/2", %{
     wasm: wasm,
     source_public: source_public,
     envelope_xdr: envelope_xdr
   } do
-    ^envelope_xdr = InstallContractCode.retrieve_unsigned_xdr_to_install(wasm, source_public)
+    ^envelope_xdr = UploadContractCode.retrieve_unsigned_xdr_to_upload(wasm, source_public)
   end
 
-  test "retrieve_unsigned_xdr_to_install contract with simulate error", %{
+  test "retrieve_unsigned_xdr_to_upload contract with simulate error", %{
     wasm: wasm,
     source_public_with_error: source_public_with_error
   } do
@@ -195,7 +195,7 @@ defmodule Soroban.Contract.InstallContractCodeTest do
      %SimulateTransactionResponse{
        error: "error"
      }} =
-      InstallContractCode.retrieve_unsigned_xdr_to_install(
+      UploadContractCode.retrieve_unsigned_xdr_to_upload(
         wasm,
         source_public_with_error
       )
@@ -206,6 +206,6 @@ defmodule Soroban.Contract.InstallContractCodeTest do
   } do
     <<66, 208, 35, 40, 82, 63, 24, 62, 0, 161, 91, 200, 46, 101, 45, 24, 216, 140, 130, 169, 254,
       217, 11, 131, 45, 9, 151, 5, 194, 188, 205,
-      26>> = InstallContractCode.get_wasm_id(transaction_response)
+      26>> = UploadContractCode.get_wasm_id(transaction_response)
   end
 end

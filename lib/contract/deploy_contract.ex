@@ -8,6 +8,7 @@ defmodule Soroban.Contract.DeployContract do
   alias Stellar.TxBuild.{
     Account,
     HostFunction,
+    HostFunctionArgs,
     InvokeHostFunction,
     SequenceNumber,
     Signature
@@ -62,8 +63,8 @@ defmodule Soroban.Contract.DeployContract do
   def get_contract_id({:ok, %GetTransactionResponse{result_xdr: result_xdr}}) do
     {%{
        result: %{
-         result: %{
-           operations: [%{result: %{result: %{value: %{value: %{value: value}}}}}]
+         value: %{
+           operations: [%{result: %{result: %{value: %{items: [%{value: %{value: value}}]}}}}]
          }
        }
      }, ""} = result_xdr |> Base.decode64!() |> TransactionResult.decode_xdr!()
@@ -73,12 +74,13 @@ defmodule Soroban.Contract.DeployContract do
 
   @spec create_host_function_deploy_op(wasm_id :: wasm_id()) :: invoke_host_function()
   defp create_host_function_deploy_op(wasm_id) do
-    function =
-      HostFunction.new(
+    function_args =
+      HostFunctionArgs.new(
         type: :create,
         wasm_id: wasm_id
       )
 
-    InvokeHostFunction.new(function: function)
+    function = HostFunction.new(args: function_args)
+    InvokeHostFunction.new(functions: [function])
   end
 end

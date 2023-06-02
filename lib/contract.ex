@@ -6,7 +6,7 @@ defmodule Soroban.Contract do
   alias Soroban.Contract.{
     DeployAssetContract,
     DeployContract,
-    InstallContractCode,
+    UploadContractCode,
     InvokeContractFunction
   }
 
@@ -20,12 +20,12 @@ defmodule Soroban.Contract do
               to: InvokeContractFunction,
               as: :invoke
 
-  defdelegate install(
+  defdelegate upload(
                 wasm,
                 source_secret_key
               ),
-              to: InstallContractCode,
-              as: :install
+              to: UploadContractCode,
+              as: :upload
 
   defdelegate deploy(
                 wasm_id,
@@ -50,12 +50,12 @@ defmodule Soroban.Contract do
               to: InvokeContractFunction,
               as: :retrieve_unsigned_xdr_to_invoke
 
-  defdelegate retrieve_unsigned_xdr_to_install(
+  defdelegate retrieve_unsigned_xdr_to_upload(
                 wasm,
                 source_public_key
               ),
-              to: InstallContractCode,
-              as: :retrieve_unsigned_xdr_to_install
+              to: UploadContractCode,
+              as: :retrieve_unsigned_xdr_to_upload
 
   defdelegate retrieve_unsigned_xdr_to_deploy(
                 wasm_id,

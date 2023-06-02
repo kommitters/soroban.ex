@@ -9,6 +9,7 @@ defmodule Soroban.Contract.DeployAssetContract do
     Account,
     Asset,
     HostFunction,
+    HostFunctionArgs,
     InvokeHostFunction,
     SequenceNumber,
     Signature
@@ -66,8 +67,8 @@ defmodule Soroban.Contract.DeployAssetContract do
   def get_contract_id({:ok, %GetTransactionResponse{result_xdr: result_xdr}}) do
     {%{
        result: %{
-         result: %{
-           operations: [%{result: %{result: %{value: %{value: %{value: value}}}}}]
+         value: %{
+           operations: [%{result: %{result: %{value: %{items: [%{value: %{value: value}}]}}}}]
          }
        }
      }, ""} = result_xdr |> Base.decode64!() |> TransactionResult.decode_xdr!()
@@ -77,12 +78,13 @@ defmodule Soroban.Contract.DeployAssetContract do
 
   @spec create_host_function_deploy_op(asset :: asset()) :: invoke_host_function()
   defp create_host_function_deploy_op(asset) do
-    function =
-      HostFunction.new(
+    function_args =
+      HostFunctionArgs.new(
         type: :create,
         asset: asset
       )
 
-    InvokeHostFunction.new(function: function)
+    function = HostFunction.new(args: function_args)
+    InvokeHostFunction.new(functions: [function])
   end
 end
