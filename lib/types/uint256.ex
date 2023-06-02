@@ -17,6 +17,10 @@ defmodule Soroban.Types.UInt256 do
   def new(_value), do: {:error, :invalid}
 
   @impl true
-  def to_sc_val(%__MODULE__{value: value}), do: SCVal.new(u256: <<value::size(256)>>)
+  def to_sc_val(%__MODULE__{value: value}) do
+    <<hi_hi::size(64), hi_lo::size(64), lo_hi::size(64), lo_lo::size(64)>> = <<value::size(256)>>
+    SCVal.new(u256: %{hi_hi: hi_hi, hi_lo: hi_lo, lo_hi: lo_hi, lo_lo: lo_lo})
+  end
+
   def to_sc_val(_error), do: {:error, :invalid_struct_uint256}
 end

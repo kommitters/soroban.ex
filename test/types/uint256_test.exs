@@ -26,8 +26,10 @@ defmodule Soroban.Types.UInt256Test do
 
   describe "to_sc_val/1" do
     test "with a valid struct", %{value: value, u256: u256} do
-      value_bin = <<value::size(256)>>
+      <<hi_hi::size(64), hi_lo::size(64), lo_hi::size(64), lo_lo::size(64)>> =
+        <<value::size(256)>>
 
+      value_bin = %{hi_hi: hi_hi, hi_lo: hi_lo, lo_hi: lo_hi, lo_lo: lo_lo}
       %SCVal{type: :u256, value: ^value_bin} = UInt256.to_sc_val(u256)
     end
 
