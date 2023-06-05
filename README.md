@@ -603,7 +603,7 @@ wasm_id =
 
 **Parameters**
 
-- `wasm_id`: Binary identification of the installed contract to deploy.
+- `wasm_id`: Binary identification of the uploaded contract to deploy.
 - `secret_key`: Secret key of the function invoker responsible for signing the transaction.
 
 ```elixir
@@ -667,7 +667,7 @@ hash
 
 ### Retrieve unsigned Transaction Envelope XDR
 
-In order to facilitate seamless integration with wallets, we have developed functions that enable the retrieval of the unsigned Transaction Envelope XDR for each type of interaction with contracts: invocation, installation, and deployment.
+In order to facilitate seamless integration with wallets, we have developed functions that enable the retrieval of the unsigned Transaction Envelope XDR for each type of interaction with contracts: invocation, upload, and deployment.
 
 This XDR is required by wallets to sign transactions before they can be submitted to the network. Once the wallet returns the signed XDR, the `Soroban.RPC.send_transaction/1` function can be used to submit the transaction.
 
@@ -714,7 +714,7 @@ alias Soroban.Contract
 wasm = File.read!("../your_wasm_path/hello.wasm")
 source_public_key = "GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"
 
-Contract.retrieve_unsigned_xdr_to_install(wasm, source_public_key)
+Contract.retrieve_unsigned_xdr_to_upload(wasm, source_public_key)
 
 "AAAAAgAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gAAAGQAADg8AAAAOgAAAAAAAAAAAAAAAQAAAAAAAAAYAA..."
 
@@ -724,7 +724,7 @@ Contract.retrieve_unsigned_xdr_to_install(wasm, source_public_key)
 
 **Parameters**
 
-- `wasm_id`: Binary identification of the installed contract to deploy.
+- `wasm_id`: Binary identification of the uploaded contract to deploy.
 - `source_public_key`: Public key of the function invoker responsible for signing the transaction.
 
 ```elixir

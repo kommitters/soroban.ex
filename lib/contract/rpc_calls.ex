@@ -117,17 +117,34 @@ defmodule Soroban.Contract.RPCCalls do
           invoke_host_function_op :: invoke_host_function()
         ) :: envelope_xdr() | simulate_response()
   def retrieve_unsigned_xdr(
-        {:ok, %SimulateTransactionResponse{results: [%{auth: auth}]}},
+        {:ok,
+         %SimulateTransactionResponse{
+           transaction_data: transaction_data,
+           min_resource_fee: min_resource_fee,
+           results: [%{auth: auth}]
+         }},
         source_account,
         sequence_number,
         invoke_host_function_op
       ) do
     invoke_host_function_op = set_host_function_auth(invoke_host_function_op, auth, nil)
 
+    {transaction_data, min_resource_fee} =
+      process_transaction_response(
+        transaction_data,
+        String.to_integer(min_resource_fee),
+        nil
+      )
+
+    %BaseFee{fee: base_fee} = BaseFee.new()
+    fee = BaseFee.new(base_fee + min_resource_fee)
+
     {:ok, envelope_xdr} =
       source_account
       |> TxBuild.new(sequence_number: sequence_number)
       |> TxBuild.add_operation(invoke_host_function_op)
+      |> Stellar.TxBuild.set_base_fee(fee)
+      |> Stellar.TxBuild.set_soroban_data(transaction_data)
       |> TxBuild.envelope()
 
     envelope_xdr
