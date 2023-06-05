@@ -11,6 +11,7 @@ defmodule Soroban.Contract.InvokeContractFunction do
   alias Stellar.TxBuild.{
     Account,
     HostFunction,
+    HostFunctionArgs,
     InvokeHostFunction,
     SCVal,
     SequenceNumber,
@@ -52,7 +53,7 @@ defmodule Soroban.Contract.InvokeContractFunction do
          %Account{} = source_account <- Account.new(public_key),
          %SequenceNumber{} = sequence_number <- SequenceNumber.new(seq_num),
          %InvokeHostFunction{} = invoke_host_function_op <-
-           create_host_function_op(contract_id, function_name, function_args) do
+           create_host_function_op(contract_id, function_name, function_args, public_key) do
       invoke_host_function_op
       |> RPCCalls.simulate(source_account, sequence_number)
       |> RPCCalls.send_transaction(
@@ -82,7 +83,7 @@ defmodule Soroban.Contract.InvokeContractFunction do
          %Account{} = source_account <- Account.new(source_public_key),
          %SequenceNumber{} = sequence_number <- SequenceNumber.new(seq_num),
          %InvokeHostFunction{} = invoke_host_function_op <-
-           create_host_function_op(contract_id, function_name, function_args) do
+           create_host_function_op(contract_id, function_name, function_args, source_public_key) do
       invoke_host_function_op
       |> RPCCalls.simulate(source_account, sequence_number)
       |> RPCCalls.retrieve_unsigned_xdr(source_account, sequence_number, invoke_host_function_op)
@@ -92,18 +93,20 @@ defmodule Soroban.Contract.InvokeContractFunction do
   @spec create_host_function_op(
           contract_id :: contract_id(),
           function_name :: function_name(),
-          function_args :: function_args()
+          function_args :: function_args(),
+          source_public_key :: source_public_key()
         ) :: invoke_host_function()
-  defp create_host_function_op(contract_id, function_name, function_args) do
-    function =
-      HostFunction.new(
+  defp create_host_function_op(contract_id, function_name, function_args, source_public_key) do
+    function_args =
+      HostFunctionArgs.new(
         type: :invoke,
         contract_id: contract_id,
         function_name: function_name,
         args: function_args
       )
 
-    InvokeHostFunction.new(function: function)
+    function = HostFunction.new(args: function_args)
+    InvokeHostFunction.new(functions: [function], source_account: source_public_key)
   end
 
   @spec convert_to_sc_val(function_args :: function_args()) :: {:ok, sc_val_list()}
