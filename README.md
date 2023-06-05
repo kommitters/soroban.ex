@@ -360,15 +360,20 @@ Allows you to directly inspect the current state of a contract, a contract's cod
 **Example**
 
 ```elixir
-key = "AAAABvrOGFv9hxq4ke1yjqrbfSQPrggCrdo12YvueQldm8h8AAAADwAAAAdDT1VOVEVSAA=="
+keys = ["AAAABvrOGFv9hxq4ke1yjqrbfSQPrggCrdo12YvueQldm8h8AAAADwAAAAdDT1VOVEVSAA=="]
 
-Soroban.RPC.get_ledger_entry(key)
+Soroban.RPC.get_ledger_entries(keys)
 
 {:ok,
- %Soroban.RPC.GetLedgerEntryResponse{
-   xdr: "AAAABvrOGFv9hxq4ke1yjqrbfSQPrggCrdo12YvueQldm8h8AAAADwAAAAdDT1VOVEVSAAAAAAMAAAAC",
-   last_modified_ledger_seq: "684751",
-   latest_ledger: "684754"
+ %GetLedgerEntriesResponse{
+   entries: [
+     %{
+       key: "AAAAB+qfy4GuVKKfazvyk4R9P9fpo2n9HICsr+xqvVcTF+DC",
+       xdr: "AAAABwAAAADqn8uBrlSin2s78pOEfT/X6aNp/RyArK/sar1XExfgwgAAAAphIGNvbnRyYWN0AAA=",
+       last_modified_ledger_seq: "13"
+     }
+   ],
+   latest_ledger: "179436"
  }}
 
 ```

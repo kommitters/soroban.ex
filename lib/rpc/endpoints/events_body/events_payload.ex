@@ -49,6 +49,14 @@ defmodule Soroban.RPC.EventsPayload do
   @spec to_request_args(t()) :: request_args()
   def to_request_args(%__MODULE__{
         start_ledger: start_ledger,
+        filters: nil,
+        pagination: pagination
+      }) do
+    %{startLedger: start_ledger, filters: nil, pagination: pagination}
+  end
+
+  def to_request_args(%__MODULE__{
+        start_ledger: start_ledger,
         filters: filters,
         pagination: pagination
       }) do

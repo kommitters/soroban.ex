@@ -44,7 +44,7 @@ defmodule Soroban.MixProject do
       {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.29", only: :dev, runtime: false},
       {:excoveralls, "~> 0.15", only: :test},
-      {:stellar_sdk, path: "/home/david/Descargas/Kommit/stellar_sdk"},
+      {:stellar_sdk, "~> 0.15"},
       {:hackney, "~> 1.18"}
     ]
   end
@@ -105,8 +105,8 @@ defmodule Soroban.MixProject do
         Soroban.RPC.GetLatestLedgerResponse,
         Soroban.RPC.GetNetwork,
         Soroban.RPC.GetNetworkResponse,
-        Soroban.RPC.GetLedgerEntry,
-        Soroban.RPC.GetLedgerEntryResponse,
+        Soroban.RPC.GetLedgerEntries,
+        Soroban.RPC.GetLedgerEntriesResponse,
         Soroban.RPC.GetEvents,
         Soroban.RPC.GetEventsResponse,
         Soroban.RPC.EventFilter,

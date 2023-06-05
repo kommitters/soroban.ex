@@ -24,9 +24,18 @@ defmodule Soroban.RPC.EventsPayloadTest do
         limit: limit
       )
 
+    event_with_nil_filters =
+      EventsPayload.new(
+        start_ledger: start_ledger,
+        filters: nil,
+        cursor: cursor,
+        limit: limit
+      )
+
     %{
       start_ledger: start_ledger,
       event: event,
+      event_with_nil_filters: event_with_nil_filters,
       filters: filters,
       cursor: cursor,
       limit: limit,
@@ -110,6 +119,19 @@ defmodule Soroban.RPC.EventsPayloadTest do
         ],
         pagination: %{cursor: ^cursor, limit: ^limit}
       } = EventsPayload.to_request_args(event)
+    end
+
+    test "with nil filters struct", %{
+      event_with_nil_filters: event_with_nil_filters,
+      start_ledger: start_ledger,
+      limit: limit,
+      cursor: cursor
+    } do
+      %{
+        startLedger: ^start_ledger,
+        filters: nil,
+        pagination: %{cursor: ^cursor, limit: ^limit}
+      } = EventsPayload.to_request_args(event_with_nil_filters)
     end
 
     test "with an invalid struct" do

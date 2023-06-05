@@ -95,7 +95,7 @@ defmodule Soroban.RPC.CannedRPCGetNetworkClientImpl do
   end
 end
 
-defmodule Soroban.RPC.CannedRPCGetLedgerEntryClientImpl do
+defmodule Soroban.RPC.CannedRPCGetLedgerEntriesClientImpl do
   @moduledoc false
 
   @behaviour Soroban.RPC.Client.Spec
@@ -106,8 +106,13 @@ defmodule Soroban.RPC.CannedRPCGetLedgerEntryClientImpl do
 
     {:ok,
      %{
-       xdr: "AAAABhv6ziOnWcVRdGMZjtFKSWnLSndMp9JPVLLXxQqAvKqJAAAABQAAAAdDT1VOVEVSAAAAAAEAAAAD",
-       last_modified_ledger_seq: "164986",
+       entries: [
+         %{
+           key: "AAAAB+qfy4GuVKKfazvyk4R9P9fpo2n9HICsr+xqvVcTF+DC",
+           xdr: "AAAABwAAAADqn8uBrlSin2s78pOEfT/X6aNp/RyArK/sar1XExfgwgAAAAphIGNvbnRyYWN0AAA=",
+           last_modified_ledger_seq: "13"
+         }
+       ],
        latest_ledger: "179436"
      }}
   end
@@ -184,7 +189,7 @@ defmodule Soroban.RPCTest do
     CannedRPCGetEventsClientImpl,
     CannedRPCGetHealthClientImpl,
     CannedRPCGetLatestLedgerClientImpl,
-    CannedRPCGetLedgerEntryClientImpl,
+    CannedRPCGetLedgerEntriesClientImpl,
     CannedRPCGetNetworkClientImpl,
     CannedRPCGetTransactionClientImpl,
     CannedRPCSendTransactionClientImpl,
@@ -194,7 +199,7 @@ defmodule Soroban.RPCTest do
     GetEventsResponse,
     GetHealthResponse,
     GetLatestLedgerResponse,
-    GetLedgerEntryResponse,
+    GetLedgerEntriesResponse,
     GetNetworkResponse,
     GetTransactionResponse,
     SendTransactionResponse,
@@ -348,24 +353,29 @@ defmodule Soroban.RPCTest do
     end
   end
 
-  describe "get_ledger_entry/1" do
+  describe "get_ledger_entries/1" do
     setup do
-      Application.put_env(:soroban, :http_client_impl, CannedRPCGetLedgerEntryClientImpl)
+      Application.put_env(:soroban, :http_client_impl, CannedRPCGetLedgerEntriesClientImpl)
 
       on_exit(fn ->
         Application.delete_env(:soroban, :http_client_impl)
       end)
 
-      %{key: "AAAABhv6ziOnWcVRdGMZjtFKSWnLSndMp9JPVLLXxQqAvKqJAAAABQAAAAdDT1VOVEVSAA"}
+      %{keys: ["AAAABhv6ziOnWcVRdGMZjtFKSWnLSndMp9JPVLLXxQqAvKqJAAAABQAAAAdDT1VOVEVSAA"]}
     end
 
-    test "request/1", %{key: key} do
+    test "request/1", %{keys: keys} do
       {:ok,
-       %GetLedgerEntryResponse{
-         xdr: "AAAABhv6ziOnWcVRdGMZjtFKSWnLSndMp9JPVLLXxQqAvKqJAAAABQAAAAdDT1VOVEVSAAAAAAEAAAAD",
-         last_modified_ledger_seq: "164986",
+       %GetLedgerEntriesResponse{
+         entries: [
+           %{
+             key: "AAAAB+qfy4GuVKKfazvyk4R9P9fpo2n9HICsr+xqvVcTF+DC",
+             xdr: "AAAABwAAAADqn8uBrlSin2s78pOEfT/X6aNp/RyArK/sar1XExfgwgAAAAphIGNvbnRyYWN0AAA=",
+             last_modified_ledger_seq: "13"
+           }
+         ],
          latest_ledger: "179436"
-       }} = RPC.get_ledger_entry(key)
+       }} = RPC.get_ledger_entries(keys)
     end
   end
 
