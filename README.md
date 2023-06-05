@@ -483,13 +483,13 @@ The deployment and invocation of Soroban smart contracts is done through the `So
 
 ```elixir
 alias Soroban.Contract
-alias Soroban.Types.Symbol
+alias Soroban.Types.String
 
-contract_id = "be4138b31cc5d0d9d91b53193d74316d254406794ec0f81d3ed40f4dc1b86a6e"
+contract_id = "5099ae2fa8453c363a9a71cdf8198ca258d12fa44bb5dc68ae0225595f461d37"
 source_secret_key = "SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK"
 function_name = "hello"
 
-function_args = [Symbol.new("world")]
+function_args = [String.new("world")]
 
 Contract.invoke(contract_id, source_secret_key, function_name, function_args)
 
@@ -511,7 +511,7 @@ Contract.invoke(contract_id, source_secret_key, function_name, function_args)
   alias Soroban.Contract
   alias Soroban.Types.{Address, UInt128}
 
-  contract_id = "be4138b31cc5d0d9d91b53193d74316d254406794ec0f81d3ed40f4dc1b86a6e"
+  contract_id = "5099ae2fa8453c363a9a71cdf8198ca258d12fa44bb5dc68ae0225595f461d37"
   source_secret_key = "SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK"
   function_name = "inc"
 
@@ -538,7 +538,7 @@ Contract.invoke(contract_id, source_secret_key, function_name, function_args)
   alias Soroban.Contract
   alias Soroban.Types.{Address, Int128}
 
-  contract_id = "be4138b31cc5d0d9d91b53193d74316d254406794ec0f81d3ed40f4dc1b86a6e"
+  contract_id = "5099ae2fa8453c363a9a71cdf8198ca258d12fa44bb5dc68ae0225595f461d37"
   source_secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
   function_name = "swap"
 
@@ -682,13 +682,13 @@ This XDR is required by wallets to sign transactions before they can be submitte
 
 ```elixir
 alias Soroban.Contract
-alias Soroban.Types.Symbol
+alias Soroban.Types.String
 
-contract_id = "be4138b31cc5d0d9d91b53193d74316d254406794ec0f81d3ed40f4dc1b86a6e"
+contract_id = "5099ae2fa8453c363a9a71cdf8198ca258d12fa44bb5dc68ae0225595f461d37"
 source_public_key = "GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"
 function_name = "hello"
 
-function_args = [Symbol.new("world")]
+function_args = [String.new("world")]
 
 Contract.retrieve_unsigned_xdr_to_invoke(
   contract_id,
