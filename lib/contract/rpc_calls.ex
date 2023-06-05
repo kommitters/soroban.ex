@@ -4,8 +4,8 @@ defmodule Soroban.Contract.RPCCalls do
   """
   alias Soroban.RPC
   alias Soroban.RPC.{SendTransactionResponse, SimulateTransactionResponse}
-  alias StellarBase.XDR.{SorobanTransactionData, UInt32}
   alias Stellar.TxBuild
+  alias StellarBase.XDR.{SorobanTransactionData, UInt32}
 
   alias Stellar.TxBuild.{
     Account,

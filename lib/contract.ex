@@ -6,8 +6,8 @@ defmodule Soroban.Contract do
   alias Soroban.Contract.{
     DeployAssetContract,
     DeployContract,
-    UploadContractCode,
-    InvokeContractFunction
+    InvokeContractFunction,
+    UploadContractCode
   }
 
   defdelegate invoke(

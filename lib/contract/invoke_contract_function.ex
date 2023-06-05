@@ -3,7 +3,6 @@ defmodule Soroban.Contract.InvokeContractFunction do
   `InvokeContractFunction` implementation to invoke authorized and not authorized contract functions.
   """
 
-  alias Stellar.TxBuild.HostFunctionArgs
   alias Soroban.Contract.RPCCalls
   alias Soroban.RPC.SendTransactionResponse
 
@@ -12,6 +11,7 @@ defmodule Soroban.Contract.InvokeContractFunction do
   alias Stellar.TxBuild.{
     Account,
     HostFunction,
+    HostFunctionArgs,
     InvokeHostFunction,
     SCVal,
     SequenceNumber,
