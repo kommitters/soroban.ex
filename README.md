@@ -205,7 +205,7 @@ Submit a trial contract invocation to get back return values, expected ledger fo
 
 **Parameters**
 
-- `base64_envelope`: The transaction to be simulated (serialized in base64).
+- `base64_envelope`: `<xdr.TransactionEnvelope>` - The transaction to be simulated (serialized in base64).
 
 **Example**
 
@@ -243,7 +243,7 @@ This supports all transactions, not only smart contract-related transactions.
 
 **Parameters**
 
-- `base64_envelope`: The signed transaction to broadcast (serialized in base64).
+- `base64_envelope`: `<xdr.TransactionEnvelope>` - The signed transaction to broadcast (serialized in base64).
 
 **Example**
 
@@ -347,7 +347,7 @@ Soroban.RPC.get_network()
 
 ```
 
-#### Get Ledger Entry
+#### Get Ledger Entries
 
 For reading the current value of ledger entries directly.
 
@@ -355,7 +355,7 @@ Allows you to directly inspect the current state of a contract, a contract's cod
 
 **Parameters**
 
-- `key`: The key of the ledger entry you wish to retrieve (serialized in a base64 string).
+- `keys`: `<xdr.LedgerKey[]>` - Array containing the keys of the ledger entries you wish to retrieve (an array of serialized base64 strings).
 
 **Example**
 
