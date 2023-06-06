@@ -15,7 +15,15 @@ defmodule Soroban.RPC.SimulateTransactionResponse do
           error: error()
         }
 
-  defstruct [:results, :cost, :latest_ledger, :error]
+  defstruct [
+    :transaction_data,
+    :events,
+    :min_resource_fee,
+    :results,
+    :cost,
+    :latest_ledger,
+    :error
+  ]
 
   @impl true
   def new(attrs), do: struct(%__MODULE__{}, attrs)

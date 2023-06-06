@@ -1,7 +1,7 @@
 defmodule Soroban.MixProject do
   use Mix.Project
 
-  @version "0.10.0"
+  @version "0.11.0"
   @github_url "https://github.com/kommitters/soroban.ex"
 
   def project do
@@ -44,7 +44,7 @@ defmodule Soroban.MixProject do
       {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.29", only: :dev, runtime: false},
       {:excoveralls, "~> 0.15", only: :test},
-      {:stellar_sdk, "~> 0.14"},
+      {:stellar_sdk, "~> 0.15"},
       {:hackney, "~> 1.18"}
     ]
   end
@@ -86,7 +86,7 @@ defmodule Soroban.MixProject do
         Soroban.Contract,
         Soroban.Contract.RPCCalls,
         Soroban.Contract.InvokeContractFunction,
-        Soroban.Contract.InstallContractCode,
+        Soroban.Contract.UploadContractCode,
         Soroban.Contract.DeployContract,
         Soroban.Contract.DeployAssetContract
       ],
@@ -105,8 +105,8 @@ defmodule Soroban.MixProject do
         Soroban.RPC.GetLatestLedgerResponse,
         Soroban.RPC.GetNetwork,
         Soroban.RPC.GetNetworkResponse,
-        Soroban.RPC.GetLedgerEntry,
-        Soroban.RPC.GetLedgerEntryResponse,
+        Soroban.RPC.GetLedgerEntries,
+        Soroban.RPC.GetLedgerEntriesResponse,
         Soroban.RPC.GetEvents,
         Soroban.RPC.GetEventsResponse,
         Soroban.RPC.EventFilter,

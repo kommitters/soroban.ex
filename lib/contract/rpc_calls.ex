@@ -2,21 +2,23 @@ defmodule Soroban.Contract.RPCCalls do
   @moduledoc """
   Exposes the functions to execute the simulate and send_transaction endpoints
   """
-
   alias Soroban.RPC
   alias Soroban.RPC.{SendTransactionResponse, SimulateTransactionResponse}
   alias Stellar.TxBuild
+  alias StellarBase.XDR.{SorobanTransactionData, UInt32}
 
   alias Stellar.TxBuild.{
     Account,
+    BaseFee,
     ContractAuth,
+    HostFunction,
     InvokeHostFunction,
     SequenceNumber,
     Signature
   }
 
   @type account :: Account.t()
-  @type auth :: String.t() | nil
+  @type auth :: list(String.t()) | nil
   @type auth_secret_key :: String.t() | nil
   @type envelope_xdr :: String.t()
   @type invoke_host_function :: InvokeHostFunction.t()
@@ -61,7 +63,12 @@ defmodule Soroban.Contract.RPCCalls do
       )
 
   def send_transaction(
-        {:ok, %SimulateTransactionResponse{results: [%{footprint: footprint, auth: auth}]}},
+        {:ok,
+         %SimulateTransactionResponse{
+           transaction_data: transaction_data,
+           min_resource_fee: min_resource_fee,
+           results: [%{auth: auth}]
+         }},
         source_account,
         sequence_number,
         signature,
@@ -69,12 +76,24 @@ defmodule Soroban.Contract.RPCCalls do
         auth_secret_key
       ) do
     invoke_host_function_op =
-      set_invoke_host_function_params(invoke_host_function_op, footprint, auth, auth_secret_key)
+      set_host_function_auth(invoke_host_function_op, auth, auth_secret_key)
+
+    {transaction_data, min_resource_fee} =
+      process_transaction_response(
+        transaction_data,
+        String.to_integer(min_resource_fee),
+        auth_secret_key
+      )
+
+    %BaseFee{fee: base_fee} = BaseFee.new()
+    fee = BaseFee.new(base_fee + min_resource_fee)
 
     {:ok, envelope_xdr} =
       source_account
       |> TxBuild.new(sequence_number: sequence_number)
       |> TxBuild.add_operation(invoke_host_function_op)
+      |> Stellar.TxBuild.set_base_fee(fee)
+      |> Stellar.TxBuild.set_soroban_data(transaction_data)
       |> TxBuild.sign(signature)
       |> TxBuild.envelope()
 
@@ -98,18 +117,34 @@ defmodule Soroban.Contract.RPCCalls do
           invoke_host_function_op :: invoke_host_function()
         ) :: envelope_xdr() | simulate_response()
   def retrieve_unsigned_xdr(
-        {:ok, %SimulateTransactionResponse{results: [%{footprint: footprint, auth: auth}]}},
+        {:ok,
+         %SimulateTransactionResponse{
+           transaction_data: transaction_data,
+           min_resource_fee: min_resource_fee,
+           results: [%{auth: auth}]
+         }},
         source_account,
         sequence_number,
         invoke_host_function_op
       ) do
-    invoke_host_function_op =
-      set_invoke_host_function_params(invoke_host_function_op, footprint, auth, nil)
+    invoke_host_function_op = set_host_function_auth(invoke_host_function_op, auth, nil)
+
+    {transaction_data, min_resource_fee} =
+      process_transaction_response(
+        transaction_data,
+        String.to_integer(min_resource_fee),
+        nil
+      )
+
+    %BaseFee{fee: base_fee} = BaseFee.new()
+    fee = BaseFee.new(base_fee + min_resource_fee)
 
     {:ok, envelope_xdr} =
       source_account
       |> TxBuild.new(sequence_number: sequence_number)
       |> TxBuild.add_operation(invoke_host_function_op)
+      |> Stellar.TxBuild.set_base_fee(fee)
+      |> Stellar.TxBuild.set_soroban_data(transaction_data)
       |> TxBuild.envelope()
 
     envelope_xdr
@@ -123,31 +158,68 @@ defmodule Soroban.Contract.RPCCalls do
       ),
       do: response
 
-  @spec set_invoke_host_function_params(
+  @spec set_host_function_auth(
           invoke_host_function :: invoke_host_function(),
-          footprint :: String.t(),
           auth :: auth(),
           auth_secret_key :: auth_secret_key()
-        ) :: invoke_host_function() | {:error, :required_auth}
-  defp set_invoke_host_function_params(invoke_host_function_op, footprint, [auth], nil) do
+        ) :: invoke_host_function() | {:error, atom()}
+  defp set_host_function_auth(
+         invoke_host_function_op,
+         nil,
+         _auth_secret_key
+       ),
+       do: invoke_host_function_op
+
+  defp set_host_function_auth(
+         %InvokeHostFunction{functions: functions} = invoke_host_function_op,
+         auth,
+         nil
+       ) do
+    functions_with_auth =
+      Enum.map(functions, fn function -> HostFunction.set_auth(function, auth) end)
+
+    invoke_host_function_op = %{invoke_host_function_op | functions: functions_with_auth}
     invoke_host_function_op
-    |> InvokeHostFunction.set_footprint(footprint)
-    |> InvokeHostFunction.set_contract_auth(auth)
   end
 
-  defp set_invoke_host_function_params(
-         invoke_host_function_op,
-         footprint,
+  defp set_host_function_auth(
+         %InvokeHostFunction{functions: functions} = invoke_host_function_op,
          [auth],
          auth_secret_key
        ) do
-    authorization = ContractAuth.sign_xdr(auth, auth_secret_key)
+    authorizations = ContractAuth.sign_xdr(auth, auth_secret_key)
 
+    functions_with_auth =
+      Enum.map(functions, fn function -> HostFunction.set_auth(function, [authorizations]) end)
+
+    invoke_host_function_op = %{invoke_host_function_op | functions: functions_with_auth}
     invoke_host_function_op
-    |> InvokeHostFunction.set_footprint(footprint)
-    |> InvokeHostFunction.set_contract_auth(authorization)
   end
 
-  defp set_invoke_host_function_params(invoke_host_function_op, footprint, nil, _auth_secret_key),
-    do: InvokeHostFunction.set_footprint(invoke_host_function_op, footprint)
+  # This function is needed since when the function invoker is not the function authorizer
+  # the transaction data returns min_resource_fee and instructions with wrong values.
+  # More info: https://discord.com/channels/897514728459468821/1112853306881081354
+  @spec process_transaction_response(
+          transaction_data :: String.t(),
+          min_resource_fee :: non_neg_integer(),
+          auth_secret_key :: auth_secret_key()
+        ) :: {SorobanTransactionData.t(), non_neg_integer()}
+  defp process_transaction_response(transaction_data, min_resource_fee, nil),
+    do: {transaction_data, min_resource_fee}
+
+  defp process_transaction_response(transaction_data, min_resource_fee, _auth_secret_key) do
+    {%{
+       resources: %{instructions: %{datum: datum}} = resources
+     } = soroban_data,
+     ""} =
+      transaction_data
+      |> Base.decode64!()
+      |> SorobanTransactionData.decode_xdr!()
+
+    new_instructions = UInt32.new(datum + round(datum * 0.25))
+    new_resources = %{resources | instructions: new_instructions}
+    soroban_data = %{soroban_data | resources: new_resources}
+    min_resource_fee = min_resource_fee + round(min_resource_fee * 0.1)
+    {soroban_data, min_resource_fee}
+  end
 end

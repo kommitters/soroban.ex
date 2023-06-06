@@ -19,7 +19,7 @@
 ```elixir
 def deps do
   [
-    {:soroban, "~> 0.10.0"}
+    {:soroban, "~> 0.11.0"}
   ]
 end
 ```
@@ -205,7 +205,7 @@ Submit a trial contract invocation to get back return values, expected ledger fo
 
 **Parameters**
 
-- `base64_envelope`: The transaction to be simulated (serialized in base64).
+- `base64_envelope`: `<xdr.TransactionEnvelope>` - The transaction to be simulated (serialized in base64).
 
 **Example**
 
@@ -243,7 +243,7 @@ This supports all transactions, not only smart contract-related transactions.
 
 **Parameters**
 
-- `base64_envelope`: The signed transaction to broadcast (serialized in base64).
+- `base64_envelope`: `<xdr.TransactionEnvelope>` - The signed transaction to broadcast (serialized in base64).
 
 **Example**
 
@@ -347,7 +347,7 @@ Soroban.RPC.get_network()
 
 ```
 
-#### Get Ledger Entry
+#### Get Ledger Entries
 
 For reading the current value of ledger entries directly.
 
@@ -355,20 +355,25 @@ Allows you to directly inspect the current state of a contract, a contract's cod
 
 **Parameters**
 
-- `key`: The key of the ledger entry you wish to retrieve (serialized in a base64 string).
+- `keys`: `<xdr.LedgerKey[]>` - Array containing the keys of the ledger entries you wish to retrieve (an array of serialized base64 strings).
 
 **Example**
 
 ```elixir
-key = "AAAABvrOGFv9hxq4ke1yjqrbfSQPrggCrdo12YvueQldm8h8AAAADwAAAAdDT1VOVEVSAA=="
+keys = ["AAAABvrOGFv9hxq4ke1yjqrbfSQPrggCrdo12YvueQldm8h8AAAADwAAAAdDT1VOVEVSAA=="]
 
-Soroban.RPC.get_ledger_entry(key)
+Soroban.RPC.get_ledger_entries(keys)
 
 {:ok,
- %Soroban.RPC.GetLedgerEntryResponse{
-   xdr: "AAAABvrOGFv9hxq4ke1yjqrbfSQPrggCrdo12YvueQldm8h8AAAADwAAAAdDT1VOVEVSAAAAAAMAAAAC",
-   last_modified_ledger_seq: "684751",
-   latest_ledger: "684754"
+ %GetLedgerEntriesResponse{
+   entries: [
+     %{
+       key: "AAAAB+qfy4GuVKKfazvyk4R9P9fpo2n9HICsr+xqvVcTF+DC",
+       xdr: "AAAABwAAAADqn8uBrlSin2s78pOEfT/X6aNp/RyArK/sar1XExfgwgAAAAphIGNvbnRyYWN0AAA=",
+       last_modified_ledger_seq: "13"
+     }
+   ],
+   latest_ledger: "179436"
  }}
 
 ```
@@ -478,13 +483,13 @@ The deployment and invocation of Soroban smart contracts is done through the `So
 
 ```elixir
 alias Soroban.Contract
-alias Soroban.Types.Symbol
+alias Soroban.Types.String
 
-contract_id = "be4138b31cc5d0d9d91b53193d74316d254406794ec0f81d3ed40f4dc1b86a6e"
+contract_id = "5099ae2fa8453c363a9a71cdf8198ca258d12fa44bb5dc68ae0225595f461d37"
 source_secret_key = "SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK"
 function_name = "hello"
 
-function_args = [Symbol.new("world")]
+function_args = [String.new("world")]
 
 Contract.invoke(contract_id, source_secret_key, function_name, function_args)
 
@@ -506,7 +511,7 @@ Contract.invoke(contract_id, source_secret_key, function_name, function_args)
   alias Soroban.Contract
   alias Soroban.Types.{Address, UInt128}
 
-  contract_id = "be4138b31cc5d0d9d91b53193d74316d254406794ec0f81d3ed40f4dc1b86a6e"
+  contract_id = "5099ae2fa8453c363a9a71cdf8198ca258d12fa44bb5dc68ae0225595f461d37"
   source_secret_key = "SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK"
   function_name = "inc"
 
@@ -533,7 +538,7 @@ Contract.invoke(contract_id, source_secret_key, function_name, function_args)
   alias Soroban.Contract
   alias Soroban.Types.{Address, Int128}
 
-  contract_id = "be4138b31cc5d0d9d91b53193d74316d254406794ec0f81d3ed40f4dc1b86a6e"
+  contract_id = "5099ae2fa8453c363a9a71cdf8198ca258d12fa44bb5dc68ae0225595f461d37"
   source_secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
   function_name = "swap"
 
@@ -559,7 +564,7 @@ Contract.invoke(contract_id, source_secret_key, function_name, function_args)
 
 #### Deploy contracts
 
-##### Install Contract Code
+##### Upload Contract Code
 
 **Parameters**
 
@@ -568,13 +573,14 @@ Contract.invoke(contract_id, source_secret_key, function_name, function_args)
 
 ```elixir
 alias Soroban.Contract
+alias Soroban.Contract.UploadContractCode
+alias Soroban.RPC
 alias Soroban.RPC.SendTransactionResponse
-alias Soroban.Contract.InstallContractCode
 
 wasm = File.read!("../your_wasm_path/hello.wasm")
 secret_key = "SCA..."
 
-{:ok, %SendTransactionResponse{hash: hash}} = Contract.install(wasm, secret_key)
+{:ok, %SendTransactionResponse{hash: hash}} = Contract.upload(wasm, secret_key)
 
 {:ok,
   %Soroban.RPC.SendTransactionResponse{
@@ -588,16 +594,16 @@ secret_key = "SCA..."
 wasm_id =
   hash
   |> RPC.get_transaction()
-  |> InstallContractCode.get_wasm_id()
+  |> UploadContractCode.get_wasm_id()
 
-"f953..."
+<<187, 187, 69, ...>>
 ```
 
 ##### Deploy Contract from WASM
 
 **Parameters**
 
-- `wasm_id`: Binary identification of the installed contract to deploy.
+- `wasm_id`: Binary identification of the uploaded contract to deploy.
 - `secret_key`: Secret key of the function invoker responsible for signing the transaction.
 
 ```elixir
@@ -605,7 +611,7 @@ alias Soroban.Contract
 alias Soroban.RPC.SendTransactionResponse
 alias Soroban.Contract.DeployContract
 
-wasm_id = "f953..."
+wasm_id = <<187, 187, 69, ...>>
 secret_key = "SCA..."
 
 {:ok, %SendTransactionResponse{hash: hash}} = Contract.deploy(wasm_id, secret_key)
@@ -661,7 +667,7 @@ hash
 
 ### Retrieve unsigned Transaction Envelope XDR
 
-In order to facilitate seamless integration with wallets, we have developed functions that enable the retrieval of the unsigned Transaction Envelope XDR for each type of interaction with contracts: invocation, installation, and deployment.
+In order to facilitate seamless integration with wallets, we have developed functions that enable the retrieval of the unsigned Transaction Envelope XDR for each type of interaction with contracts: invocation, upload, and deployment.
 
 This XDR is required by wallets to sign transactions before they can be submitted to the network. Once the wallet returns the signed XDR, the `Soroban.RPC.send_transaction/1` function can be used to submit the transaction.
 
@@ -676,13 +682,13 @@ This XDR is required by wallets to sign transactions before they can be submitte
 
 ```elixir
 alias Soroban.Contract
-alias Soroban.Types.Symbol
+alias Soroban.Types.String
 
-contract_id = "be4138b31cc5d0d9d91b53193d74316d254406794ec0f81d3ed40f4dc1b86a6e"
+contract_id = "5099ae2fa8453c363a9a71cdf8198ca258d12fa44bb5dc68ae0225595f461d37"
 source_public_key = "GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"
 function_name = "hello"
 
-function_args = [Symbol.new("world")]
+function_args = [String.new("world")]
 
 Contract.retrieve_unsigned_xdr_to_invoke(
   contract_id,
@@ -708,7 +714,7 @@ alias Soroban.Contract
 wasm = File.read!("../your_wasm_path/hello.wasm")
 source_public_key = "GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"
 
-Contract.retrieve_unsigned_xdr_to_install(wasm, source_public_key)
+Contract.retrieve_unsigned_xdr_to_upload(wasm, source_public_key)
 
 "AAAAAgAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gAAAGQAADg8AAAAOgAAAAAAAAAAAAAAAQAAAAAAAAAYAA..."
 
@@ -718,7 +724,7 @@ Contract.retrieve_unsigned_xdr_to_install(wasm, source_public_key)
 
 **Parameters**
 
-- `wasm_id`: Binary identification of the installed contract to deploy.
+- `wasm_id`: Binary identification of the uploaded contract to deploy.
 - `source_public_key`: Public key of the function invoker responsible for signing the transaction.
 
 ```elixir

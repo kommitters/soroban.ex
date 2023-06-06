@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.11.0 (06.06.2023)
+
+- [Soroban preview 9 support](https://github.com/kommitters/soroban.ex/issues/91)
+
 ## 0.10.0 (18.05.2023)
 
 - [Soroban.ex improvements](https://github.com/kommitters/soroban.ex/issues/84)

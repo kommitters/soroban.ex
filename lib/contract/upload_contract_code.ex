@@ -1,6 +1,6 @@
-defmodule Soroban.Contract.InstallContractCode do
+defmodule Soroban.Contract.UploadContractCode do
   @moduledoc """
-  `InstallContractCode` implementation to install contract from a wasm file.
+  `UploadContractCode` implementation to upload contract from a wasm file.
   """
   alias Soroban.RPC.{GetTransactionResponse, SendTransactionResponse}
   alias Stellar.Horizon.Accounts
@@ -8,6 +8,7 @@ defmodule Soroban.Contract.InstallContractCode do
   alias Stellar.TxBuild.{
     Account,
     HostFunction,
+    HostFunctionArgs,
     InvokeHostFunction,
     SequenceNumber,
     Signature
@@ -25,14 +26,14 @@ defmodule Soroban.Contract.InstallContractCode do
   @type sequence_number :: SequenceNumber.t()
   @type signature :: Signature.t()
 
-  @spec install(wasm :: wasm(), secret_key :: binary()) :: send_response()
-  def install(wasm, secret_key) do
+  @spec upload(wasm :: wasm(), secret_key :: binary()) :: send_response()
+  def upload(wasm, secret_key) do
     with {public_key, _secret} = keypair <- Stellar.KeyPair.from_secret_seed(secret_key),
          {:ok, seq_num} <- Accounts.fetch_next_sequence_number(public_key),
          %Account{} = source_account <- Account.new(public_key),
          %SequenceNumber{} = sequence_number <- SequenceNumber.new(seq_num),
          %Signature{} = signature <- Signature.new(keypair),
-         %InvokeHostFunction{} = invoke_host_function_op <- create_host_function_install_op(wasm) do
+         %InvokeHostFunction{} = invoke_host_function_op <- create_host_function_upload_op(wasm) do
       invoke_host_function_op
       |> RPCCalls.simulate(source_account, sequence_number)
       |> RPCCalls.send_transaction(
@@ -44,15 +45,15 @@ defmodule Soroban.Contract.InstallContractCode do
     end
   end
 
-  @spec retrieve_unsigned_xdr_to_install(
+  @spec retrieve_unsigned_xdr_to_upload(
           wasm :: wasm(),
           source_public_key :: binary()
         ) :: envelope_xdr()
-  def retrieve_unsigned_xdr_to_install(wasm, source_public_key) do
+  def retrieve_unsigned_xdr_to_upload(wasm, source_public_key) do
     with {:ok, seq_num} <- Accounts.fetch_next_sequence_number(source_public_key),
          %Account{} = source_account <- Account.new(source_public_key),
          %SequenceNumber{} = sequence_number <- SequenceNumber.new(seq_num),
-         %InvokeHostFunction{} = invoke_host_function_op <- create_host_function_install_op(wasm) do
+         %InvokeHostFunction{} = invoke_host_function_op <- create_host_function_upload_op(wasm) do
       invoke_host_function_op
       |> RPCCalls.simulate(source_account, sequence_number)
       |> RPCCalls.retrieve_unsigned_xdr(source_account, sequence_number, invoke_host_function_op)
@@ -63,8 +64,8 @@ defmodule Soroban.Contract.InstallContractCode do
   def get_wasm_id({:ok, %GetTransactionResponse{result_xdr: result_xdr}}) do
     {%{
        result: %{
-         result: %{
-           operations: [%{result: %{result: %{value: %{value: %{value: value}}}}}]
+         value: %{
+           operations: [%{result: %{result: %{value: %{items: [%{value: %{value: value}}]}}}}]
          }
        }
      }, ""} = result_xdr |> Base.decode64!() |> TransactionResult.decode_xdr!()
@@ -72,14 +73,16 @@ defmodule Soroban.Contract.InstallContractCode do
     value
   end
 
-  @spec create_host_function_install_op(code :: wasm()) :: invoke_host_function()
-  defp create_host_function_install_op(code) do
-    function =
-      HostFunction.new(
-        type: :install,
+  @spec create_host_function_upload_op(code :: wasm()) :: invoke_host_function()
+  defp create_host_function_upload_op(code) do
+    function_args =
+      HostFunctionArgs.new(
+        type: :upload,
         code: code
       )
 
-    InvokeHostFunction.new(function: function)
+    function = HostFunction.new(args: function_args)
+
+    InvokeHostFunction.new(functions: [function])
   end
 end
