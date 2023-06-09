@@ -21,6 +21,10 @@ defmodule Soroban.Types.VecTest do
       %Vec{values: ^values} = Vec.new(values)
     end
 
+    test "with no values" do
+      %Vec{values: []} = Vec.new()
+    end
+
     test "with an invalid value", %{invalid_values: invalid_values} do
       {:error, :invalid_args} = Vec.new(invalid_values)
     end
