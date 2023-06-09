@@ -16,6 +16,8 @@ defmodule Soroban.Types.Map do
   @type t :: %__MODULE__{values: values}
 
   @impl true
+  def new(values \\ [])
+
   def new(values) when is_list(values) do
     with {:ok, values} <- validate_map_entry_values(values) do
       %__MODULE__{values: values}
@@ -34,7 +36,7 @@ defmodule Soroban.Types.Map do
   def to_sc_val(_error), do: {:error, :invalid_struct_map}
 
   @spec validate_map_entry_values(values :: values()) :: validation()
-  def validate_map_entry_values(values) do
+  defp validate_map_entry_values(values) do
     if Enum.all?(values, &is_struct(&1, MapEntry)),
       do: {:ok, values},
       else: {:error, :invalid_values}

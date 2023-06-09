@@ -21,6 +21,10 @@ defmodule Soroban.Types.MapTest do
       %Map{values: [^entry]} = Map.new([entry])
     end
 
+    test "with no values" do
+      %Map{values: []} = Map.new()
+    end
+
     test "with a nil value" do
       {:error, :invalid} = Map.new(nil)
     end

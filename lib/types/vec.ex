@@ -15,6 +15,8 @@ defmodule Soroban.Types.Vec do
   @type t :: %__MODULE__{values: values()}
 
   @impl true
+  def new(values \\ [])
+
   def new(values) when is_list(values) do
     with {:ok, values} <- validate_vec_values(values) do
       %__MODULE__{values: values}
@@ -33,6 +35,8 @@ defmodule Soroban.Types.Vec do
   def to_sc_val(_error), do: {:error, :invalid_struct_vec}
 
   @spec validate_vec_values(values :: values()) :: validation()
+  defp validate_vec_values([]), do: {:ok, []}
+
   defp validate_vec_values([value | _] = values) do
     if Enum.any?(values, fn val -> val.__struct__ != value.__struct__ end),
       do: {:error, :invalid_args},
