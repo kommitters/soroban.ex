@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.11.1 (09.06.2023)
+
+- [Allow to create empty maps and vecs](https://github.com/kommitters/soroban.ex/pull/95)
+
 ## 0.11.0 (06.06.2023)
 
 - [Soroban preview 9 support](https://github.com/kommitters/soroban.ex/issues/91)
