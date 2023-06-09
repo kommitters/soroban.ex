@@ -1,7 +1,7 @@
 defmodule Soroban.MixProject do
   use Mix.Project
 
-  @version "0.11.0"
+  @version "0.11.1"
   @github_url "https://github.com/kommitters/soroban.ex"
 
   def project do
