@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.11.2 (15.06.2023)
+
+- Update `stellar_sdk` dependency to `0.15.1` which fixes a bug related to the contract address.
+
 ## 0.11.1 (09.06.2023)
 
 - [Allow to create empty maps and vecs](https://github.com/kommitters/soroban.ex/pull/95)
