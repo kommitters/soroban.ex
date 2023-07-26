@@ -3,7 +3,6 @@ defmodule Soroban.Contract.InvokeContractFunction do
   `InvokeContractFunction` implementation to invoke authorized and not authorized contract functions.
   """
 
-  alias Stellar.TxBuild.SCVec
   alias Soroban.Contract.RPCCalls
   alias Soroban.RPC.SendTransactionResponse
 
@@ -113,7 +112,6 @@ defmodule Soroban.Contract.InvokeContractFunction do
     function_args = SCVec.new([contract_address, function_name] ++ function_args)
 
     host_function = HostFunction.new(invoke_contract: function_args)
-    IO.inspect(host_function)
     InvokeHostFunction.new(host_function: host_function, source_account: source_public_key)
   end
 

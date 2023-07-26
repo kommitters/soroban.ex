@@ -42,14 +42,15 @@ defmodule Soroban.RPC.CannedDeployInvokeHostFunctionClientImpl do
     {:ok,
      %{
        transaction_data:
-         "AAAAAwAAAAAAAAAAYvwdC9CRsrYcDdZWNGsqaNfTR8bywsjubQRHAlb8BfcAAAAG4avr0cYyEk0etiaStUgJ889XGSqUqZEZcCyR+ma87LIAAAAUAAAAB8zDhJ3ZTMHmdBjlVh/7d1HDdo+QI1ZXGmeRzBwVAoVXAAAAAQAAAAbhq+vRxjISTR62JpK1SAnzz1cZKpSpkRlwLJH6ZrzssgAAABUAAAAAAAAAAGL8HQvQkbK2HA3WVjRrKmjX00fG8sLI7m0ERwJW/AX3ACb/vgAAFcQAAAC0AAABrAAAAAAAAABUAAAAAA==",
+         "AAAAAAAAAAEAAAAHuoVwkiq7sFT5+6wPecWIC3zW3SXzDactjjMN9VUNzQIAAAAAAAAAAQAAAAYAAAABCxVDbaJHB3G3QY/sKHyvedJ1xrL+PdkNSwifbUKPRpAAAAAUAAAAAQAAAAAAAX/UAAACyAAAAKQAAADYAAAAAAAAACs=",
        events: nil,
        min_resource_fee: "79488",
        results: [
          %{
-           auth: nil,
-           events: nil,
-           xdr: "AAAAEAAAAAEAAAACAAAADwAAAAVIZWxsbwAAAAAAAA8AAAAFd29ybGQAAAA="
+           auth: [
+             "AAAAAAAAAAEAAAAAAAAAAAAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2hnv5IMztuFIUbDO484C3+P3zeMpMPFbUnPrAKdNylWQAAAAALqFcJIqu7BU+fusD3nFiAt81t0l8w2nLY4zDfVVDc0CAAAAAA=="
+           ],
+           xdr: "AAAAEgAAAAELFUNtokcHcbdBj+wofK950nXGsv492Q1LCJ9tQo9GkA=="
          }
        ],
        cost: %{cpu_insns: "1048713", mem_bytes: "1201148"},
@@ -78,7 +79,6 @@ defmodule Soroban.Contract.DeployContractTest do
 
   alias Soroban.RPC.{
     CannedDeployInvokeHostFunctionClientImpl,
-    GetTransactionResponse,
     SendTransactionResponse
   }
 
@@ -93,36 +93,14 @@ defmodule Soroban.Contract.DeployContractTest do
       Application.delete_env(:soroban, :http_client_impl)
     end)
 
-    transaction_response =
-      {:ok,
-       %GetTransactionResponse{
-         status: "SUCCESS",
-         latest_ledger: "150946",
-         latest_ledger_close_time: "1685742107",
-         oldest_ledger: "149507",
-         oldest_ledger_close_time: "1685734568",
-         ledger: "150944",
-         created_at: "1685742097",
-         application_order: 1,
-         fee_bump: nil,
-         envelope_xdr:
-           "AAAAAgAAAADJTnjlYcJxSKDat78jbEyDkVqo2uhpNX4BdBtqGrx+1gAAlawAAHZZAAAABQAAAAAAAAAAAAAAAQAAAAAAAAAYAAAAAQAAAAEAAAAAALoyVImX+BA9hnzcvjZB15srwetgXJatUEh9ZocODPIAAAAAu7tFu9Yxp9R0VVN9UR5MQC4n+Mp30RuookYeFXC+cBoAAAAAAAAAAQAAAAEAAAAHu7tFu9Yxp9R0VVN9UR5MQC4n+Mp30RuookYeFXC+cBoAAAABAAAABpH1zoYhpCfbiSVl8I4zaiIxRArMi/njt4Kv8B4yRHwZAAAAFAABQosAAAJwAAAAgAAAAKgAAAAAAAAAIQAAAAAAAAABGrx+1gAAAEAHFP8VSnrsm31ys5NM6XUmwiI5B2jyanvc61bZogwlOpSzsmhBZ7H/KivYWMkFYVfuWz/8d8bI4gnnhhU794MK",
-         result_xdr:
-           "AAAAAAAAkxEAAAAAAAAAAQAAAAAAAAAYAAAAAAAAAAEAAAANAAAAIJH1zoYhpCfbiSVl8I4zaiIxRArMi/njt4Kv8B4yRHwZAAAAAA==",
-         result_meta_xdr:
-           "AAAAAwAAAAIAAAADAAJNoAAAAAAAAAAAyU545WHCcUig2re/I2xMg5FaqNroaTV+AXQbahq8ftYAAAAXSHHC9gAAdlkAAAAEAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAwAAAAAAAk1cAAAAAGR6YLAAAAAAAAAAAQACTaAAAAAAAAAAAMlOeOVhwnFIoNq3vyNsTIORWqja6Gk1fgF0G2oavH7WAAAAF0hxwvYAAHZZAAAABQAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAMAAAAAAAJNoAAAAABkemIRAAAAAAAAAAEAAAABAAAAAAACTaAAAAAGkfXOhiGkJ9uJJWXwjjNqIjFECsyL+eO3gq/wHjJEfBkAAAAUAAAAEgAAAAC7u0W71jGn1HRVU31RHkxALif4ynfRG6iiRh4VcL5wGgAAAAAAAAAAAAAAAQAAAAAAAAAAAACTEQAAAAAAAAABAAAAAAAAABgAAAAAAAAAAQAAAA0AAAAgkfXOhiGkJ9uJJWXwjjNqIjFECsyL+eO3gq/wHjJEfBkAAAAA8zw74WneXsJqBG8/SUG46bIxecWJOKG+wKUGs2uXq1PLvEh1Deu4U1CTs96viKx/TP+HQlV2pY3iusdUrNtGFsj9bldqgCRW73HAbe0FoeotGowWup59ixILJHVoD1t5AAAAAA=="
-       }}
-
     %{
-      contract_id: "be4138b31cc5d0d9d91b53193d74316d254406794ec0f81d3ed40f4dc1b86a6e",
       source_public: "GBNDWIM7DPYZJ2RLJ3IESXBIO4C2SVF6PWZXS3DLODJSBQWBMKY5U4M3",
       source_secret: "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24",
       source_public_with_error: "GASY52GNGVKEMXSGH7VSCZQKRWQMIQD77J53KHXEBAV2BODWH6FDDZ3F",
       source_secret_with_error: "SDXKY6TSBNS7T2UJMHLIH4BWTP4EHR52HZTRNEKH33ML3ARJI2AKIPEC",
       wasm_id:
-        <<66, 208, 35, 40, 82, 63, 24, 62, 0, 161, 91, 200, 46, 101, 45, 24, 216, 140, 130, 169,
-          254, 217, 11, 131, 45, 9, 151, 5, 194, 188, 205, 26>>,
-      transaction_response: transaction_response
+        <<186, 133, 112, 146, 42, 187, 176, 84, 249, 251, 172, 15, 121, 197, 136, 11, 124, 214,
+          221, 37, 243, 13, 167, 45, 142, 51, 13, 245, 85, 13, 205, 2>>
     }
   end
 
@@ -151,12 +129,5 @@ defmodule Soroban.Contract.DeployContractTest do
              ),
              "AAAAAgAAAAAlj"
            )
-  end
-
-  test "get_contract_id/1", %{
-    transaction_response: transaction_response
-  } do
-    "91f5ce8621a427db892565f08e336a2231440acc8bf9e3b782aff01e32447c19" =
-      DeployContract.get_contract_id(transaction_response)
   end
 end

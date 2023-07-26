@@ -2,26 +2,23 @@ defmodule Soroban.Contract.UploadContractCode do
   @moduledoc """
   `UploadContractCode` implementation to upload contract from a wasm file.
   """
-  alias Soroban.RPC.{GetTransactionResponse, SendTransactionResponse}
+  alias Soroban.RPC.SendTransactionResponse
   alias Stellar.Horizon.Accounts
 
   alias Stellar.TxBuild.{
     Account,
     HostFunction,
-    HostFunctionArgs,
     InvokeHostFunction,
     SequenceNumber,
     Signature
   }
 
   alias Soroban.Contract.RPCCalls
-  alias StellarBase.XDR.TransactionResult
 
   @type wasm :: binary()
   @type envelope_xdr :: String.t()
   @type invoke_host_function :: InvokeHostFunction.t()
   @type account :: Account.t()
-  @type get_response :: {:ok, GetTransactionResponse.t()}
   @type send_response :: {:ok, SendTransactionResponse.t()}
   @type sequence_number :: SequenceNumber.t()
   @type signature :: Signature.t()
@@ -60,29 +57,9 @@ defmodule Soroban.Contract.UploadContractCode do
     end
   end
 
-  @spec get_wasm_id(get_response()) :: binary()
-  def get_wasm_id({:ok, %GetTransactionResponse{result_xdr: result_xdr}}) do
-    {%{
-       result: %{
-         value: %{
-           operations: [%{result: %{result: %{value: %{items: [%{value: %{value: value}}]}}}}]
-         }
-       }
-     }, ""} = result_xdr |> Base.decode64!() |> TransactionResult.decode_xdr!()
-
-    value
-  end
-
   @spec create_host_function_upload_op(code :: wasm()) :: invoke_host_function()
   defp create_host_function_upload_op(code) do
-    function_args =
-      HostFunctionArgs.new(
-        type: :upload,
-        code: code
-      )
-
-    function = HostFunction.new(args: function_args)
-
-    InvokeHostFunction.new(functions: [function])
+    host_function = HostFunction.new(upload_contract_wasm: code)
+    InvokeHostFunction.new(host_function: host_function)
   end
 end
