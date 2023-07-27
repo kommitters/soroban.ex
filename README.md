@@ -473,7 +473,7 @@ The deployment and invocation of Soroban smart contracts is done through the `So
 
 **Parameters**
 
-- `contract_address`: Identifier of the contract to be invoked.
+- `contract_address`: Identifier of the contract to be invoked, encoded as `StrKey`.
 - `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
 - `function_name`: String indicating the name of the function to be invoked.
 - `function_args`: List of `Soroban.Types` representing the arguments required by the indicated function (`function_name`). They should be provided in the specific order expected by the function.
@@ -532,7 +532,10 @@ Contract.invoke(contract_address, source_secret_key, function_name, function_arg
     }}
   ```
 
-- When the function invoker is not the function authorizer.(WIP in Stellar_SDK)
+- When the function invoker is not the function authorizer.
+
+  > **Note**
+  > The support for this use case is currently in progress in the Stellar SDK.
 
   ```elixir
   alias Soroban.Contract
@@ -665,7 +668,7 @@ This XDR is required by wallets to sign transactions before they can be submitte
 
 **Parameters**
 
-- `contract_address`: Identifier of the contract to be invoked.
+- `contract_address`: Identifier of the contract to be invoked, encoded as `StrKey`.
 - `source_public_key`: Public key of the function invoker responsible for signing the transaction.
 - `function_name`: String value indicating the name of the function to be invoked.
 - `function_args`: List of `Soroban.Types` representing the arguments required by the indicated function (`function_name`). They should be provided in the specific order expected by the function.

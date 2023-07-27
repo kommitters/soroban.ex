@@ -21,13 +21,13 @@ defmodule Soroban.Contract.InvokeContractFunction do
 
   @type account :: Account.t()
   @type function_args :: list(struct())
-  @type auth_secret_key :: binary() | nil
+  @type auth_secret_key :: String.t() | nil
   @type invoke_host_function :: InvokeHostFunction.t()
   @type envelope_xdr :: String.t()
   @type function_name :: String.t()
-  @type contract_address :: binary()
-  @type source_secret_key :: binary()
-  @type source_public_key :: binary()
+  @type contract_address :: String.t()
+  @type source_secret_key :: String.t()
+  @type source_public_key :: String.t()
   @type send_response :: {:ok, SendTransactionResponse.t()}
   @type signature :: Signature.t()
   @type sequence_number :: SequenceNumber.t()
