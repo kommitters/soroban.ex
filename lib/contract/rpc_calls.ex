@@ -10,8 +10,6 @@ defmodule Soroban.Contract.RPCCalls do
   alias Stellar.TxBuild.{
     Account,
     BaseFee,
-    ContractAuth,
-    HostFunction,
     InvokeHostFunction,
     SequenceNumber,
     Signature
@@ -171,30 +169,11 @@ defmodule Soroban.Contract.RPCCalls do
        do: invoke_host_function_op
 
   defp set_host_function_auth(
-         %InvokeHostFunction{functions: functions} = invoke_host_function_op,
+         %InvokeHostFunction{} = invoke_host_function_op,
          auth,
          nil
-       ) do
-    functions_with_auth =
-      Enum.map(functions, fn function -> HostFunction.set_auth(function, auth) end)
-
-    invoke_host_function_op = %{invoke_host_function_op | functions: functions_with_auth}
-    invoke_host_function_op
-  end
-
-  defp set_host_function_auth(
-         %InvokeHostFunction{functions: functions} = invoke_host_function_op,
-         [auth],
-         auth_secret_key
-       ) do
-    authorizations = ContractAuth.sign_xdr(auth, auth_secret_key)
-
-    functions_with_auth =
-      Enum.map(functions, fn function -> HostFunction.set_auth(function, [authorizations]) end)
-
-    invoke_host_function_op = %{invoke_host_function_op | functions: functions_with_auth}
-    invoke_host_function_op
-  end
+       ),
+       do: InvokeHostFunction.set_auth(invoke_host_function_op, auth)
 
   # This function is needed since when the function invoker is not the function authorizer
   # the transaction data returns min_resource_fee and instructions with wrong values.

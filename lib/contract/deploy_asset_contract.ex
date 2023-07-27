@@ -2,21 +2,22 @@ defmodule Soroban.Contract.DeployAssetContract do
   @moduledoc """
   `DeployAssetContract` implementation to deploy contract from an Asset.
   """
-  alias Soroban.RPC.{GetTransactionResponse, SendTransactionResponse}
+  alias Soroban.RPC.SendTransactionResponse
   alias Stellar.Horizon.Accounts
 
   alias Stellar.TxBuild.{
     Account,
     Asset,
+    ContractExecutable,
+    ContractIDPreimage,
+    CreateContractArgs,
     HostFunction,
-    HostFunctionArgs,
     InvokeHostFunction,
     SequenceNumber,
     Signature
   }
 
   alias Soroban.Contract.RPCCalls
-  alias StellarBase.XDR.TransactionResult
 
   @type asset :: Asset.t()
   @type asset_code :: binary()
@@ -24,7 +25,6 @@ defmodule Soroban.Contract.DeployAssetContract do
   @type invoke_host_function :: InvokeHostFunction.t()
   @type secret_key :: binary()
   @type send_response :: {:ok, SendTransactionResponse.t()}
-  @type transaction_response :: {:ok, GetTransactionResponse.t()}
 
   @spec deploy(asset_code :: asset_code(), secret_key :: secret_key()) :: send_response()
   def deploy(asset_code, secret_key) do
@@ -63,28 +63,18 @@ defmodule Soroban.Contract.DeployAssetContract do
     end
   end
 
-  @spec get_contract_id(transaction_response :: transaction_response()) :: binary()
-  def get_contract_id({:ok, %GetTransactionResponse{result_xdr: result_xdr}}) do
-    {%{
-       result: %{
-         value: %{
-           operations: [%{result: %{result: %{value: %{items: [%{value: %{value: value}}]}}}}]
-         }
-       }
-     }, ""} = result_xdr |> Base.decode64!() |> TransactionResult.decode_xdr!()
-
-    Base.encode16(value, case: :lower)
-  end
-
   @spec create_host_function_deploy_op(asset :: asset()) :: invoke_host_function()
   defp create_host_function_deploy_op(asset) do
-    function_args =
-      HostFunctionArgs.new(
-        type: :create,
-        asset: asset
+    contract_id_preimage = ContractIDPreimage.new(from_asset: asset)
+    contract_executable = ContractExecutable.new(:token)
+
+    create_contract_args =
+      CreateContractArgs.new(
+        contract_id_preimage: contract_id_preimage,
+        contract_executable: contract_executable
       )
 
-    function = HostFunction.new(args: function_args)
-    InvokeHostFunction.new(functions: [function])
+    host_function = HostFunction.new(create_contract: create_contract_args)
+    InvokeHostFunction.new(host_function: host_function)
   end
 end

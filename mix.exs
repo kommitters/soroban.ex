@@ -44,7 +44,7 @@ defmodule Soroban.MixProject do
       {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.29", only: :dev, runtime: false},
       {:excoveralls, "~> 0.15", only: :test},
-      {:stellar_sdk, "~> 0.15"},
+      {:stellar_sdk, "~> 0.16"},
       {:hackney, "~> 1.18"}
     ]
   end

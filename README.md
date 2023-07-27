@@ -473,7 +473,7 @@ The deployment and invocation of Soroban smart contracts is done through the `So
 
 **Parameters**
 
-- `contract_id`: Identifier of the contract to be invoked.
+- `contract_address`: Identifier of the contract to be invoked, encoded as `StrKey`.
 - `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
 - `function_name`: String indicating the name of the function to be invoked.
 - `function_args`: List of `Soroban.Types` representing the arguments required by the indicated function (`function_name`). They should be provided in the specific order expected by the function.
@@ -485,13 +485,13 @@ The deployment and invocation of Soroban smart contracts is done through the `So
 alias Soroban.Contract
 alias Soroban.Types.String
 
-contract_id = "5099ae2fa8453c363a9a71cdf8198ca258d12fa44bb5dc68ae0225595f461d37"
+contract_address = "CD3HNKU3ERTEYLBBBVTSOYE4ZL2ZWV7NHLQIZRRKC4CBNMZXC7ISBXHV"
 source_secret_key = "SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK"
 function_name = "hello"
 
 function_args = [String.new("world")]
 
-Contract.invoke(contract_id, source_secret_key, function_name, function_args)
+Contract.invoke(contract_address, source_secret_key, function_name, function_args)
 
 {:ok,
   %Soroban.RPC.SendTransactionResponse{
@@ -511,7 +511,7 @@ Contract.invoke(contract_id, source_secret_key, function_name, function_args)
   alias Soroban.Contract
   alias Soroban.Types.{Address, UInt128}
 
-  contract_id = "5099ae2fa8453c363a9a71cdf8198ca258d12fa44bb5dc68ae0225595f461d37"
+  contract_address = "CD3HNKU3ERTEYLBBBVTSOYE4ZL2ZWV7NHLQIZRRKC4CBNMZXC7ISBXHV"
   source_secret_key = "SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK"
   function_name = "inc"
 
@@ -520,7 +520,7 @@ Contract.invoke(contract_id, source_secret_key, function_name, function_args)
     UInt128.new(2)
   ]
 
-  Contract.invoke(contract_id, source_secret_key, function_name, function_args)
+  Contract.invoke(contract_address, source_secret_key, function_name, function_args)
 
   {:ok,
     %Soroban.RPC.SendTransactionResponse{
@@ -534,11 +534,14 @@ Contract.invoke(contract_id, source_secret_key, function_name, function_args)
 
 - When the function invoker is not the function authorizer.
 
+  > **Note**
+  > The support for this use case is currently in progress in the Stellar SDK.
+
   ```elixir
   alias Soroban.Contract
   alias Soroban.Types.{Address, Int128}
 
-  contract_id = "5099ae2fa8453c363a9a71cdf8198ca258d12fa44bb5dc68ae0225595f461d37"
+  contract_address = "CD3HNKU3ERTEYLBBBVTSOYE4ZL2ZWV7NHLQIZRRKC4CBNMZXC7ISBXHV"
   source_secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
   function_name = "swap"
 
@@ -550,7 +553,7 @@ Contract.invoke(contract_id, source_secret_key, function_name, function_args)
 
   auth_secret_key = "SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK"
 
-  Contract.invoke(contract_id, source_secret_key, function_name, function_args, auth_secret_key)
+  Contract.invoke(contract_address, source_secret_key, function_name, function_args, auth_secret_key)
 
   {:ok,
     %Soroban.RPC.SendTransactionResponse{
@@ -625,11 +628,6 @@ secret_key = "SCA..."
     error_result_xdr: nil
   }}
 
-hash
-|> RPC.get_transaction()
-|> DeployContract.get_contract_id()
-
-"9227..."
 ```
 
 ##### Deploy Asset Contract
@@ -658,11 +656,6 @@ secret_key = "SCA..."
   error_result_xdr: nil
 }}
 
-hash
-|> RPC.get_transaction()
-|> DeployAssetContract.get_contract_id()
-
-"c624..."
 ```
 
 ### Retrieve unsigned Transaction Envelope XDR
@@ -675,7 +668,7 @@ This XDR is required by wallets to sign transactions before they can be submitte
 
 **Parameters**
 
-- `contract_id`: Identifier of the contract to be invoked.
+- `contract_address`: Identifier of the contract to be invoked, encoded as `StrKey`.
 - `source_public_key`: Public key of the function invoker responsible for signing the transaction.
 - `function_name`: String value indicating the name of the function to be invoked.
 - `function_args`: List of `Soroban.Types` representing the arguments required by the indicated function (`function_name`). They should be provided in the specific order expected by the function.
@@ -684,14 +677,14 @@ This XDR is required by wallets to sign transactions before they can be submitte
 alias Soroban.Contract
 alias Soroban.Types.String
 
-contract_id = "5099ae2fa8453c363a9a71cdf8198ca258d12fa44bb5dc68ae0225595f461d37"
+contract_address = "CD3HNKU3ERTEYLBBBVTSOYE4ZL2ZWV7NHLQIZRRKC4CBNMZXC7ISBXHV"
 source_public_key = "GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"
 function_name = "hello"
 
 function_args = [String.new("world")]
 
 Contract.retrieve_unsigned_xdr_to_invoke(
-  contract_id,
+  contract_address,
   source_public_key,
   function_name,
   function_args

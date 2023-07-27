@@ -2,25 +2,28 @@ defmodule Soroban.Contract.DeployContract do
   @moduledoc """
   `DeployContract` implementation to deploy contract from a wasm file.
   """
-  alias Soroban.RPC.{GetTransactionResponse, SendTransactionResponse}
+  alias Soroban.RPC.SendTransactionResponse
   alias Stellar.Horizon.Accounts
 
   alias Stellar.TxBuild.{
     Account,
+    ContractExecutable,
+    ContractIDPreimage,
+    ContractIDPreimageFromAddress,
+    CreateContractArgs,
     HostFunction,
-    HostFunctionArgs,
     InvokeHostFunction,
+    SCAddress,
     SequenceNumber,
     Signature
   }
 
   alias Soroban.Contract.RPCCalls
-  alias StellarBase.XDR.TransactionResult
 
   @type envelope_xdr :: String.t()
+  @type public_key :: String.t()
   @type wasm_id :: binary()
   @type invoke_host_function :: InvokeHostFunction.t()
-  @type get_response :: {:ok, GetTransactionResponse.t()}
   @type send_response :: {:ok, SendTransactionResponse.t()}
 
   @spec deploy(wasm_id :: wasm_id(), secret_key :: binary()) :: send_response()
@@ -31,7 +34,7 @@ defmodule Soroban.Contract.DeployContract do
          %SequenceNumber{} = sequence_number <- SequenceNumber.new(seq_num),
          %Signature{} = signature <- Signature.new(keypair),
          %InvokeHostFunction{} = invoke_host_function_op <-
-           create_host_function_deploy_op(wasm_id) do
+           create_host_function_deploy_op(wasm_id, public_key) do
       invoke_host_function_op
       |> RPCCalls.simulate(source_account, sequence_number)
       |> RPCCalls.send_transaction(
@@ -52,35 +55,30 @@ defmodule Soroban.Contract.DeployContract do
          %Account{} = source_account <- Account.new(source_public_key),
          %SequenceNumber{} = sequence_number <- SequenceNumber.new(seq_num),
          %InvokeHostFunction{} = invoke_host_function_op <-
-           create_host_function_deploy_op(wasm_id) do
+           create_host_function_deploy_op(wasm_id, source_public_key) do
       invoke_host_function_op
       |> RPCCalls.simulate(source_account, sequence_number)
       |> RPCCalls.retrieve_unsigned_xdr(source_account, sequence_number, invoke_host_function_op)
     end
   end
 
-  @spec get_contract_id(get_response()) :: binary()
-  def get_contract_id({:ok, %GetTransactionResponse{result_xdr: result_xdr}}) do
-    {%{
-       result: %{
-         value: %{
-           operations: [%{result: %{result: %{value: %{items: [%{value: %{value: value}}]}}}}]
-         }
-       }
-     }, ""} = result_xdr |> Base.decode64!() |> TransactionResult.decode_xdr!()
+  @spec create_host_function_deploy_op(wasm_id :: wasm_id(), public_key :: public_key()) ::
+          invoke_host_function()
+  defp create_host_function_deploy_op(wasm_id, public_key) do
+    address = SCAddress.new(public_key)
+    salt = :crypto.strong_rand_bytes(32)
+    address_preimage = ContractIDPreimageFromAddress.new(address: address, salt: salt)
+    contract_id_preimage = ContractIDPreimage.new(from_address: address_preimage)
+    contract_executable = ContractExecutable.new(wasm_ref: wasm_id)
 
-    Base.encode16(value, case: :lower)
-  end
-
-  @spec create_host_function_deploy_op(wasm_id :: wasm_id()) :: invoke_host_function()
-  defp create_host_function_deploy_op(wasm_id) do
-    function_args =
-      HostFunctionArgs.new(
-        type: :create,
-        wasm_id: wasm_id
+    create_contract_args =
+      CreateContractArgs.new(
+        contract_id_preimage: contract_id_preimage,
+        contract_executable: contract_executable
       )
 
-    function = HostFunction.new(args: function_args)
-    InvokeHostFunction.new(functions: [function])
+    host_function = HostFunction.new(create_contract: create_contract_args)
+
+    InvokeHostFunction.new(host_function: host_function)
   end
 end
