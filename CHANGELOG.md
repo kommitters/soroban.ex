@@ -2,7 +2,7 @@
 
 ## 0.12.0 (27.07.2023)
 
-- [Enable key use cases for deployment and invocation](https://github.com/kommitters/soroban.ex/issues/102)
+- [Soroban Preview 10 support: Enable key use cases for deployment and invocation](https://github.com/kommitters/soroban.ex/issues/102).
 
 ## 0.11.2 (15.06.2023)
 
