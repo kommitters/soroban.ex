@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.12.0 (27.07.2023)
+
+- [Enable key use cases for deployment and invocation](https://github.com/kommitters/soroban.ex/issues/102)
+
 ## 0.11.2 (15.06.2023)
 
 - Update `stellar_sdk` dependency to `0.15.1` which fixes a bug related to the contract address.
