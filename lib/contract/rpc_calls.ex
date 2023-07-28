@@ -135,7 +135,7 @@ defmodule Soroban.Contract.RPCCalls do
       )
 
     %BaseFee{fee: base_fee} = BaseFee.new()
-    fee = BaseFee.new(base_fee + min_resource_fee)
+    fee = BaseFee.new(base_fee + min_resource_fee + round(min_resource_fee * 0.01))
 
     {:ok, envelope_xdr} =
       source_account
