@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.12.0 (27.07.2023)
+## 0.12.0 (28.07.2023)
 
 - [Soroban Preview 10 support: Enable key use cases for deployment and invocation](https://github.com/kommitters/soroban.ex/issues/102).
 
