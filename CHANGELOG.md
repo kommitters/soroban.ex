@@ -3,6 +3,7 @@
 ## 0.12.0 (28.07.2023)
 
 - [Soroban Preview 10 support: Enable key use cases for deployment and invocation](https://github.com/kommitters/soroban.ex/issues/102).
+- [Update erlef/setup-beam action in CD](https://github.com/kommitters/soroban.ex/pull/109).
 
 ## 0.11.2 (15.06.2023)
 
