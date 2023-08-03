@@ -3,7 +3,13 @@ defmodule Soroban.Contract.RPCCalls do
   Exposes the functions to execute the simulate and send_transaction endpoints
   """
   alias Soroban.RPC
-  alias Soroban.RPC.{SendTransactionResponse, SimulateTransactionResponse}
+
+  alias Soroban.RPC.{
+    GetLatestLedgerResponse,
+    SendTransactionResponse,
+    SimulateTransactionResponse
+  }
+
   alias Stellar.TxBuild
   alias StellarBase.XDR.{SorobanTransactionData, UInt32}
 
@@ -12,11 +18,12 @@ defmodule Soroban.Contract.RPCCalls do
     BaseFee,
     InvokeHostFunction,
     SequenceNumber,
-    Signature
+    Signature,
+    SorobanAuthorizationEntry
   }
 
   @type account :: Account.t()
-  @type auth :: list(String.t()) | nil
+  @type auths :: list(String.t()) | nil
   @type auth_secret_key :: String.t() | nil
   @type envelope_xdr :: String.t()
   @type invoke_host_function :: InvokeHostFunction.t()
@@ -71,31 +78,31 @@ defmodule Soroban.Contract.RPCCalls do
         sequence_number,
         signature,
         invoke_host_function_op,
-        auth_secret_key
+        auth_secret_keys
       ) do
-    invoke_host_function_op =
-      set_host_function_auth(invoke_host_function_op, auth, auth_secret_key)
+    with %InvokeHostFunction{} = invoke_host_function_op <-
+           set_host_function_auth(invoke_host_function_op, auth, auth_secret_keys) do
+      {transaction_data, min_resource_fee} =
+        process_transaction_response(
+          transaction_data,
+          String.to_integer(min_resource_fee),
+          auth_secret_keys
+        )
 
-    {transaction_data, min_resource_fee} =
-      process_transaction_response(
-        transaction_data,
-        String.to_integer(min_resource_fee),
-        auth_secret_key
-      )
+      %BaseFee{fee: base_fee} = BaseFee.new()
+      fee = BaseFee.new(base_fee + min_resource_fee + round(min_resource_fee * 0.01))
 
-    %BaseFee{fee: base_fee} = BaseFee.new()
-    fee = BaseFee.new(base_fee + min_resource_fee)
+      {:ok, envelope_xdr} =
+        source_account
+        |> TxBuild.new(sequence_number: sequence_number)
+        |> TxBuild.add_operation(invoke_host_function_op)
+        |> Stellar.TxBuild.set_base_fee(fee)
+        |> Stellar.TxBuild.set_soroban_data(transaction_data)
+        |> TxBuild.sign(signature)
+        |> TxBuild.envelope()
 
-    {:ok, envelope_xdr} =
-      source_account
-      |> TxBuild.new(sequence_number: sequence_number)
-      |> TxBuild.add_operation(invoke_host_function_op)
-      |> Stellar.TxBuild.set_base_fee(fee)
-      |> Stellar.TxBuild.set_soroban_data(transaction_data)
-      |> TxBuild.sign(signature)
-      |> TxBuild.envelope()
-
-    RPC.send_transaction(envelope_xdr)
+      RPC.send_transaction(envelope_xdr)
+    end
   end
 
   def send_transaction(
@@ -158,7 +165,7 @@ defmodule Soroban.Contract.RPCCalls do
 
   @spec set_host_function_auth(
           invoke_host_function :: invoke_host_function(),
-          auth :: auth(),
+          auths :: auths(),
           auth_secret_key :: auth_secret_key()
         ) :: invoke_host_function() | {:error, atom()}
   defp set_host_function_auth(
@@ -170,10 +177,31 @@ defmodule Soroban.Contract.RPCCalls do
 
   defp set_host_function_auth(
          %InvokeHostFunction{} = invoke_host_function_op,
-         auth,
+         auths,
          nil
        ),
-       do: InvokeHostFunction.set_auth(invoke_host_function_op, auth)
+       do: InvokeHostFunction.set_auth(invoke_host_function_op, auths)
+
+  defp set_host_function_auth(
+         %InvokeHostFunction{} = invoke_host_function_op,
+         auths,
+         auth_secret_keys
+       )
+       when length(auths) == length(auth_secret_keys) do
+    {:ok, %GetLatestLedgerResponse{sequence: latest_ledger}} = RPC.get_latest_ledger()
+
+    authorizations =
+      auth_secret_keys
+      |> Enum.zip(auths)
+      |> Enum.map(fn {auth_secret_key, auth} ->
+        SorobanAuthorizationEntry.sign_xdr(auth, auth_secret_key, latest_ledger)
+      end)
+
+    InvokeHostFunction.set_auth(invoke_host_function_op, authorizations)
+  end
+
+  defp set_host_function_auth(_invoke_host_function_op, _auths, _auth_secret_keys),
+    do: {:error, :invalid_auth_secret_keys_length}
 
   # This function is needed since when the function invoker is not the function authorizer
   # the transaction data returns min_resource_fee and instructions with wrong values.
