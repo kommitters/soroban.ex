@@ -96,8 +96,8 @@ defmodule Soroban.Contract.RPCCalls do
         source_account
         |> TxBuild.new(sequence_number: sequence_number)
         |> TxBuild.add_operation(invoke_host_function_op)
-        |> Stellar.TxBuild.set_base_fee(fee)
-        |> Stellar.TxBuild.set_soroban_data(transaction_data)
+        |> TxBuild.set_base_fee(fee)
+        |> TxBuild.set_soroban_data(transaction_data)
         |> TxBuild.sign(signature)
         |> TxBuild.envelope()
 
@@ -148,8 +148,8 @@ defmodule Soroban.Contract.RPCCalls do
       source_account
       |> TxBuild.new(sequence_number: sequence_number)
       |> TxBuild.add_operation(invoke_host_function_op)
-      |> Stellar.TxBuild.set_base_fee(fee)
-      |> Stellar.TxBuild.set_soroban_data(transaction_data)
+      |> TxBuild.set_base_fee(fee)
+      |> TxBuild.set_soroban_data(transaction_data)
       |> TxBuild.envelope()
 
     envelope_xdr

@@ -15,7 +15,7 @@ defmodule Soroban.Contract do
                 source_secret_key,
                 function_name,
                 function_args \\ [],
-                auth_secret_key \\ []
+                auth_secret_keys \\ []
               ),
               to: InvokeContractFunction,
               as: :invoke
