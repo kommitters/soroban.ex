@@ -535,25 +535,35 @@ Contract.invoke(contract_address, source_secret_key, function_name, function_arg
 - When the function invoker is not the function authorizer.
 
   > **Note**
-  > The support for this use case is currently in progress in the Stellar SDK.
+  > This operation will not succeed if one of the `auth_secret_keys` is the same as the `source_secret_key`, because the simulate_transaction will return that auth as a `SOROBAN_CREDENTIALS_SOURCE_ACCOUNT` type.
 
   ```elixir
   alias Soroban.Contract
   alias Soroban.Types.{Address, Int128}
 
-  contract_address = "CD3HNKU3ERTEYLBBBVTSOYE4ZL2ZWV7NHLQIZRRKC4CBNMZXC7ISBXHV"
+  contract_address = "CD43KXYLGORRXFATEUD3OKOQG4PIKLFL55FRETM3CPHI2WUF2NMFIEUM"
   source_secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
   function_name = "swap"
 
   function_args = [
     Address.new("GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"),
+    Address.new("GDAH3LPNC32U2HLJ4UKDSG2HSJN65XTMZKAZII4Z4NOAFFWJTI2PUN5W"),
     Int128.new(100),
     Int128.new(4500)
   ]
 
-  auth_secret_key = "SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK"
+  auth_secret_keys = [
+    "SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK",
+    "SDLOYUOMX67YX6NK7TZLWTGYU3V4FIEBL5RFRX36EYDZ4OM46VSJXV7C"
+  ]
 
-  Contract.invoke(contract_address, source_secret_key, function_name, function_args, auth_secret_key)
+  Contract.invoke(
+    contract_address,
+    source_secret_key,
+    function_name,
+    function_args,
+    auth_secret_keys
+  )
 
   {:ok,
     %Soroban.RPC.SendTransactionResponse{

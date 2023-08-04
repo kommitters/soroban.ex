@@ -21,7 +21,7 @@ defmodule Soroban.Contract.InvokeContractFunction do
 
   @type account :: Account.t()
   @type function_args :: list(struct())
-  @type auth_secret_key :: String.t() | nil
+  @type auth_secret_keys :: list(String.t())
   @type invoke_host_function :: InvokeHostFunction.t()
   @type envelope_xdr :: String.t()
   @type function_name :: String.t()
@@ -38,14 +38,14 @@ defmodule Soroban.Contract.InvokeContractFunction do
           source_secret_key :: source_secret_key(),
           function_name :: function_name(),
           function_args :: function_args(),
-          auth_secret_key :: auth_secret_key()
+          auth_secret_keys :: auth_secret_keys()
         ) :: send_response()
   def invoke(
         contract_address,
         source_secret_key,
         function_name,
         function_args,
-        auth_secret_key \\ nil
+        auth_secret_keys \\ []
       ) do
     with {public_key, _secret} = keypair <- Stellar.KeyPair.from_secret_seed(source_secret_key),
          {:ok, seq_num} <- Accounts.fetch_next_sequence_number(public_key),
@@ -62,7 +62,7 @@ defmodule Soroban.Contract.InvokeContractFunction do
         sequence_number,
         signature,
         invoke_host_function_op,
-        auth_secret_key
+        auth_secret_keys
       )
     end
   end

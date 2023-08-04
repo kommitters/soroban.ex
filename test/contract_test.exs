@@ -89,7 +89,7 @@ defmodule Soroban.ContractTest do
       # GDDZSR7Y6TIMSBM72WYVGUH6FB6P7MF6Y6DU7MCNAPFRXI5GCWGWWFRS
       function_name: "function_name",
       function_args: [Symbol.new("Arg")],
-      auth_secret_key: "SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK",
+      auth_secret_keys: ["SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK"],
       asset_code: :ZZZ,
       wasm:
         <<0, 97, 115, 109, 1, 0, 0, 0, 1, 65, 12, 96, 1, 126, 1, 126, 96, 2, 126, 126, 1, 126, 96,
@@ -153,8 +153,8 @@ defmodule Soroban.ContractTest do
       )
   end
 
-  test "invoke/5 with args and auth_secret_key", %{
-    auth_secret_key: auth_secret_key,
+  test "invoke/5 with args and auth_secret_keys", %{
+    auth_secret_keys: auth_secret_keys,
     contract_id: contract_id,
     source_secret: source_secret,
     function_name: function_name,
@@ -173,7 +173,7 @@ defmodule Soroban.ContractTest do
         source_secret,
         function_name,
         function_args,
-        auth_secret_key
+        auth_secret_keys
       )
   end
 
