@@ -5,6 +5,7 @@ defmodule Soroban.Contract.InvokeContractFunction do
 
   alias Soroban.Contract.RPCCalls
   alias Soroban.RPC.SendTransactionResponse
+  alias Soroban.Types.Address
 
   alias Stellar.Horizon.Accounts
 
@@ -12,7 +13,6 @@ defmodule Soroban.Contract.InvokeContractFunction do
     Account,
     HostFunction,
     InvokeHostFunction,
-    SCAddress,
     SCVal,
     SCVec,
     SequenceNumber,
@@ -105,8 +105,8 @@ defmodule Soroban.Contract.InvokeContractFunction do
   defp create_host_function_op(contract_address, function_name, function_args, source_public_key) do
     contract_address =
       contract_address
-      |> SCAddress.new()
-      |> (&SCVal.new(address: &1)).()
+      |> Address.new()
+      |> Address.to_sc_val()
 
     function_name = SCVal.new(symbol: function_name)
     function_args = SCVec.new([contract_address, function_name] ++ function_args)

@@ -83,10 +83,9 @@ defmodule Soroban.ContractTest do
     end)
 
     %{
-      contract_id: "CD3HNKU3ERTEYLBBBVTSOYE4ZL2ZWV7NHLQIZRRKC4CBNMZXC7ISBXHV",
+      contract_address: "CD3HNKU3ERTEYLBBBVTSOYE4ZL2ZWV7NHLQIZRRKC4CBNMZXC7ISBXHV",
       source_public: "GBNDWIM7DPYZJ2RLJ3IESXBIO4C2SVF6PWZXS3DLODJSBQWBMKY5U4M3",
       source_secret: "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24",
-      # GDDZSR7Y6TIMSBM72WYVGUH6FB6P7MF6Y6DU7MCNAPFRXI5GCWGWWFRS
       function_name: "function_name",
       function_args: [Symbol.new("Arg")],
       auth_secret_keys: ["SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK"],
@@ -98,6 +97,9 @@ defmodule Soroban.ContractTest do
       wasm_id:
         <<66, 208, 35, 40, 82, 63, 24, 62, 0, 161, 91, 200, 46, 101, 45, 24, 216, 140, 130, 169,
           254, 217, 11, 131, 45, 9, 151, 5, 194, 188, 205, 26>>,
+      contract_hash: "067eb7ba419edd3e946e08eb17a81fbe1e850e690ed7692160875c2b65b45f21",
+      keys: [{:temporary, "Tmp"}, {:persistent, "Per"}],
+      ledgers_to_bump: 100_000,
       xdr_envelope:
         "AAAAAgAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gABOf8ABPEIAAAAPgAAAAAAAAAAAAAAAQAAAAEAAAAAWjshnxvxlOorTtBJXCh3BalUvn2zeWxrcNMgwsFisdoAAAAYAAAAAAAAAAMAAAASAAAAAfZ2qpskZkwsIQ1nJ2CcyvWbV+064IzGKhcEFrM3F9EgAAAADwAAAA1mdW5jdGlvbl9uYW1lAAAAAAAADwAAAANBcmcAAAAAAAAAAAEAAAAAAAAAAgAAAAYAAAAB9naqmyRmTCwhDWcnYJzK9ZtX7TrgjMYqFwQWszcX0SAAAAAUAAAAAQAAAAAAAAAHmDXys1KuBimD87u2AiUG/jb5CqOkQW/qASpb6gMVRlsAAAAAAAAAAAA1i+AAABQ4AAAAAAAAAPAAAAAAAAAALwAAAAA=",
       no_args_xdr_envelope:
@@ -112,7 +114,7 @@ defmodule Soroban.ContractTest do
   end
 
   test "invoke/5", %{
-    contract_id: contract_id,
+    contract_address: contract_address,
     source_secret: source_secret,
     function_name: function_name
   } do
@@ -125,14 +127,14 @@ defmodule Soroban.ContractTest do
        error_result_xdr: nil
      }} =
       Contract.invoke(
-        contract_id,
+        contract_address,
         source_secret,
         function_name
       )
   end
 
   test "invoke/5 with args", %{
-    contract_id: contract_id,
+    contract_address: contract_address,
     source_secret: source_secret,
     function_name: function_name,
     function_args: function_args
@@ -146,7 +148,7 @@ defmodule Soroban.ContractTest do
        error_result_xdr: nil
      }} =
       Contract.invoke(
-        contract_id,
+        contract_address,
         source_secret,
         function_name,
         function_args
@@ -155,7 +157,7 @@ defmodule Soroban.ContractTest do
 
   test "invoke/5 with args and auth_secret_keys", %{
     auth_secret_keys: auth_secret_keys,
-    contract_id: contract_id,
+    contract_address: contract_address,
     source_secret: source_secret,
     function_name: function_name,
     function_args: function_args
@@ -169,7 +171,7 @@ defmodule Soroban.ContractTest do
        error_result_xdr: nil
      }} =
       Contract.invoke(
-        contract_id,
+        contract_address,
         source_secret,
         function_name,
         function_args,
@@ -231,8 +233,70 @@ defmodule Soroban.ContractTest do
       )
   end
 
+  test "bump_contract/3", %{
+    contract_address: contract_address,
+    source_secret: source_secret,
+    ledgers_to_bump: ledgers_to_bump
+  } do
+    {:ok,
+     %SendTransactionResponse{
+       status: "PENDING",
+       hash: "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4",
+       latest_ledger: "476420",
+       latest_ledger_close_time: "1683150612",
+       error_result_xdr: nil
+     }} =
+      Contract.bump_contract(
+        contract_address,
+        source_secret,
+        ledgers_to_bump
+      )
+  end
+
+  test "bump_contract_wasm/3", %{
+    contract_hash: contract_hash,
+    source_secret: source_secret,
+    ledgers_to_bump: ledgers_to_bump
+  } do
+    {:ok,
+     %SendTransactionResponse{
+       status: "PENDING",
+       hash: "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4",
+       latest_ledger: "476420",
+       latest_ledger_close_time: "1683150612",
+       error_result_xdr: nil
+     }} =
+      Contract.bump_contract_wasm(
+        contract_hash,
+        source_secret,
+        ledgers_to_bump
+      )
+  end
+
+  test "bump_contract_keys/4", %{
+    contract_address: contract_address,
+    source_secret: source_secret,
+    ledgers_to_bump: ledgers_to_bump,
+    keys: keys
+  } do
+    {:ok,
+     %SendTransactionResponse{
+       status: "PENDING",
+       hash: "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4",
+       latest_ledger: "476420",
+       latest_ledger_close_time: "1683150612",
+       error_result_xdr: nil
+     }} =
+      Contract.bump_contract_keys(
+        contract_address,
+        source_secret,
+        ledgers_to_bump,
+        keys
+      )
+  end
+
   test "retrieve_unsigned_xdr_to_invoke/4", %{
-    contract_id: contract_id,
+    contract_address: contract_address,
     source_public: source_public,
     function_name: function_name,
     function_args: function_args,
@@ -240,7 +304,7 @@ defmodule Soroban.ContractTest do
   } do
     ^xdr_envelope =
       Contract.retrieve_unsigned_xdr_to_invoke(
-        contract_id,
+        contract_address,
         source_public,
         function_name,
         function_args
@@ -248,14 +312,14 @@ defmodule Soroban.ContractTest do
   end
 
   test "retrieve_unsigned_xdr_to_invoke/4 without args", %{
-    contract_id: contract_id,
+    contract_address: contract_address,
     source_public: source_public,
     function_name: function_name,
     no_args_xdr_envelope: no_args_xdr_envelope
   } do
     ^no_args_xdr_envelope =
       Contract.retrieve_unsigned_xdr_to_invoke(
-        contract_id,
+        contract_address,
         source_public,
         function_name
       )

@@ -4,6 +4,7 @@ defmodule Soroban.Contract do
   """
 
   alias Soroban.Contract.{
+    BumpFootprintExpiration,
     DeployAssetContract,
     DeployContract,
     InvokeContractFunction,
@@ -40,6 +41,18 @@ defmodule Soroban.Contract do
               ),
               to: DeployAssetContract,
               as: :deploy
+
+  defdelegate bump_contract(contract_address, secret_key, ledgers_to_bump),
+    to: BumpFootprintExpiration,
+    as: :bump_contract
+
+  defdelegate bump_contract_wasm(contract_hash, secret_key, ledgers_to_bump),
+    to: BumpFootprintExpiration,
+    as: :bump_contract_wasm
+
+  defdelegate bump_contract_keys(contract_address, secret_key, ledgers_to_bump, keys),
+    to: BumpFootprintExpiration,
+    as: :bump_contract_keys
 
   defdelegate retrieve_unsigned_xdr_to_invoke(
                 contract_id,
