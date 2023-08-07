@@ -122,7 +122,7 @@ defmodule Soroban.Contract.BumpFootprintExpiration do
     end
   end
 
-  @spec create_wasm_soroban_data(contract_hash :: contract_hash()) :: soroban_data() | error()
+  @spec create_wasm_soroban_data(contract_hash :: contract_hash()) :: soroban_data()
   defp create_wasm_soroban_data(contract_hash) do
     hash = Base.decode16!(contract_hash, case: :lower)
     contract_code = LedgerKey.new({:contract_code, [hash: hash, body_type: :data_entry]})
