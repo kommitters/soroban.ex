@@ -156,7 +156,7 @@ defmodule Soroban.Contract.BumpFootprintExpirationTest do
 
     %{
       contract_address: "CD3HNKU3ERTEYLBBBVTSOYE4ZL2ZWV7NHLQIZRRKC4CBNMZXC7ISBXHV",
-      contract_hash: "067eb7ba419edd3e946e08eb17a81fbe1e850e690ed7692160875c2b65b45f21",
+      wasm_id: "067eb7ba419edd3e946e08eb17a81fbe1e850e690ed7692160875c2b65b45f21",
       # GBNDWIM7DPYZJ2RLJ3IESXBIO4C2SVF6PWZXS3DLODJSBQWBMKY5U4M3
       source_secret: "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24",
       keys: [{:temporary, "Tmp"}, {:persistent, "Per"}],
@@ -197,7 +197,7 @@ defmodule Soroban.Contract.BumpFootprintExpirationTest do
   end
 
   test "bump_contract_wasm/3", %{
-    contract_hash: contract_hash,
+    wasm_id: wasm_id,
     source_secret: source_secret,
     ledgers_to_bump: ledgers_to_bump
   } do
@@ -210,7 +210,7 @@ defmodule Soroban.Contract.BumpFootprintExpirationTest do
        error_result_xdr: nil
      }} =
       BumpFootprintExpiration.bump_contract_wasm(
-        contract_hash,
+        wasm_id,
         source_secret,
         ledgers_to_bump
       )

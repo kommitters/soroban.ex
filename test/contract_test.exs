@@ -97,7 +97,7 @@ defmodule Soroban.ContractTest do
       wasm_id:
         <<66, 208, 35, 40, 82, 63, 24, 62, 0, 161, 91, 200, 46, 101, 45, 24, 216, 140, 130, 169,
           254, 217, 11, 131, 45, 9, 151, 5, 194, 188, 205, 26>>,
-      contract_hash: "067eb7ba419edd3e946e08eb17a81fbe1e850e690ed7692160875c2b65b45f21",
+      bump_wasm_id: "067eb7ba419edd3e946e08eb17a81fbe1e850e690ed7692160875c2b65b45f21",
       keys: [{:temporary, "Tmp"}, {:persistent, "Per"}],
       ledgers_to_bump: 100_000,
       xdr_envelope:
@@ -254,7 +254,7 @@ defmodule Soroban.ContractTest do
   end
 
   test "bump_contract_wasm/3", %{
-    contract_hash: contract_hash,
+    bump_wasm_id: bump_wasm_id,
     source_secret: source_secret,
     ledgers_to_bump: ledgers_to_bump
   } do
@@ -267,7 +267,7 @@ defmodule Soroban.ContractTest do
        error_result_xdr: nil
      }} =
       Contract.bump_contract_wasm(
-        contract_hash,
+        bump_wasm_id,
         source_secret,
         ledgers_to_bump
       )

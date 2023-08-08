@@ -46,7 +46,7 @@ defmodule Soroban.Contract do
     to: BumpFootprintExpiration,
     as: :bump_contract
 
-  defdelegate bump_contract_wasm(contract_hash, secret_key, ledgers_to_bump),
+  defdelegate bump_contract_wasm(wasm_id, secret_key, ledgers_to_bump),
     to: BumpFootprintExpiration,
     as: :bump_contract_wasm
 

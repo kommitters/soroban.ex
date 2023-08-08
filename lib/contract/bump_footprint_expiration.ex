@@ -25,7 +25,7 @@ defmodule Soroban.Contract.BumpFootprintExpiration do
   @type keys :: list({durability(), data_key()})
   @type error :: {:error, atom()}
   @type contract_address :: String.t()
-  @type contract_hash :: String.t()
+  @type wasm_id :: String.t()
   @type secret_key :: String.t()
   @type ledgers_to_bump :: non_neg_integer()
   @type send_response :: {:ok, SendTransactionResponse.t()}
@@ -57,16 +57,16 @@ defmodule Soroban.Contract.BumpFootprintExpiration do
   end
 
   @spec bump_contract_wasm(
-          contract_hash :: contract_hash(),
+          wasm_id :: wasm_id(),
           secret_key :: secret_key(),
           ledgers_to_bump :: ledgers_to_bump()
         ) :: send_response()
-  def bump_contract_wasm(contract_hash, secret_key, ledgers_to_bump) do
+  def bump_contract_wasm(wasm_id, secret_key, ledgers_to_bump) do
     with {public_key, _secret} = keypair <- Stellar.KeyPair.from_secret_seed(secret_key),
          {:ok, seq_num} <- Accounts.fetch_next_sequence_number(public_key),
          {:ok, bump_footprint_op} <- create_bump_footprint_op(ledgers_to_bump),
          %SequenceNumber{} = sequence_number <- SequenceNumber.new(seq_num),
-         %SorobanTransactionData{} = soroban_data <- create_wasm_soroban_data(contract_hash),
+         %SorobanTransactionData{} = soroban_data <- create_wasm_soroban_data(wasm_id),
          %Account{} = source_account <- Account.new(public_key),
          %Signature{} = signature <- Signature.new(keypair) do
       bump_footprint_op
@@ -122,9 +122,9 @@ defmodule Soroban.Contract.BumpFootprintExpiration do
     end
   end
 
-  @spec create_wasm_soroban_data(contract_hash :: contract_hash()) :: soroban_data()
-  defp create_wasm_soroban_data(contract_hash) do
-    hash = Base.decode16!(contract_hash, case: :lower)
+  @spec create_wasm_soroban_data(wasm_id :: wasm_id()) :: soroban_data()
+  defp create_wasm_soroban_data(wasm_id) do
+    hash = Base.decode16!(wasm_id, case: :lower)
     contract_code = LedgerKey.new({:contract_code, [hash: hash, body_type: :data_entry]})
 
     footprint = LedgerFootprint.new(read_only: [contract_code])
