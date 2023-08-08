@@ -668,6 +668,108 @@ secret_key = "SCA..."
 
 ```
 
+#### BumpFootprint operation
+
+##### Bump contract
+
+Extends a contract instance lifetime.
+
+**Parameters**
+
+- `contract_address`: Identifier of the contract to be bumped, encoded as `StrKey`.
+- `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
+- `ledgers_to_bump`: The number of ledgers wanted to extend the contract lifetime.
+
+```elixir
+alias Soroban.Contract
+alias Soroban.RPC.SendTransactionResponse
+
+contract_address = "CD43KXYLGORRXFATEUD3OKOQG4PIKLFL55FRETM3CPHI2WUF2NMFIEUM"
+secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
+ledgers_to_bump = 100_000
+
+{:ok, %SendTransactionResponse{hash: hash}} =
+  Contract.bump_contract(contract_address, secret_key, ledgers_to_bump)
+
+{:ok,
+ %Soroban.RPC.SendTransactionResponse{
+   status: "PENDING",
+   hash: "2f6f...",
+   latest_ledger: "279954",
+   latest_ledger_close_time: "1691441432",
+   error_result_xdr: nil
+}}
+
+```
+
+##### Bump contract wasm
+
+Extends the lifetime of a contract's uploaded wasm code.
+
+**Parameters**
+
+- `wasm_id`: Binary identification of the uploaded contract.
+- `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
+- `ledgers_to_bump`: The number of ledgers wanted to extend the wasm lifetime.
+
+```elixir
+alias Soroban.Contract
+alias Soroban.RPC.SendTransactionResponse
+
+wasm_id = "067eb7ba419edd3e946e08eb17a81fbe1e850e690ed7692160875c2b65b45f21"
+secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
+ledgers_to_bump = 100_000
+
+{:ok, %SendTransactionResponse{hash: hash}} =
+  Contract.bump_contract_wasm(wasm_id, secret_key, ledgers_to_bump)
+
+{:ok,
+ %Soroban.RPC.SendTransactionResponse{
+   status: "PENDING",
+   hash: "2f6f...",
+   latest_ledger: "279954",
+   latest_ledger_close_time: "1691441432",
+   error_result_xdr: nil
+}}
+
+```
+
+##### Bump contract keys
+
+Extends the lifetime of a contract's data entry keys.
+
+**Parameters**
+
+- `contract_address`: Identifier of the contract to be bumped, encoded as `StrKey`.
+- `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
+- `ledgers_to_bump`: The number of ledgers wanted to extend the contract lifetime.
+- `keys`: A list of tuples indicating the durability and the name of the data entry, to increase its lifetime.
+  - `durability`: Allowed types `:persistent`, `:temporary`
+  - `data entry`: Any `String` that is 32 characters or less.
+
+```elixir
+alias Soroban.Contract
+alias Soroban.RPC.SendTransactionResponse
+
+contract_address = "CD43KXYLGORRXFATEUD3OKOQG4PIKLFL55FRETM3CPHI2WUF2NMFIEUM"
+secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
+ledgers_to_bump = 100_000
+keys =  [{:persistent, "Prst"}, {:temporary, "Tmp"}]
+
+{:ok, %SendTransactionResponse{hash: hash}} =
+  Contract.bump_contract_keys(contract_address, secret_key, ledgers_to_bump, keys)
+
+{:ok,
+ %Soroban.RPC.SendTransactionResponse{
+   status: "PENDING",
+   hash: "2f6f...",
+   latest_ledger: "279954",
+   latest_ledger_close_time: "1691441432",
+   error_result_xdr: nil
+}}
+
+```
+
 ### Retrieve unsigned Transaction Envelope XDR
 
 In order to facilitate seamless integration with wallets, we have developed functions that enable the retrieval of the unsigned Transaction Envelope XDR for each type of interaction with contracts: invocation, upload, and deployment.

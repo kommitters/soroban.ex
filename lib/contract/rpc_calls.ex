@@ -11,6 +11,8 @@ defmodule Soroban.Contract.RPCCalls do
   }
 
   alias Stellar.TxBuild
+  alias Stellar.TxBuild.BumpFootprintExpiration
+  alias Stellar.TxBuild.SorobanTransactionData, as: TxSorobanTransactionData
   alias StellarBase.XDR.{SorobanTransactionData, UInt32}
 
   alias Stellar.TxBuild.{
@@ -26,26 +28,37 @@ defmodule Soroban.Contract.RPCCalls do
   @type auths :: list(String.t()) | nil
   @type auth_secret_key :: String.t() | nil
   @type envelope_xdr :: String.t()
-  @type invoke_host_function :: InvokeHostFunction.t()
+  @type operation :: InvokeHostFunction.t() | BumpFootprintExpiration.t()
   @type simulate_response :: {:ok, SimulateTransactionResponse.t()}
   @type send_response :: {:ok, SendTransactionResponse.t()}
   @type signature :: Signature.t()
   @type sequence_number :: SequenceNumber.t()
 
   @spec simulate(
-          invoke_host_function_op :: invoke_host_function(),
+          operation :: operation(),
           source_account :: account(),
           sequence_number :: sequence_number()
         ) :: simulate_response()
-  def simulate(
-        invoke_host_function_op,
-        source_account,
-        sequence_number
-      ) do
+  def simulate(_operation, _source_account, _sequence_number, soroban_data \\ nil)
+
+  def simulate(operation, source_account, sequence_number, nil) do
     {:ok, envelop_xdr} =
       source_account
       |> TxBuild.new(sequence_number: sequence_number)
-      |> TxBuild.add_operation(invoke_host_function_op)
+      |> TxBuild.add_operation(operation)
+      |> TxBuild.envelope()
+
+    RPC.simulate_transaction(envelop_xdr)
+  end
+
+  def simulate(operation, source_account, sequence_number, soroban_data) do
+    soroban_data = TxSorobanTransactionData.to_xdr(soroban_data)
+
+    {:ok, envelop_xdr} =
+      source_account
+      |> TxBuild.new(sequence_number: sequence_number)
+      |> TxBuild.add_operation(operation)
+      |> TxBuild.set_soroban_data(soroban_data)
       |> TxBuild.envelope()
 
     RPC.simulate_transaction(envelop_xdr)
@@ -56,7 +69,7 @@ defmodule Soroban.Contract.RPCCalls do
           source_account :: account(),
           sequence_number :: sequence_number(),
           signature :: signature(),
-          invoke_host_function_op :: invoke_host_function()
+          operation :: operation()
         ) :: send_response() | simulate_response()
   def send_transaction(
         _simulate_transaction,
@@ -77,11 +90,11 @@ defmodule Soroban.Contract.RPCCalls do
         source_account,
         sequence_number,
         signature,
-        invoke_host_function_op,
+        %InvokeHostFunction{} = operation,
         auth_secret_keys
       ) do
     with %InvokeHostFunction{} = invoke_host_function_op <-
-           set_host_function_auth(invoke_host_function_op, auth, auth_secret_keys) do
+           set_host_function_auth(operation, auth, auth_secret_keys) do
       {transaction_data, min_resource_fee} =
         process_transaction_response(
           transaction_data,
@@ -106,6 +119,40 @@ defmodule Soroban.Contract.RPCCalls do
   end
 
   def send_transaction(
+        {:ok,
+         %SimulateTransactionResponse{
+           transaction_data: transaction_data,
+           min_resource_fee: min_resource_fee
+         }},
+        source_account,
+        sequence_number,
+        signature,
+        %BumpFootprintExpiration{} = operation,
+        _auth_secret_keys
+      ) do
+    {transaction_data, min_resource_fee} =
+      process_transaction_response(
+        transaction_data,
+        String.to_integer(min_resource_fee),
+        nil
+      )
+
+    %BaseFee{fee: base_fee} = BaseFee.new()
+    fee = BaseFee.new(base_fee + min_resource_fee)
+
+    {:ok, envelope_xdr} =
+      source_account
+      |> TxBuild.new(sequence_number: sequence_number)
+      |> TxBuild.add_operation(operation)
+      |> Stellar.TxBuild.set_base_fee(fee)
+      |> Stellar.TxBuild.set_soroban_data(transaction_data)
+      |> TxBuild.sign(signature)
+      |> TxBuild.envelope()
+
+    RPC.send_transaction(envelope_xdr)
+  end
+
+  def send_transaction(
         {:ok, %SimulateTransactionResponse{}} = response,
         _source_account,
         _sequence_number,
@@ -119,7 +166,7 @@ defmodule Soroban.Contract.RPCCalls do
           simulate_response :: simulate_response(),
           source_account :: account(),
           sequence_number :: sequence_number(),
-          invoke_host_function_op :: invoke_host_function()
+          invoke_host_function_op :: operation()
         ) :: envelope_xdr() | simulate_response()
   def retrieve_unsigned_xdr(
         {:ok,
@@ -164,10 +211,10 @@ defmodule Soroban.Contract.RPCCalls do
       do: response
 
   @spec set_host_function_auth(
-          invoke_host_function :: invoke_host_function(),
+          invoke_host_function :: operation(),
           auths :: auths(),
           auth_secret_key :: auth_secret_key()
-        ) :: invoke_host_function() | {:error, atom()}
+        ) :: operation() | {:error, atom()}
   defp set_host_function_auth(
          invoke_host_function_op,
          nil,
