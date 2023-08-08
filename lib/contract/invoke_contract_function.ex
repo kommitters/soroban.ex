@@ -4,7 +4,7 @@ defmodule Soroban.Contract.InvokeContractFunction do
   """
 
   alias Soroban.Contract.RPCCalls
-  alias Soroban.RPC.SendTransactionResponse
+  alias Soroban.RPC.{SendTransactionResponse, SimulateTransactionResponse}
   alias Soroban.Types.Address
 
   alias Stellar.Horizon.Accounts

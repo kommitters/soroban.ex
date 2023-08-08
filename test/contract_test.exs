@@ -181,7 +181,7 @@ defmodule Soroban.ContractTest do
   end
 
   test "simulate_invoke/5", %{
-    contract_id: contract_id,
+    contract_address: contract_address,
     source_public: source_public,
     function_name: function_name
   } do
@@ -199,7 +199,7 @@ defmodule Soroban.ContractTest do
        error: nil
      }} =
       Contract.simulate_invoke(
-        contract_id,
+        contract_address,
         source_public,
         function_name
       )
