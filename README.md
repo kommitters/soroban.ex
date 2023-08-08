@@ -708,7 +708,7 @@ Extends the lifetime of a contract's uploaded wasm code.
 
 **Parameters**
 
-- `wasm_id`: Binary identification of the uploaded contract.
+- `wasm_id`: Binary identification of an uploaded contract.
 - `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
 - `ledgers_to_bump`: The number of ledgers wanted to extend the wasm lifetime.
 
@@ -767,6 +767,105 @@ keys =  [{:persistent, "Prst"}, {:temporary, "Tmp"}]
    latest_ledger_close_time: "1691441432",
    error_result_xdr: nil
 }}
+
+```
+
+#### RestoreFootprint operation
+
+##### Restore contract
+
+Restores a contract instance.
+
+**Parameters**
+
+- `contract_address`: Identifier of the contract to be restored, encoded as `StrKey`.
+- `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
+
+```elixir
+alias Soroban.Contract
+alias Soroban.RPC.SendTransactionResponse
+
+contract_address = "CD43KXYLGORRXFATEUD3OKOQG4PIKLFL55FRETM3CPHI2WUF2NMFIEUM"
+secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
+
+{:ok, %SendTransactionResponse{hash: hash}} =
+  Contract.restore_contract(contract_address, secret_key)
+
+{:ok,
+ %Soroban.RPC.SendTransactionResponse{
+   status: "PENDING",
+   hash: "eedb...",
+   latest_ledger: "295506",
+   latest_ledger_close_time: "1691523150",
+   error_result_xdr: nil
+ }}
+
+```
+
+##### Restore contract wasm
+
+Restores a contract uploaded wasm code.
+
+> **Note**: When restoring a contract wasm make sure the contract wasn't re-uploaded, because the transaction could succeed but, since the `wasm_id` changed, the restored one will continue not working.
+
+**Parameters**
+
+- `wasm_id`: Binary identification of an uploaded contract.
+- `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
+
+```elixir
+alias Soroban.Contract
+alias Soroban.RPC.SendTransactionResponse
+
+wasm_id = "067eb7ba419edd3e946e08eb17a81fbe1e850e690ed7692160875c2b65b45f21"
+secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
+
+{:ok, %SendTransactionResponse{hash: hash}} = Contract.restore_contract_wasm(wasm_id, secret_key)
+
+{:ok,
+ %Soroban.RPC.SendTransactionResponse{
+   status: "PENDING",
+   hash: "eedb...",
+   latest_ledger: "295508",
+   latest_ledger_close_time: "1691523689",
+   error_result_xdr: nil
+ }}
+
+```
+
+##### Restore contract keys
+
+Restore contract's data entry keys.
+
+> **Note**: Only `persistent` data entries are allowed because temporary entries cannot be restored as they are permanently deleted when they expire.
+
+**Parameters**
+
+- `contract_address`: Identifier of the contract to be restored, encoded as `StrKey`.
+- `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
+- `keys`: A keyword list indicating the durability and the name of the data entry, to restore.
+  - `durability`: Allowed types `:persistent`
+  - `data entry`: Any `String` that is 32 characters or less.
+
+```elixir
+alias Soroban.Contract
+alias Soroban.RPC.SendTransactionResponse
+
+contract_address = "CD43KXYLGORRXFATEUD3OKOQG4PIKLFL55FRETM3CPHI2WUF2NMFIEUM"
+secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
+keys =  [persistent: ["Prst"]]
+
+{:ok, %SendTransactionResponse{hash: hash}} =
+  Contract.restore_contract_keys(contract_address, secret_key, keys)
+
+{:ok,
+ %Soroban.RPC.SendTransactionResponse{
+   status: "PENDING",
+   hash: "0521...",
+   latest_ledger: "295768",
+   latest_ledger_close_time: "1691524532",
+   error_result_xdr: nil
+ }}
 
 ```
 

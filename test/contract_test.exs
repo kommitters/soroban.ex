@@ -102,15 +102,15 @@ defmodule Soroban.ContractTest do
       keys: [{:temporary, "Tmp"}, {:persistent, "Per"}],
       ledgers_to_bump: 100_000,
       xdr_envelope:
-        "AAAAAgAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gABOf8ABPEIAAAAPgAAAAAAAAAAAAAAAQAAAAEAAAAAWjshnxvxlOorTtBJXCh3BalUvn2zeWxrcNMgwsFisdoAAAAYAAAAAAAAAAMAAAASAAAAAfZ2qpskZkwsIQ1nJ2CcyvWbV+064IzGKhcEFrM3F9EgAAAADwAAAA1mdW5jdGlvbl9uYW1lAAAAAAAADwAAAANBcmcAAAAAAAAAAAEAAAAAAAAAAgAAAAYAAAAB9naqmyRmTCwhDWcnYJzK9ZtX7TrgjMYqFwQWszcX0SAAAAAUAAAAAQAAAAAAAAAHmDXys1KuBimD87u2AiUG/jb5CqOkQW/qASpb6gMVRlsAAAAAAAAAAAA1i+AAABQ4AAAAAAAAAPAAAAAAAAAALwAAAAA=",
+        "AAAAAgAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gABRmoABPEIAAAAPgAAAAAAAAAAAAAAAQAAAAEAAAAAWjshnxvxlOorTtBJXCh3BalUvn2zeWxrcNMgwsFisdoAAAAYAAAAAAAAAAMAAAASAAAAAfZ2qpskZkwsIQ1nJ2CcyvWbV+064IzGKhcEFrM3F9EgAAAADwAAAA1mdW5jdGlvbl9uYW1lAAAAAAAADwAAAANBcmcAAAAAAAAAAAEAAAAAAAAAAgAAAAYAAAAB9naqmyRmTCwhDWcnYJzK9ZtX7TrgjMYqFwQWszcX0SAAAAAUAAAAAQAAAAAAAAAHmDXys1KuBimD87u2AiUG/jb5CqOkQW/qASpb6gMVRlsAAAAAAAAAAAA1i+AAABQ4AAAAAAAAAPAAAAAAAAAALwAAAAA=",
       no_args_xdr_envelope:
-        "AAAAAgAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gABOf8ABPEIAAAAPgAAAAAAAAAAAAAAAQAAAAEAAAAAWjshnxvxlOorTtBJXCh3BalUvn2zeWxrcNMgwsFisdoAAAAYAAAAAAAAAAIAAAASAAAAAfZ2qpskZkwsIQ1nJ2CcyvWbV+064IzGKhcEFrM3F9EgAAAADwAAAA1mdW5jdGlvbl9uYW1lAAAAAAAAAAAAAAEAAAAAAAAAAgAAAAYAAAAB9naqmyRmTCwhDWcnYJzK9ZtX7TrgjMYqFwQWszcX0SAAAAAUAAAAAQAAAAAAAAAHmDXys1KuBimD87u2AiUG/jb5CqOkQW/qASpb6gMVRlsAAAAAAAAAAAA1i+AAABQ4AAAAAAAAAPAAAAAAAAAALwAAAAA=",
+        "AAAAAgAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gABRmoABPEIAAAAPgAAAAAAAAAAAAAAAQAAAAEAAAAAWjshnxvxlOorTtBJXCh3BalUvn2zeWxrcNMgwsFisdoAAAAYAAAAAAAAAAIAAAASAAAAAfZ2qpskZkwsIQ1nJ2CcyvWbV+064IzGKhcEFrM3F9EgAAAADwAAAA1mdW5jdGlvbl9uYW1lAAAAAAAAAAAAAAEAAAAAAAAAAgAAAAYAAAAB9naqmyRmTCwhDWcnYJzK9ZtX7TrgjMYqFwQWszcX0SAAAAAUAAAAAQAAAAAAAAAHmDXys1KuBimD87u2AiUG/jb5CqOkQW/qASpb6gMVRlsAAAAAAAAAAAA1i+AAABQ4AAAAAAAAAPAAAAAAAAAALwAAAAA=",
       upload_xdr_envelope:
-        "AAAAAgAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gABOf8ABPEIAAAAPgAAAAAAAAAAAAAAAQAAAAAAAAAYAAAAAgAAADIAYXNtAQAAAAFBDGABfgF+YAJ+fgF+YAN+fn4BfmAAAX5gBH5+fn4BfmABfgF/YAJ/fgAAAAAAAAAAAAEAAAAAAAAAAgAAAAYAAAAB9naqmyRmTCwhDWcnYJzK9ZtX7TrgjMYqFwQWszcX0SAAAAAUAAAAAQAAAAAAAAAHmDXys1KuBimD87u2AiUG/jb5CqOkQW/qASpb6gMVRlsAAAAAAAAAAAA1i+AAABQ4AAAAAAAAAPAAAAAAAAAALwAAAAA=",
+        "AAAAAgAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gABRmoABPEIAAAAPgAAAAAAAAAAAAAAAQAAAAAAAAAYAAAAAgAAADIAYXNtAQAAAAFBDGABfgF+YAJ+fgF+YAN+fn4BfmAAAX5gBH5+fn4BfmABfgF/YAJ/fgAAAAAAAAAAAAEAAAAAAAAAAgAAAAYAAAAB9naqmyRmTCwhDWcnYJzK9ZtX7TrgjMYqFwQWszcX0SAAAAAUAAAAAQAAAAAAAAAHmDXys1KuBimD87u2AiUG/jb5CqOkQW/qASpb6gMVRlsAAAAAAAAAAAA1i+AAABQ4AAAAAAAAAPAAAAAAAAAALwAAAAA=",
       deploy_xdr_envelope:
         "AAAAAgAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gAAAGQABPEIAAAAPgAAAAAAAAAAAAAAAQAAAAAAAAAYAAAAAgAAACBC0CMoUj8YPgChW8guZS0Y2IyCqf7ZC4MtCZcFwrzNGgAAAAIAAAAGFNBLmawioIDIHGB7cDLoh6p62MIZLDte5H48CfIdpd0AAAAUAAAABwqCq7aoMU3MQSfhfSV/txr5cNzbWBsArvIc8VLG7qcCAAAAAAAAAAAAAAAAAAAAAA==",
       asset_deploy_xdr_envelope:
-        "AAAAAgAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gABOf8ABPEIAAAAPgAAAAAAAAAAAAAAAQAAAAAAAAAYAAAAAQAAAAEAAAABWlpaAAAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gAAAAEAAAAAAAAAAQAAAAAAAAACAAAABgAAAAH2dqqbJGZMLCENZydgnMr1m1ftOuCMxioXBBazNxfRIAAAABQAAAABAAAAAAAAAAeYNfKzUq4GKYPzu7YCJQb+NvkKo6RBb+oBKlvqAxVGWwAAAAAAAAAAADWL4AAAFDgAAAAAAAAA8AAAAAAAAAAvAAAAAA=="
+        "AAAAAgAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gABRmoABPEIAAAAPgAAAAAAAAAAAAAAAQAAAAAAAAAYAAAAAQAAAAEAAAABWlpaAAAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gAAAAEAAAAAAAAAAQAAAAAAAAACAAAABgAAAAH2dqqbJGZMLCENZydgnMr1m1ftOuCMxioXBBazNxfRIAAAABQAAAABAAAAAAAAAAeYNfKzUq4GKYPzu7YCJQb+NvkKo6RBb+oBKlvqAxVGWwAAAAAAAAAAADWL4AAAFDgAAAAAAAAA8AAAAAAAAAAvAAAAAA=="
     }
   end
 
@@ -318,6 +318,61 @@ defmodule Soroban.ContractTest do
         source_secret,
         ledgers_to_bump,
         keys
+      )
+  end
+
+  test "restore_contract/2", %{
+    contract_address: contract_address,
+    source_secret: source_secret
+  } do
+    {:ok,
+     %SendTransactionResponse{
+       status: "PENDING",
+       hash: "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4",
+       latest_ledger: "476420",
+       latest_ledger_close_time: "1683150612",
+       error_result_xdr: nil
+     }} =
+      Contract.restore_contract(
+        contract_address,
+        source_secret
+      )
+  end
+
+  test "restore_contract_wasm/2", %{
+    bump_wasm_id: bump_wasm_id,
+    source_secret: source_secret
+  } do
+    {:ok,
+     %SendTransactionResponse{
+       status: "PENDING",
+       hash: "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4",
+       latest_ledger: "476420",
+       latest_ledger_close_time: "1683150612",
+       error_result_xdr: nil
+     }} =
+      Contract.restore_contract_wasm(
+        bump_wasm_id,
+        source_secret
+      )
+  end
+
+  test "restore_contract_keys/3", %{
+    contract_address: contract_address,
+    source_secret: source_secret
+  } do
+    {:ok,
+     %SendTransactionResponse{
+       status: "PENDING",
+       hash: "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4",
+       latest_ledger: "476420",
+       latest_ledger_close_time: "1683150612",
+       error_result_xdr: nil
+     }} =
+      Contract.restore_contract_keys(
+        contract_address,
+        source_secret,
+        persistent: ["Persistent"]
       )
   end
 

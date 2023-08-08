@@ -8,6 +8,7 @@ defmodule Soroban.Contract do
     DeployAssetContract,
     DeployContract,
     InvokeContractFunction,
+    RestoreFootprint,
     UploadContractCode
   }
 
@@ -62,6 +63,18 @@ defmodule Soroban.Contract do
   defdelegate bump_contract_keys(contract_address, secret_key, ledgers_to_bump, keys),
     to: BumpFootprintExpiration,
     as: :bump_contract_keys
+
+  defdelegate restore_contract(contract_address, secret_key),
+    to: RestoreFootprint,
+    as: :restore_contract
+
+  defdelegate restore_contract_wasm(wasm_id, secret_key),
+    to: RestoreFootprint,
+    as: :restore_contract_wasm
+
+  defdelegate restore_contract_keys(contract_address, secret_key, keys),
+    to: RestoreFootprint,
+    as: :restore_contract_keys
 
   defdelegate retrieve_unsigned_xdr_to_invoke(
                 contract_address,
