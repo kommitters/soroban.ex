@@ -321,6 +321,61 @@ defmodule Soroban.ContractTest do
       )
   end
 
+  test "restore_contract/2", %{
+    contract_address: contract_address,
+    source_secret: source_secret
+  } do
+    {:ok,
+     %SendTransactionResponse{
+       status: "PENDING",
+       hash: "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4",
+       latest_ledger: "476420",
+       latest_ledger_close_time: "1683150612",
+       error_result_xdr: nil
+     }} =
+      Contract.restore_contract(
+        contract_address,
+        source_secret
+      )
+  end
+
+  test "restore_contract_wasm/2", %{
+    bump_wasm_id: bump_wasm_id,
+    source_secret: source_secret
+  } do
+    {:ok,
+     %SendTransactionResponse{
+       status: "PENDING",
+       hash: "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4",
+       latest_ledger: "476420",
+       latest_ledger_close_time: "1683150612",
+       error_result_xdr: nil
+     }} =
+      Contract.restore_contract_wasm(
+        bump_wasm_id,
+        source_secret
+      )
+  end
+
+  test "restore_contract_keys/3", %{
+    contract_address: contract_address,
+    source_secret: source_secret
+  } do
+    {:ok,
+     %SendTransactionResponse{
+       status: "PENDING",
+       hash: "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4",
+       latest_ledger: "476420",
+       latest_ledger_close_time: "1683150612",
+       error_result_xdr: nil
+     }} =
+      Contract.restore_contract_keys(
+        contract_address,
+        source_secret,
+        persistent: ["Persistent"]
+      )
+  end
+
   test "retrieve_unsigned_xdr_to_invoke/4", %{
     contract_address: contract_address,
     source_public: source_public,

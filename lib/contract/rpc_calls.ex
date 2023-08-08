@@ -24,8 +24,7 @@ defmodule Soroban.Contract.RPCCalls do
     SorobanAuthorizationEntry
   }
 
-  @type error :: {:error, atom()}
-  @type validation :: {:ok, any()} | error()
+  @type validation :: {:ok, any()}
   @type account :: Account.t()
   @type auths :: list(String.t()) | nil
   @type auth_secret_key :: String.t() | nil
@@ -260,7 +259,6 @@ defmodule Soroban.Contract.RPCCalls do
   @spec validate_operation(operation :: footprint_operations()) :: validation()
   defp validate_operation(%BumpFootprintExpiration{} = operation), do: {:ok, operation}
   defp validate_operation(%RestoreFootprint{} = operation), do: {:ok, operation}
-  defp validate_operation(_operation), do: {:error, :invalid_operation}
 
   # This function is needed since when the function invoker is not the function authorizer
   # the transaction data returns min_resource_fee and instructions with wrong values.
