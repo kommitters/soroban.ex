@@ -820,7 +820,7 @@ alias Soroban.RPC.SendTransactionResponse
 wasm_id = "067eb7ba419edd3e946e08eb17a81fbe1e850e690ed7692160875c2b65b45f21"
 secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
 
-{:ok, %SendTransactionResponse{hash: hash}} = Contract.bump_contract_wasm(wasm_id, secret_key)
+{:ok, %SendTransactionResponse{hash: hash}} = Contract.restore_contract_wasm(wasm_id, secret_key)
 
 {:ok,
  %Soroban.RPC.SendTransactionResponse{
@@ -837,7 +837,7 @@ secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
 
 Restore contract's data entry keys.
 
-> Only `persistent` data entries are allowed because temporary entries cannot be restored as they are permanently deleted when they expire.
+> **Note**: Only `persistent` data entries are allowed because temporary entries cannot be restored as they are permanently deleted when they expire.
 
 **Parameters**
 
