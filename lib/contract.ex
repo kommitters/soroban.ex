@@ -12,7 +12,7 @@ defmodule Soroban.Contract do
   }
 
   defdelegate invoke(
-                contract_id,
+                contract_address,
                 source_secret_key,
                 function_name,
                 function_args \\ [],
@@ -20,6 +20,15 @@ defmodule Soroban.Contract do
               ),
               to: InvokeContractFunction,
               as: :invoke
+
+  defdelegate simulate_invoke(
+                contract_address,
+                source_public_key,
+                function_name,
+                function_args \\ []
+              ),
+              to: InvokeContractFunction,
+              as: :simulate_invoke
 
   defdelegate upload(
                 wasm,
@@ -55,7 +64,7 @@ defmodule Soroban.Contract do
     as: :bump_contract_keys
 
   defdelegate retrieve_unsigned_xdr_to_invoke(
-                contract_id,
+                contract_address,
                 source_public_key,
                 function_name,
                 function_args \\ []

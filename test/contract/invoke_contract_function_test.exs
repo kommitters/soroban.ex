@@ -380,6 +380,37 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
       )
   end
 
+  test "simulate invoke", %{
+    contract_id: contract_id,
+    source_public: source_public,
+    function_name: function_name,
+    function_args: function_args
+  } do
+    {:ok,
+     %SimulateTransactionResponse{
+       transaction_data:
+         "AAAAAAAAAAIAAAAGAAAAAfZ2qpskZkwsIQ1nJ2CcyvWbV+064IzGKhcEFrM3F9EgAAAAFAAAAAEAAAAAAAAAB5g18rNSrgYpg/O7tgIlBv42+QqjpEFv6gEqW+oDFUZbAAAAAAAAAAAANYvgAAAUOAAAAAAAAADwAAAAAAAAAC8=",
+       events: nil,
+       min_resource_fee: "79488",
+       results: [
+         %{
+           auth: nil,
+           events: nil,
+           xdr: "AAAAEAAAAAEAAAACAAAADwAAAAVIZWxsbwAAAAAAAA8AAAAFd29ybGQAAAA="
+         }
+       ],
+       cost: %{cpu_insns: "1052105", mem_bytes: "1201148"},
+       latest_ledger: "690189",
+       error: nil
+     }} =
+      InvokeContractFunction.simulate_invoke(
+        contract_id,
+        source_public,
+        function_name,
+        function_args
+      )
+  end
+
   test "invoke host function invalid length of auth keys", %{
     contract_id: contract_id,
     source_secret_auths_error: source_secret_auths_error,
