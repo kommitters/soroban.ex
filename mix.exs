@@ -1,7 +1,7 @@
 defmodule Soroban.MixProject do
   use Mix.Project
 
-  @version "0.12.0"
+  @version "0.13.0"
   @github_url "https://github.com/kommitters/soroban.ex"
 
   def project do
@@ -42,9 +42,9 @@ defmodule Soroban.MixProject do
     [
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
-      {:ex_doc, "~> 0.29", only: :dev, runtime: false},
-      {:excoveralls, "~> 0.15", only: :test},
-      {:stellar_sdk, "~> 0.16"},
+      {:ex_doc, "~> 0.30", only: :dev, runtime: false},
+      {:excoveralls, "~> 0.16", only: :test},
+      {:stellar_sdk, "~> 0.17"},
       {:hackney, "~> 1.18"}
     ]
   end
@@ -88,7 +88,9 @@ defmodule Soroban.MixProject do
         Soroban.Contract.InvokeContractFunction,
         Soroban.Contract.UploadContractCode,
         Soroban.Contract.DeployContract,
-        Soroban.Contract.DeployAssetContract
+        Soroban.Contract.DeployAssetContract,
+        Soroban.Contract.BumpFootprintExpiration,
+        Soroban.Contract.RestoreFootprint
       ],
       RPC: [
         Soroban.RPC,

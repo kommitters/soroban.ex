@@ -19,7 +19,7 @@
 ```elixir
 def deps do
   [
-    {:soroban, "~> 0.12.0"}
+    {:soroban, "~> 0.13.0"}
   ]
 end
 ```
@@ -535,25 +535,35 @@ Contract.invoke(contract_address, source_secret_key, function_name, function_arg
 - When the function invoker is not the function authorizer.
 
   > **Note**
-  > The support for this use case is currently in progress in the Stellar SDK.
+  > This operation will not succeed if one of the `auth_secret_keys` is the same as the `source_secret_key`, because the simulate_transaction will return that auth as a `SOROBAN_CREDENTIALS_SOURCE_ACCOUNT` type.
 
   ```elixir
   alias Soroban.Contract
   alias Soroban.Types.{Address, Int128}
 
-  contract_address = "CD3HNKU3ERTEYLBBBVTSOYE4ZL2ZWV7NHLQIZRRKC4CBNMZXC7ISBXHV"
+  contract_address = "CD43KXYLGORRXFATEUD3OKOQG4PIKLFL55FRETM3CPHI2WUF2NMFIEUM"
   source_secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
   function_name = "swap"
 
   function_args = [
     Address.new("GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"),
+    Address.new("GDAH3LPNC32U2HLJ4UKDSG2HSJN65XTMZKAZII4Z4NOAFFWJTI2PUN5W"),
     Int128.new(100),
     Int128.new(4500)
   ]
 
-  auth_secret_key = "SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK"
+  auth_secret_keys = [
+    "SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK",
+    "SDLOYUOMX67YX6NK7TZLWTGYU3V4FIEBL5RFRX36EYDZ4OM46VSJXV7C"
+  ]
 
-  Contract.invoke(contract_address, source_secret_key, function_name, function_args, auth_secret_key)
+  Contract.invoke(
+    contract_address,
+    source_secret_key,
+    function_name,
+    function_args,
+    auth_secret_keys
+  )
 
   {:ok,
     %Soroban.RPC.SendTransactionResponse{
@@ -655,6 +665,207 @@ secret_key = "SCA..."
   latest_ledger_close_time: "16",
   error_result_xdr: nil
 }}
+
+```
+
+#### BumpFootprint operation
+
+##### Bump contract
+
+Extends a contract instance lifetime.
+
+**Parameters**
+
+- `contract_address`: Identifier of the contract to be bumped, encoded as `StrKey`.
+- `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
+- `ledgers_to_bump`: The number of ledgers wanted to extend the contract lifetime.
+
+```elixir
+alias Soroban.Contract
+alias Soroban.RPC.SendTransactionResponse
+
+contract_address = "CD43KXYLGORRXFATEUD3OKOQG4PIKLFL55FRETM3CPHI2WUF2NMFIEUM"
+secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
+ledgers_to_bump = 100_000
+
+{:ok, %SendTransactionResponse{hash: hash}} =
+  Contract.bump_contract(contract_address, secret_key, ledgers_to_bump)
+
+{:ok,
+ %Soroban.RPC.SendTransactionResponse{
+   status: "PENDING",
+   hash: "2f6f...",
+   latest_ledger: "279954",
+   latest_ledger_close_time: "1691441432",
+   error_result_xdr: nil
+}}
+
+```
+
+##### Bump contract wasm
+
+Extends the lifetime of a contract's uploaded wasm code.
+
+**Parameters**
+
+- `wasm_id`: Binary identification of an uploaded contract.
+- `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
+- `ledgers_to_bump`: The number of ledgers wanted to extend the wasm lifetime.
+
+```elixir
+alias Soroban.Contract
+alias Soroban.RPC.SendTransactionResponse
+
+wasm_id = "067eb7ba419edd3e946e08eb17a81fbe1e850e690ed7692160875c2b65b45f21"
+secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
+ledgers_to_bump = 100_000
+
+{:ok, %SendTransactionResponse{hash: hash}} =
+  Contract.bump_contract_wasm(wasm_id, secret_key, ledgers_to_bump)
+
+{:ok,
+ %Soroban.RPC.SendTransactionResponse{
+   status: "PENDING",
+   hash: "2f6f...",
+   latest_ledger: "279954",
+   latest_ledger_close_time: "1691441432",
+   error_result_xdr: nil
+}}
+
+```
+
+##### Bump contract keys
+
+Extends the lifetime of a contract's data entry keys.
+
+**Parameters**
+
+- `contract_address`: Identifier of the contract to be bumped, encoded as `StrKey`.
+- `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
+- `ledgers_to_bump`: The number of ledgers wanted to extend the contract lifetime.
+- `keys`: A list of tuples indicating the durability and the name of the data entry, to increase its lifetime.
+  - `durability`: Allowed types `:persistent`, `:temporary`
+  - `data entry`: Any `String` that is 32 characters or less.
+
+```elixir
+alias Soroban.Contract
+alias Soroban.RPC.SendTransactionResponse
+
+contract_address = "CD43KXYLGORRXFATEUD3OKOQG4PIKLFL55FRETM3CPHI2WUF2NMFIEUM"
+secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
+ledgers_to_bump = 100_000
+keys =  [{:persistent, "Prst"}, {:temporary, "Tmp"}]
+
+{:ok, %SendTransactionResponse{hash: hash}} =
+  Contract.bump_contract_keys(contract_address, secret_key, ledgers_to_bump, keys)
+
+{:ok,
+ %Soroban.RPC.SendTransactionResponse{
+   status: "PENDING",
+   hash: "2f6f...",
+   latest_ledger: "279954",
+   latest_ledger_close_time: "1691441432",
+   error_result_xdr: nil
+}}
+
+```
+
+#### RestoreFootprint operation
+
+##### Restore contract
+
+Restores a contract instance.
+
+**Parameters**
+
+- `contract_address`: Identifier of the contract to be restored, encoded as `StrKey`.
+- `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
+
+```elixir
+alias Soroban.Contract
+alias Soroban.RPC.SendTransactionResponse
+
+contract_address = "CD43KXYLGORRXFATEUD3OKOQG4PIKLFL55FRETM3CPHI2WUF2NMFIEUM"
+secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
+
+{:ok, %SendTransactionResponse{hash: hash}} =
+  Contract.restore_contract(contract_address, secret_key)
+
+{:ok,
+ %Soroban.RPC.SendTransactionResponse{
+   status: "PENDING",
+   hash: "eedb...",
+   latest_ledger: "295506",
+   latest_ledger_close_time: "1691523150",
+   error_result_xdr: nil
+ }}
+
+```
+
+##### Restore contract wasm
+
+Restores a contract uploaded wasm code.
+
+> **Note**: When restoring a contract wasm make sure the contract wasn't re-uploaded, because the transaction could succeed but, since the `wasm_id` changed, the restored one will continue not working.
+
+**Parameters**
+
+- `wasm_id`: Binary identification of an uploaded contract.
+- `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
+
+```elixir
+alias Soroban.Contract
+alias Soroban.RPC.SendTransactionResponse
+
+wasm_id = "067eb7ba419edd3e946e08eb17a81fbe1e850e690ed7692160875c2b65b45f21"
+secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
+
+{:ok, %SendTransactionResponse{hash: hash}} = Contract.restore_contract_wasm(wasm_id, secret_key)
+
+{:ok,
+ %Soroban.RPC.SendTransactionResponse{
+   status: "PENDING",
+   hash: "eedb...",
+   latest_ledger: "295508",
+   latest_ledger_close_time: "1691523689",
+   error_result_xdr: nil
+ }}
+
+```
+
+##### Restore contract keys
+
+Restore contract's data entry keys.
+
+> **Note**: Only `persistent` data entries are allowed because temporary entries cannot be restored as they are permanently deleted when they expire.
+
+**Parameters**
+
+- `contract_address`: Identifier of the contract to be restored, encoded as `StrKey`.
+- `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
+- `keys`: A keyword list indicating the durability and the name of the data entry, to restore.
+  - `durability`: Allowed types `:persistent`
+  - `data entry`: Any `String` that is 32 characters or less.
+
+```elixir
+alias Soroban.Contract
+alias Soroban.RPC.SendTransactionResponse
+
+contract_address = "CD43KXYLGORRXFATEUD3OKOQG4PIKLFL55FRETM3CPHI2WUF2NMFIEUM"
+secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
+keys =  [persistent: ["Prst"]]
+
+{:ok, %SendTransactionResponse{hash: hash}} =
+  Contract.restore_contract_keys(contract_address, secret_key, keys)
+
+{:ok,
+ %Soroban.RPC.SendTransactionResponse{
+   status: "PENDING",
+   hash: "0521...",
+   latest_ledger: "295768",
+   latest_ledger_close_time: "1691524532",
+   error_result_xdr: nil
+ }}
 
 ```
 
