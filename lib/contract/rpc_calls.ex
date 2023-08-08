@@ -11,7 +11,7 @@ defmodule Soroban.Contract.RPCCalls do
   }
 
   alias Stellar.TxBuild
-  alias Stellar.TxBuild.BumpFootprintExpiration
+  alias Stellar.TxBuild.{BumpFootprintExpiration, RestoreFootprint}
   alias Stellar.TxBuild.SorobanTransactionData, as: TxSorobanTransactionData
   alias StellarBase.XDR.{SorobanTransactionData, UInt32}
 
@@ -24,11 +24,14 @@ defmodule Soroban.Contract.RPCCalls do
     SorobanAuthorizationEntry
   }
 
+  @type error :: {:error, atom()}
+  @type validation :: {:ok, any()} | error()
   @type account :: Account.t()
   @type auths :: list(String.t()) | nil
   @type auth_secret_key :: String.t() | nil
   @type envelope_xdr :: String.t()
-  @type operation :: InvokeHostFunction.t() | BumpFootprintExpiration.t()
+  @type footprint_operations :: BumpFootprintExpiration.t() | RestoreFootprint.t()
+  @type operation :: InvokeHostFunction.t() | footprint_operations()
   @type simulate_response :: {:ok, SimulateTransactionResponse.t()}
   @type send_response :: {:ok, SendTransactionResponse.t()}
   @type signature :: Signature.t()
@@ -103,7 +106,7 @@ defmodule Soroban.Contract.RPCCalls do
         )
 
       %BaseFee{fee: base_fee} = BaseFee.new()
-      fee = BaseFee.new(base_fee + min_resource_fee + round(min_resource_fee * 0.01))
+      fee = BaseFee.new(base_fee + min_resource_fee + round(min_resource_fee * 0.05))
 
       {:ok, envelope_xdr} =
         source_account
@@ -122,34 +125,38 @@ defmodule Soroban.Contract.RPCCalls do
         {:ok,
          %SimulateTransactionResponse{
            transaction_data: transaction_data,
-           min_resource_fee: min_resource_fee
+           min_resource_fee: min_resource_fee,
+           results: results
          }},
         source_account,
         sequence_number,
         signature,
-        %BumpFootprintExpiration{} = operation,
+        operation,
         _auth_secret_keys
-      ) do
-    {transaction_data, min_resource_fee} =
-      process_transaction_response(
-        transaction_data,
-        String.to_integer(min_resource_fee),
-        nil
       )
+      when is_list(results) do
+    with {:ok, operation} <- validate_operation(operation) do
+      {transaction_data, min_resource_fee} =
+        process_transaction_response(
+          transaction_data,
+          String.to_integer(min_resource_fee),
+          nil
+        )
 
-    %BaseFee{fee: base_fee} = BaseFee.new()
-    fee = BaseFee.new(base_fee + min_resource_fee)
+      %BaseFee{fee: base_fee} = BaseFee.new()
+      fee = BaseFee.new(base_fee + min_resource_fee)
 
-    {:ok, envelope_xdr} =
-      source_account
-      |> TxBuild.new(sequence_number: sequence_number)
-      |> TxBuild.add_operation(operation)
-      |> Stellar.TxBuild.set_base_fee(fee)
-      |> Stellar.TxBuild.set_soroban_data(transaction_data)
-      |> TxBuild.sign(signature)
-      |> TxBuild.envelope()
+      {:ok, envelope_xdr} =
+        source_account
+        |> TxBuild.new(sequence_number: sequence_number)
+        |> TxBuild.add_operation(operation)
+        |> Stellar.TxBuild.set_base_fee(fee)
+        |> Stellar.TxBuild.set_soroban_data(transaction_data)
+        |> TxBuild.sign(signature)
+        |> TxBuild.envelope()
 
-    RPC.send_transaction(envelope_xdr)
+      RPC.send_transaction(envelope_xdr)
+    end
   end
 
   def send_transaction(
@@ -189,7 +196,7 @@ defmodule Soroban.Contract.RPCCalls do
       )
 
     %BaseFee{fee: base_fee} = BaseFee.new()
-    fee = BaseFee.new(base_fee + min_resource_fee + round(min_resource_fee * 0.01))
+    fee = BaseFee.new(base_fee + min_resource_fee + round(min_resource_fee * 0.05))
 
     {:ok, envelope_xdr} =
       source_account
@@ -249,6 +256,11 @@ defmodule Soroban.Contract.RPCCalls do
 
   defp set_host_function_auth(_invoke_host_function_op, _auths, _auth_secret_keys),
     do: {:error, :invalid_auth_secret_keys_length}
+
+  @spec validate_operation(operation :: footprint_operations()) :: validation()
+  defp validate_operation(%BumpFootprintExpiration{} = operation), do: {:ok, operation}
+  defp validate_operation(%RestoreFootprint{} = operation), do: {:ok, operation}
+  defp validate_operation(_operation), do: {:error, :invalid_operation}
 
   # This function is needed since when the function invoker is not the function authorizer
   # the transaction data returns min_resource_fee and instructions with wrong values.
