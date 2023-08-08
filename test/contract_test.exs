@@ -68,7 +68,8 @@ defmodule Soroban.ContractTest do
 
   alias Soroban.RPC.{
     CannedContractClientImpl,
-    SendTransactionResponse
+    SendTransactionResponse,
+    SimulateTransactionResponse
   }
 
   alias Stellar.Horizon.Client.CannedContractAccountRequests
@@ -176,6 +177,31 @@ defmodule Soroban.ContractTest do
         function_name,
         function_args,
         auth_secret_keys
+      )
+  end
+
+  test "simulate_invoke/5", %{
+    contract_address: contract_address,
+    source_public: source_public,
+    function_name: function_name
+  } do
+    {:ok,
+     %SimulateTransactionResponse{
+       transaction_data:
+         "AAAAAAAAAAIAAAAGAAAAAfZ2qpskZkwsIQ1nJ2CcyvWbV+064IzGKhcEFrM3F9EgAAAAFAAAAAEAAAAAAAAAB5g18rNSrgYpg/O7tgIlBv42+QqjpEFv6gEqW+oDFUZbAAAAAAAAAAAANYvgAAAUOAAAAAAAAADwAAAAAAAAAC8=",
+       events: nil,
+       min_resource_fee: "79488",
+       results: [
+         %{auth: nil, xdr: "AAAAEAAAAAEAAAACAAAADwAAAAVIZWxsbwAAAAAAAA8AAAAFd29ybGQAAAA="}
+       ],
+       cost: %{cpu_insns: "1048713", mem_bytes: "1201148"},
+       latest_ledger: "475528",
+       error: nil
+     }} =
+      Contract.simulate_invoke(
+        contract_address,
+        source_public,
+        function_name
       )
   end
 

@@ -292,7 +292,7 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
     end)
 
     %{
-      contract_id: "CD3HNKU3ERTEYLBBBVTSOYE4ZL2ZWV7NHLQIZRRKC4CBNMZXC7ISBXHV",
+      contract_address: "CD3HNKU3ERTEYLBBBVTSOYE4ZL2ZWV7NHLQIZRRKC4CBNMZXC7ISBXHV",
       source_public: "GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM",
       # GBNDWIM7DPYZJ2RLJ3IESXBIO4C2SVF6PWZXS3DLODJSBQWBMKY5U4M3
       source_secret: "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24",
@@ -313,7 +313,7 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
   end
 
   test "invoke host function without authorization", %{
-    contract_id: contract_id,
+    contract_address: contract_address,
     source_secret: source_secret,
     function_name: function_name,
     function_args: function_args
@@ -327,7 +327,7 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
        error_result_xdr: nil
      }} =
       InvokeContractFunction.invoke(
-        contract_id,
+        contract_address,
         source_secret,
         function_name,
         function_args
@@ -335,7 +335,7 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
   end
 
   test "invoke host function without signed authorization", %{
-    contract_id: contract_id,
+    contract_address: contract_address,
     source_secret_with_auth: source_secret_with_auth,
     function_name: function_name,
     function_args: function_args
@@ -349,7 +349,7 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
        error_result_xdr: nil
      }} =
       InvokeContractFunction.invoke(
-        contract_id,
+        contract_address,
         source_secret_with_auth,
         function_name,
         function_args
@@ -357,7 +357,7 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
   end
 
   test "invoke host function with signed authorization", %{
-    contract_id: contract_id,
+    contract_address: contract_address,
     source_secret_with_auths: source_secret_with_auths,
     function_name: function_name,
     function_args: function_args,
@@ -372,7 +372,7 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
        error_result_xdr: nil
      }} =
       InvokeContractFunction.invoke(
-        contract_id,
+        contract_address,
         source_secret_with_auths,
         function_name,
         function_args,
@@ -380,8 +380,39 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
       )
   end
 
+  test "simulate invoke", %{
+    contract_address: contract_address,
+    source_public: source_public,
+    function_name: function_name,
+    function_args: function_args
+  } do
+    {:ok,
+     %SimulateTransactionResponse{
+       transaction_data:
+         "AAAAAAAAAAIAAAAGAAAAAfZ2qpskZkwsIQ1nJ2CcyvWbV+064IzGKhcEFrM3F9EgAAAAFAAAAAEAAAAAAAAAB5g18rNSrgYpg/O7tgIlBv42+QqjpEFv6gEqW+oDFUZbAAAAAAAAAAAANYvgAAAUOAAAAAAAAADwAAAAAAAAAC8=",
+       events: nil,
+       min_resource_fee: "79488",
+       results: [
+         %{
+           auth: nil,
+           events: nil,
+           xdr: "AAAAEAAAAAEAAAACAAAADwAAAAVIZWxsbwAAAAAAAA8AAAAFd29ybGQAAAA="
+         }
+       ],
+       cost: %{cpu_insns: "1052105", mem_bytes: "1201148"},
+       latest_ledger: "690189",
+       error: nil
+     }} =
+      InvokeContractFunction.simulate_invoke(
+        contract_address,
+        source_public,
+        function_name,
+        function_args
+      )
+  end
+
   test "invoke host function invalid length of auth keys", %{
-    contract_id: contract_id,
+    contract_address: contract_address,
     source_secret_auths_error: source_secret_auths_error,
     function_name: function_name,
     function_args: function_args,
@@ -389,7 +420,7 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
   } do
     {:error, :invalid_auth_secret_keys_length} =
       InvokeContractFunction.invoke(
-        contract_id,
+        contract_address,
         source_secret_auths_error,
         function_name,
         function_args,
@@ -398,7 +429,7 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
   end
 
   test "invoke host function with simulate error", %{
-    contract_id: contract_id,
+    contract_address: contract_address,
     source_secret_with_error: source_secret_with_error,
     function_name: function_name,
     function_args: function_args
@@ -408,7 +439,7 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
        error: "error"
      }} =
       InvokeContractFunction.invoke(
-        contract_id,
+        contract_address,
         source_secret_with_error,
         function_name,
         function_args
@@ -416,7 +447,7 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
   end
 
   test "retrieve_unsigned_xdr_to_invoke without authorization", %{
-    contract_id: contract_id,
+    contract_address: contract_address,
     source_public: source_public,
     function_name: function_name,
     function_args: function_args,
@@ -424,7 +455,7 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
   } do
     ^xdr_envelope =
       InvokeContractFunction.retrieve_unsigned_xdr_to_invoke(
-        contract_id,
+        contract_address,
         source_public,
         function_name,
         function_args
@@ -432,7 +463,7 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
   end
 
   test "retrieve_unsigned_xdr_to_invoke host function with simulate error", %{
-    contract_id: contract_id,
+    contract_address: contract_address,
     source_public_with_error: source_public_with_error,
     function_name: function_name,
     function_args: function_args
@@ -442,7 +473,7 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
        error: "error"
      }} =
       InvokeContractFunction.retrieve_unsigned_xdr_to_invoke(
-        contract_id,
+        contract_address,
         source_public_with_error,
         function_name,
         function_args
