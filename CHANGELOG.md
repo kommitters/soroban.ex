@@ -1,12 +1,14 @@
 # Changelog
 
-## 0.13.0 (08.08.2023)
+## 0.13.0 (09.08.2023)
 
 - [Allow invocation with invoker authorization](https://github.com/kommitters/soroban.ex/issues/103).
 - [Add BumpFootprintExpiration operation](https://github.com/kommitters/soroban.ex/issues/104).
 - [Add RestoreFootprint operation](https://github.com/kommitters/soroban.ex/issues/105).
 - Allow to use simulate tx in contract functions invocation.
 - Update all dependencies.
+- Add `builds.hex.pm` to allowed-endpoints in CD.
+- Update harden-runner action to v2.5.1.
 
 ## 0.12.0 (28.07.2023)
 
