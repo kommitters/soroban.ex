@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.14.0 (05.09.2023)
+
+- Allow to add custom extra fee rate when invoking functions.
+- Update all dependencies.
+
 ## 0.13.0 (09.08.2023)
 
 - [Allow invocation with invoker authorization](https://github.com/kommitters/soroban.ex/issues/103).

@@ -84,6 +84,7 @@ defmodule Soroban.ContractTest do
     end)
 
     %{
+      extra_fee_rate: 0.05,
       contract_address: "CD3HNKU3ERTEYLBBBVTSOYE4ZL2ZWV7NHLQIZRRKC4CBNMZXC7ISBXHV",
       source_public: "GBNDWIM7DPYZJ2RLJ3IESXBIO4C2SVF6PWZXS3DLODJSBQWBMKY5U4M3",
       source_secret: "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24",
@@ -102,15 +103,15 @@ defmodule Soroban.ContractTest do
       keys: [{:temporary, "Tmp"}, {:persistent, "Per"}],
       ledgers_to_bump: 100_000,
       xdr_envelope:
-        "AAAAAgAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gABRmoABPEIAAAAPgAAAAAAAAAAAAAAAQAAAAEAAAAAWjshnxvxlOorTtBJXCh3BalUvn2zeWxrcNMgwsFisdoAAAAYAAAAAAAAAAMAAAASAAAAAfZ2qpskZkwsIQ1nJ2CcyvWbV+064IzGKhcEFrM3F9EgAAAADwAAAA1mdW5jdGlvbl9uYW1lAAAAAAAADwAAAANBcmcAAAAAAAAAAAEAAAAAAAAAAgAAAAYAAAAB9naqmyRmTCwhDWcnYJzK9ZtX7TrgjMYqFwQWszcX0SAAAAAUAAAAAQAAAAAAAAAHmDXys1KuBimD87u2AiUG/jb5CqOkQW/qASpb6gMVRlsAAAAAAAAAAAA1i+AAABQ4AAAAAAAAAPAAAAAAAAAALwAAAAA=",
+        "AAAAAgAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gABNuQABPEIAAAAPgAAAAAAAAAAAAAAAQAAAAEAAAAAWjshnxvxlOorTtBJXCh3BalUvn2zeWxrcNMgwsFisdoAAAAYAAAAAAAAAAMAAAASAAAAAfZ2qpskZkwsIQ1nJ2CcyvWbV+064IzGKhcEFrM3F9EgAAAADwAAAA1mdW5jdGlvbl9uYW1lAAAAAAAADwAAAANBcmcAAAAAAAAAAAEAAAAAAAAAAgAAAAYAAAAB9naqmyRmTCwhDWcnYJzK9ZtX7TrgjMYqFwQWszcX0SAAAAAUAAAAAQAAAAAAAAAHmDXys1KuBimD87u2AiUG/jb5CqOkQW/qASpb6gMVRlsAAAAAAAAAAAA1i+AAABQ4AAAAAAAAAPAAAAAAAAAALwAAAAA=",
       no_args_xdr_envelope:
-        "AAAAAgAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gABRmoABPEIAAAAPgAAAAAAAAAAAAAAAQAAAAEAAAAAWjshnxvxlOorTtBJXCh3BalUvn2zeWxrcNMgwsFisdoAAAAYAAAAAAAAAAIAAAASAAAAAfZ2qpskZkwsIQ1nJ2CcyvWbV+064IzGKhcEFrM3F9EgAAAADwAAAA1mdW5jdGlvbl9uYW1lAAAAAAAAAAAAAAEAAAAAAAAAAgAAAAYAAAAB9naqmyRmTCwhDWcnYJzK9ZtX7TrgjMYqFwQWszcX0SAAAAAUAAAAAQAAAAAAAAAHmDXys1KuBimD87u2AiUG/jb5CqOkQW/qASpb6gMVRlsAAAAAAAAAAAA1i+AAABQ4AAAAAAAAAPAAAAAAAAAALwAAAAA=",
+        "AAAAAgAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gABNuQABPEIAAAAPgAAAAAAAAAAAAAAAQAAAAEAAAAAWjshnxvxlOorTtBJXCh3BalUvn2zeWxrcNMgwsFisdoAAAAYAAAAAAAAAAIAAAASAAAAAfZ2qpskZkwsIQ1nJ2CcyvWbV+064IzGKhcEFrM3F9EgAAAADwAAAA1mdW5jdGlvbl9uYW1lAAAAAAAAAAAAAAEAAAAAAAAAAgAAAAYAAAAB9naqmyRmTCwhDWcnYJzK9ZtX7TrgjMYqFwQWszcX0SAAAAAUAAAAAQAAAAAAAAAHmDXys1KuBimD87u2AiUG/jb5CqOkQW/qASpb6gMVRlsAAAAAAAAAAAA1i+AAABQ4AAAAAAAAAPAAAAAAAAAALwAAAAA=",
       upload_xdr_envelope:
-        "AAAAAgAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gABRmoABPEIAAAAPgAAAAAAAAAAAAAAAQAAAAAAAAAYAAAAAgAAADIAYXNtAQAAAAFBDGABfgF+YAJ+fgF+YAN+fn4BfmAAAX5gBH5+fn4BfmABfgF/YAJ/fgAAAAAAAAAAAAEAAAAAAAAAAgAAAAYAAAAB9naqmyRmTCwhDWcnYJzK9ZtX7TrgjMYqFwQWszcX0SAAAAAUAAAAAQAAAAAAAAAHmDXys1KuBimD87u2AiUG/jb5CqOkQW/qASpb6gMVRlsAAAAAAAAAAAA1i+AAABQ4AAAAAAAAAPAAAAAAAAAALwAAAAA=",
+        "AAAAAgAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gABNuQABPEIAAAAPgAAAAAAAAAAAAAAAQAAAAAAAAAYAAAAAgAAADIAYXNtAQAAAAFBDGABfgF+YAJ+fgF+YAN+fn4BfmAAAX5gBH5+fn4BfmABfgF/YAJ/fgAAAAAAAAAAAAEAAAAAAAAAAgAAAAYAAAAB9naqmyRmTCwhDWcnYJzK9ZtX7TrgjMYqFwQWszcX0SAAAAAUAAAAAQAAAAAAAAAHmDXys1KuBimD87u2AiUG/jb5CqOkQW/qASpb6gMVRlsAAAAAAAAAAAA1i+AAABQ4AAAAAAAAAPAAAAAAAAAALwAAAAA=",
       deploy_xdr_envelope:
         "AAAAAgAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gAAAGQABPEIAAAAPgAAAAAAAAAAAAAAAQAAAAAAAAAYAAAAAgAAACBC0CMoUj8YPgChW8guZS0Y2IyCqf7ZC4MtCZcFwrzNGgAAAAIAAAAGFNBLmawioIDIHGB7cDLoh6p62MIZLDte5H48CfIdpd0AAAAUAAAABwqCq7aoMU3MQSfhfSV/txr5cNzbWBsArvIc8VLG7qcCAAAAAAAAAAAAAAAAAAAAAA==",
       asset_deploy_xdr_envelope:
-        "AAAAAgAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gABRmoABPEIAAAAPgAAAAAAAAAAAAAAAQAAAAAAAAAYAAAAAQAAAAEAAAABWlpaAAAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gAAAAEAAAAAAAAAAQAAAAAAAAACAAAABgAAAAH2dqqbJGZMLCENZydgnMr1m1ftOuCMxioXBBazNxfRIAAAABQAAAABAAAAAAAAAAeYNfKzUq4GKYPzu7YCJQb+NvkKo6RBb+oBKlvqAxVGWwAAAAAAAAAAADWL4AAAFDgAAAAAAAAA8AAAAAAAAAAvAAAAAA=="
+        "AAAAAgAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gABNuQABPEIAAAAPgAAAAAAAAAAAAAAAQAAAAAAAAAYAAAAAQAAAAEAAAABWlpaAAAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gAAAAEAAAAAAAAAAQAAAAAAAAACAAAABgAAAAH2dqqbJGZMLCENZydgnMr1m1ftOuCMxioXBBazNxfRIAAAABQAAAABAAAAAAAAAAeYNfKzUq4GKYPzu7YCJQb+NvkKo6RBb+oBKlvqAxVGWwAAAAAAAAAAADWL4AAAFDgAAAAAAAAA8AAAAAAAAAAvAAAAAA=="
     }
   end
 
@@ -156,12 +157,12 @@ defmodule Soroban.ContractTest do
       )
   end
 
-  test "invoke/5 with args and auth_secret_keys", %{
-    auth_secret_keys: auth_secret_keys,
+  test "invoke/5 with args and fix fee", %{
     contract_address: contract_address,
     source_secret: source_secret,
     function_name: function_name,
-    function_args: function_args
+    function_args: function_args,
+    extra_fee_rate: extra_fee_rate
   } do
     {:ok,
      %SendTransactionResponse{
@@ -176,6 +177,32 @@ defmodule Soroban.ContractTest do
         source_secret,
         function_name,
         function_args,
+        extra_fee_rate
+      )
+  end
+
+  test "invoke/5 with args and auth_secret_keys", %{
+    auth_secret_keys: auth_secret_keys,
+    contract_address: contract_address,
+    source_secret: source_secret,
+    function_name: function_name,
+    function_args: function_args,
+    extra_fee_rate: extra_fee_rate
+  } do
+    {:ok,
+     %SendTransactionResponse{
+       status: "PENDING",
+       hash: "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4",
+       latest_ledger: "476420",
+       latest_ledger_close_time: "1683150612",
+       error_result_xdr: nil
+     }} =
+      Contract.invoke(
+        contract_address,
+        source_secret,
+        function_name,
+        function_args,
+        extra_fee_rate,
         auth_secret_keys
       )
   end
