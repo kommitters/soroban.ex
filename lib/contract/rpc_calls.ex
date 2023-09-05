@@ -73,7 +73,7 @@ defmodule Soroban.Contract.RPCCalls do
           signature :: signature(),
           operation :: operation(),
           auth_secret_key :: auth_secret_key(),
-          fix_fee :: float()
+          extra_fee_rate :: float()
         ) :: send_response() | simulate_response()
   def send_transaction(
         _simulate_transaction,
@@ -82,7 +82,7 @@ defmodule Soroban.Contract.RPCCalls do
         _signature,
         _invoke_host_function_op,
         auth_secret_key \\ nil,
-        fix_fee \\ 0.0
+        extra_fee_rate \\ 0.0
       )
 
   def send_transaction(
@@ -97,7 +97,7 @@ defmodule Soroban.Contract.RPCCalls do
         signature,
         %InvokeHostFunction{} = operation,
         auth_secret_keys,
-        fix_fee
+        extra_fee_rate
       ) do
     with %InvokeHostFunction{} = invoke_host_function_op <-
            set_host_function_auth(operation, auth, auth_secret_keys) do
@@ -109,7 +109,7 @@ defmodule Soroban.Contract.RPCCalls do
         )
 
       %BaseFee{fee: base_fee} = BaseFee.new()
-      fee = BaseFee.new(base_fee + min_resource_fee + round(min_resource_fee * fix_fee))
+      fee = BaseFee.new(base_fee + min_resource_fee + round(min_resource_fee * extra_fee_rate))
 
       {:ok, envelope_xdr} =
         source_account
@@ -136,7 +136,7 @@ defmodule Soroban.Contract.RPCCalls do
         signature,
         operation,
         _auth_secret_keys,
-        fix_fee
+        extra_fee_rate
       )
       when is_list(results) do
     with {:ok, operation} <- validate_operation(operation) do
@@ -148,7 +148,7 @@ defmodule Soroban.Contract.RPCCalls do
         )
 
       %BaseFee{fee: base_fee} = BaseFee.new()
-      fee = BaseFee.new(base_fee + min_resource_fee + round(min_resource_fee * fix_fee))
+      fee = BaseFee.new(base_fee + min_resource_fee + round(min_resource_fee * extra_fee_rate))
 
       {:ok, envelope_xdr} =
         source_account
@@ -170,7 +170,7 @@ defmodule Soroban.Contract.RPCCalls do
         _signature,
         _invoke_host_function_op,
         _auth_secret_key,
-        _fix_fee
+        _extra_fee_rate
       ),
       do: response
 
@@ -179,14 +179,14 @@ defmodule Soroban.Contract.RPCCalls do
           source_account :: account(),
           sequence_number :: sequence_number(),
           invoke_host_function_op :: operation(),
-          fix_fee :: float()
+          extra_fee_rate :: float()
         ) :: envelope_xdr() | simulate_response()
   def retrieve_unsigned_xdr(
         _simulate_response,
         _source_account,
         _sequence_number,
         _invoke_host_function_op,
-        fix_fee \\ 0.0
+        extra_fee_rate \\ 0.0
       )
 
   def retrieve_unsigned_xdr(
@@ -199,7 +199,7 @@ defmodule Soroban.Contract.RPCCalls do
         source_account,
         sequence_number,
         invoke_host_function_op,
-        fix_fee
+        extra_fee_rate
       ) do
     invoke_host_function_op = set_host_function_auth(invoke_host_function_op, auth, [])
 
@@ -211,7 +211,7 @@ defmodule Soroban.Contract.RPCCalls do
       )
 
     %BaseFee{fee: base_fee} = BaseFee.new()
-    fee = BaseFee.new(base_fee + min_resource_fee + round(min_resource_fee * fix_fee))
+    fee = BaseFee.new(base_fee + min_resource_fee + round(min_resource_fee * extra_fee_rate))
 
     {:ok, envelope_xdr} =
       source_account
@@ -229,7 +229,7 @@ defmodule Soroban.Contract.RPCCalls do
         _source_account,
         _sequence_number,
         _invoke_host_function_op,
-        _fix_fee
+        _extra_fee_rate
       ),
       do: response
 

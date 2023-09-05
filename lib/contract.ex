@@ -17,7 +17,7 @@ defmodule Soroban.Contract do
                 source_secret_key,
                 function_name,
                 function_args \\ [],
-                fix_fee \\ 0.0,
+                extra_fee_rate \\ 0.0,
                 auth_secret_keys \\ []
               ),
               to: InvokeContractFunction,
@@ -82,7 +82,7 @@ defmodule Soroban.Contract do
                 source_public_key,
                 function_name,
                 function_args \\ [],
-                fix_fee \\ 0.0
+                extra_fee_rate \\ 0.0
               ),
               to: InvokeContractFunction,
               as: :retrieve_unsigned_xdr_to_invoke

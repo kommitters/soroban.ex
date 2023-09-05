@@ -39,7 +39,7 @@ defmodule Soroban.Contract.InvokeContractFunction do
           source_secret_key :: source_secret_key(),
           function_name :: function_name(),
           function_args :: function_args(),
-          fix_fee :: float(),
+          extra_fee_rate :: float(),
           auth_secret_keys :: auth_secret_keys()
         ) :: send_response()
   def invoke(
@@ -47,7 +47,7 @@ defmodule Soroban.Contract.InvokeContractFunction do
         source_secret_key,
         function_name,
         function_args,
-        fix_fee \\ 0.0,
+        extra_fee_rate \\ 0.0,
         auth_secret_keys \\ []
       ) do
     with {public_key, _secret} = keypair <- Stellar.KeyPair.from_secret_seed(source_secret_key),
@@ -66,7 +66,7 @@ defmodule Soroban.Contract.InvokeContractFunction do
         signature,
         invoke_host_function_op,
         auth_secret_keys,
-        fix_fee
+        extra_fee_rate
       )
     end
   end
@@ -76,14 +76,14 @@ defmodule Soroban.Contract.InvokeContractFunction do
           source_public_key :: source_public_key(),
           function_name :: function_name(),
           function_args :: function_args(),
-          fix_fee :: float()
+          extra_fee_rate :: float()
         ) :: envelope_xdr()
   def retrieve_unsigned_xdr_to_invoke(
         contract_address,
         source_public_key,
         function_name,
         function_args,
-        fix_fee \\ 0.0
+        extra_fee_rate \\ 0.0
       ) do
     with {:ok, seq_num} <- Accounts.fetch_next_sequence_number(source_public_key),
          {:ok, function_args} <- convert_to_sc_val(function_args),
@@ -102,7 +102,7 @@ defmodule Soroban.Contract.InvokeContractFunction do
         source_account,
         sequence_number,
         invoke_host_function_op,
-        fix_fee
+        extra_fee_rate
       )
     end
   end

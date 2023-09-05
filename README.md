@@ -477,7 +477,7 @@ The deployment and invocation of Soroban smart contracts is done through the `So
 - `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
 - `function_name`: String indicating the name of the function to be invoked.
 - `function_args`: List of `Soroban.Types` representing the arguments required by the indicated function (`function_name`). They should be provided in the specific order expected by the function.
-- `fix_fee`: Float number to increment the transaction fee to pay, useful when the operation returns an insufficient fee error. 
+- `extra_fee_rate`: Float number to increment the transaction fee to pay, useful when the operation returns an insufficient fee error.
 - `auth_secret_key`: (optional) Secret key used to authorize the function invocation when the function invoker is not the same function authorizer.
 
 ##### Simple invocation - no authorization required
@@ -544,7 +544,7 @@ Contract.invoke(contract_address, source_secret_key, function_name, function_arg
 
   contract_address = "CD43KXYLGORRXFATEUD3OKOQG4PIKLFL55FRETM3CPHI2WUF2NMFIEUM"
   source_secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
-  fix_fee = 0.05
+  extra_fee_rate = 0.05
   function_name = "swap"
 
   function_args = [
@@ -564,7 +564,7 @@ Contract.invoke(contract_address, source_secret_key, function_name, function_arg
     source_secret_key,
     function_name,
     function_args,
-    fix_fee,
+    extra_fee_rate,
     auth_secret_keys
   )
 
@@ -886,7 +886,7 @@ This XDR is required by wallets to sign transactions before they can be submitte
 - `source_public_key`: Public key of the function invoker responsible for signing the transaction.
 - `function_name`: String value indicating the name of the function to be invoked.
 - `function_args`: List of `Soroban.Types` representing the arguments required by the indicated function (`function_name`). They should be provided in the specific order expected by the function.
-- `fix_fee`: Float number to increment the transaction fee to pay, useful when the operation returns an insufficient fee error. 
+- `extra_fee_rate`: Float number to increment the transaction fee to pay, useful when the operation returns an insufficient fee error.
 
 ```elixir
 alias Soroban.Contract
@@ -894,7 +894,7 @@ alias Soroban.Types.String
 
 contract_address = "CD3HNKU3ERTEYLBBBVTSOYE4ZL2ZWV7NHLQIZRRKC4CBNMZXC7ISBXHV"
 source_public_key = "GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"
-fix_fee = 0.05
+extra_fee_rate = 0.05
 function_name = "hello"
 
 function_args = [String.new("world")]
@@ -904,7 +904,7 @@ Contract.retrieve_unsigned_xdr_to_invoke(
   source_public_key,
   function_name,
   function_args,
-  fix_fee
+  extra_fee_rate
 )
 
 "AAAAAgAAAAD...QAAAAAAAAAAAAAAAAAAAAA="

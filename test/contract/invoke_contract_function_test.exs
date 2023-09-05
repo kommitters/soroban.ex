@@ -292,7 +292,7 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
     end)
 
     %{
-      fix_fee: 0.05,
+      extra_fee_rate: 0.05,
       contract_address: "CD3HNKU3ERTEYLBBBVTSOYE4ZL2ZWV7NHLQIZRRKC4CBNMZXC7ISBXHV",
       source_public: "GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM",
       # GBNDWIM7DPYZJ2RLJ3IESXBIO4C2SVF6PWZXS3DLODJSBQWBMKY5U4M3
@@ -363,7 +363,7 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
     function_name: function_name,
     function_args: function_args,
     auth_secret_keys: auth_secret_keys,
-    fix_fee: fix_fee
+    extra_fee_rate: extra_fee_rate
   } do
     {:ok,
      %SendTransactionResponse{
@@ -378,7 +378,7 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
         source_secret_with_auths,
         function_name,
         function_args,
-        fix_fee,
+        extra_fee_rate,
         auth_secret_keys
       )
   end
@@ -420,7 +420,7 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
     function_name: function_name,
     function_args: function_args,
     auth_secret_keys: auth_secret_keys,
-    fix_fee: fix_fee
+    extra_fee_rate: extra_fee_rate
   } do
     {:error, :invalid_auth_secret_keys_length} =
       InvokeContractFunction.invoke(
@@ -428,7 +428,7 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
         source_secret_auths_error,
         function_name,
         function_args,
-        fix_fee,
+        extra_fee_rate,
         auth_secret_keys
       )
   end
@@ -438,7 +438,7 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
     source_secret_with_error: source_secret_with_error,
     function_name: function_name,
     function_args: function_args,
-    fix_fee: fix_fee
+    extra_fee_rate: extra_fee_rate
   } do
     {:ok,
      %SimulateTransactionResponse{
@@ -449,7 +449,7 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
         source_secret_with_error,
         function_name,
         function_args,
-        fix_fee
+        extra_fee_rate
       )
   end
 
@@ -459,7 +459,7 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
     function_name: function_name,
     function_args: function_args,
     xdr_envelope: xdr_envelope,
-    fix_fee: fix_fee
+    extra_fee_rate: extra_fee_rate
   } do
     ^xdr_envelope =
       InvokeContractFunction.retrieve_unsigned_xdr_to_invoke(
@@ -467,7 +467,7 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
         source_public,
         function_name,
         function_args,
-        fix_fee
+        extra_fee_rate
       )
   end
 
