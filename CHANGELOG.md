@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.15.0 (21.09.2023)
+
+- [Soroban Preview 11 support](https://github.com/kommitters/soroban.ex/issues/126).
+
 ## 0.14.0 (05.09.2023)
 
 - Allow to add custom extra fee rate when invoking functions.
