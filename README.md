@@ -486,13 +486,14 @@ The deployment and invocation of Soroban smart contracts is done through the `So
 alias Soroban.Contract
 alias Soroban.Types.String
 
-contract_address = "CD3HNKU3ERTEYLBBBVTSOYE4ZL2ZWV7NHLQIZRRKC4CBNMZXC7ISBXHV"
+contract_address = "CAEYZ6JI5YV2CBI3NRRUNA2DMERJ4KLJTI76WDZBTWZ7VMPGY6JDIZD5"
 source_secret_key = "SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK"
+extra_fee_rate = 0.08
 function_name = "hello"
 
 function_args = [String.new("world")]
 
-Contract.invoke(contract_address, source_secret_key, function_name, function_args)
+Contract.invoke(contract_address, source_secret_key, function_name, function_args, extra_fee_rate)
 
 {:ok,
   %Soroban.RPC.SendTransactionResponse{
@@ -512,8 +513,9 @@ Contract.invoke(contract_address, source_secret_key, function_name, function_arg
   alias Soroban.Contract
   alias Soroban.Types.{Address, UInt128}
 
-  contract_address = "CD3HNKU3ERTEYLBBBVTSOYE4ZL2ZWV7NHLQIZRRKC4CBNMZXC7ISBXHV"
+  contract_address = "CAEYZ6JI5YV2CBI3NRRUNA2DMERJ4KLJTI76WDZBTWZ7VMPGY6JDIZD5"
   source_secret_key = "SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK"
+  extra_fee_rate = 0.08
   function_name = "inc"
 
   function_args = [
@@ -521,7 +523,7 @@ Contract.invoke(contract_address, source_secret_key, function_name, function_arg
     UInt128.new(2)
   ]
 
-  Contract.invoke(contract_address, source_secret_key, function_name, function_args)
+  Contract.invoke(contract_address, source_secret_key, function_name, function_args, extra_fee_rate)
 
   {:ok,
     %Soroban.RPC.SendTransactionResponse{
@@ -542,9 +544,9 @@ Contract.invoke(contract_address, source_secret_key, function_name, function_arg
   alias Soroban.Contract
   alias Soroban.Types.{Address, Int128}
 
-  contract_address = "CD43KXYLGORRXFATEUD3OKOQG4PIKLFL55FRETM3CPHI2WUF2NMFIEUM"
+  contract_address = "CAEYZ6JI5YV2CBI3NRRUNA2DMERJ4KLJTI76WDZBTWZ7VMPGY6JDIZD5"
   source_secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
-  extra_fee_rate = 0.05
+  extra_fee_rate = 0.1
   function_name = "swap"
 
   function_args = [
@@ -607,12 +609,6 @@ secret_key = "SCA..."
     error_result_xdr: nil
   }}
 
-wasm_id =
-  hash
-  |> RPC.get_transaction()
-  |> UploadContractCode.get_wasm_id()
-
-<<187, 187, 69, ...>>
 ```
 
 ##### Deploy Contract from WASM
@@ -687,7 +683,7 @@ Extends a contract instance lifetime.
 alias Soroban.Contract
 alias Soroban.RPC.SendTransactionResponse
 
-contract_address = "CD43KXYLGORRXFATEUD3OKOQG4PIKLFL55FRETM3CPHI2WUF2NMFIEUM"
+contract_address = "CAEYZ6JI5YV2CBI3NRRUNA2DMERJ4KLJTI76WDZBTWZ7VMPGY6JDIZD5"
 secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
 ledgers_to_bump = 100_000
 
@@ -754,7 +750,7 @@ Extends the lifetime of a contract's data entry keys.
 alias Soroban.Contract
 alias Soroban.RPC.SendTransactionResponse
 
-contract_address = "CD43KXYLGORRXFATEUD3OKOQG4PIKLFL55FRETM3CPHI2WUF2NMFIEUM"
+contract_address = "CAEYZ6JI5YV2CBI3NRRUNA2DMERJ4KLJTI76WDZBTWZ7VMPGY6JDIZD5"
 secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
 ledgers_to_bump = 100_000
 keys =  [{:persistent, "Prst"}, {:temporary, "Tmp"}]
@@ -788,7 +784,7 @@ Restores a contract instance.
 alias Soroban.Contract
 alias Soroban.RPC.SendTransactionResponse
 
-contract_address = "CD43KXYLGORRXFATEUD3OKOQG4PIKLFL55FRETM3CPHI2WUF2NMFIEUM"
+contract_address = "CAEYZ6JI5YV2CBI3NRRUNA2DMERJ4KLJTI76WDZBTWZ7VMPGY6JDIZD5"
 secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
 
 {:ok, %SendTransactionResponse{hash: hash}} =
@@ -854,7 +850,7 @@ Restore contract's data entry keys.
 alias Soroban.Contract
 alias Soroban.RPC.SendTransactionResponse
 
-contract_address = "CD43KXYLGORRXFATEUD3OKOQG4PIKLFL55FRETM3CPHI2WUF2NMFIEUM"
+contract_address = "CAEYZ6JI5YV2CBI3NRRUNA2DMERJ4KLJTI76WDZBTWZ7VMPGY6JDIZD5"
 secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
 keys =  [persistent: ["Prst"]]
 
@@ -892,9 +888,9 @@ This XDR is required by wallets to sign transactions before they can be submitte
 alias Soroban.Contract
 alias Soroban.Types.String
 
-contract_address = "CD3HNKU3ERTEYLBBBVTSOYE4ZL2ZWV7NHLQIZRRKC4CBNMZXC7ISBXHV"
+contract_address = "CAEYZ6JI5YV2CBI3NRRUNA2DMERJ4KLJTI76WDZBTWZ7VMPGY6JDIZD5"
 source_public_key = "GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"
-extra_fee_rate = 0.05
+extra_fee_rate = 0.08
 function_name = "hello"
 
 function_args = [String.new("world")]

@@ -42,7 +42,7 @@ defmodule Soroban.RPC.CannedDeployInvokeHostFunctionClientImpl do
     {:ok,
      %{
        transaction_data:
-         "AAAAAAAAAAEAAAAHuoVwkiq7sFT5+6wPecWIC3zW3SXzDactjjMN9VUNzQIAAAAAAAAAAQAAAAYAAAABCxVDbaJHB3G3QY/sKHyvedJ1xrL+PdkNSwifbUKPRpAAAAAUAAAAAQAAAAAAAX/UAAACyAAAAKQAAADYAAAAAAAAACs=",
+         "AAAAAAAAAAIAAAAGAAAAAQmM+SjuK6EFG2xjRoNDYSKeKWmaP+sPIZ2z+rHmx5I0AAAAFAAAAAEAAAAHjDfZjX1lF+yHF4743DgE1KQTRmGJtwRYh3hJXOzQ9k8AAAAAAE74MAAAGPAAAAAAAAAAAAAAAA0=",
        events: nil,
        min_resource_fee: "79488",
        results: [
