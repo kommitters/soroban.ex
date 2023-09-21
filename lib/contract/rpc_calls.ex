@@ -138,7 +138,7 @@ defmodule Soroban.Contract.RPCCalls do
         _auth_secret_keys,
         extra_fee_rate
       )
-      when is_list(results) do
+      when is_nil(results) and is_binary(transaction_data) do
     with {:ok, operation} <- validate_operation(operation) do
       {transaction_data, min_resource_fee} =
         process_transaction_response(

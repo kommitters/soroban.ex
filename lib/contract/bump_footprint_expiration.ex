@@ -114,8 +114,7 @@ defmodule Soroban.Contract.BumpFootprintExpiration do
         footprint: footprint,
         instructions: 0,
         read_bytes: 0,
-        write_bytes: 0,
-        extended_meta_data_size_bytes: 0
+        write_bytes: 0
       ]
       |> SorobanResources.new()
       |> (&SorobanTransactionData.new(resources: &1, refundable_fee: 0)).()
@@ -125,7 +124,7 @@ defmodule Soroban.Contract.BumpFootprintExpiration do
   @spec create_wasm_soroban_data(wasm_id :: wasm_id()) :: soroban_data()
   defp create_wasm_soroban_data(wasm_id) do
     hash = Base.decode16!(wasm_id, case: :lower)
-    contract_code = LedgerKey.new({:contract_code, [hash: hash, body_type: :data_entry]})
+    contract_code = LedgerKey.new({:contract_code, [hash: hash]})
 
     footprint = LedgerFootprint.new(read_only: [contract_code])
 
@@ -133,8 +132,7 @@ defmodule Soroban.Contract.BumpFootprintExpiration do
       footprint: footprint,
       instructions: 0,
       read_bytes: 0,
-      write_bytes: 0,
-      extended_meta_data_size_bytes: 0
+      write_bytes: 0
     ]
     |> SorobanResources.new()
     |> (&SorobanTransactionData.new(resources: &1, refundable_fee: 0)).()
@@ -159,8 +157,7 @@ defmodule Soroban.Contract.BumpFootprintExpiration do
          [
            contract: contract_sc_address,
            key: key,
-           durability: :persistent,
-           body_type: :data_entry
+           durability: :persistent
          ]}
       )
     ]
@@ -176,8 +173,7 @@ defmodule Soroban.Contract.BumpFootprintExpiration do
          [
            contract: contract_sc_address,
            key: key,
-           durability: durability,
-           body_type: :data_entry
+           durability: durability
          ]}
       )
     end)

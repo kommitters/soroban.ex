@@ -1,7 +1,7 @@
 defmodule Soroban.MixProject do
   use Mix.Project
 
-  @version "0.14.0"
+  @version "0.15.0"
   @github_url "https://github.com/kommitters/soroban.ex"
 
   def project do
@@ -44,7 +44,7 @@ defmodule Soroban.MixProject do
       {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.30", only: :dev, runtime: false},
       {:excoveralls, "~> 0.17", only: :test},
-      {:stellar_sdk, "~> 0.17"},
+      {:stellar_sdk, "~> 0.18"},
       {:hackney, "~> 1.18"}
     ]
   end
