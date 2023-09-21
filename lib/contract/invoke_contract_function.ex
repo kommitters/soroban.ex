@@ -141,11 +141,9 @@ defmodule Soroban.Contract.InvokeContractFunction do
           source_public_key :: source_public_key()
         ) :: invoke_host_function()
   defp create_host_function_op(contract_address, function_name, function_args, source_public_key) do
-    contract_address = SCAddress.new(contract_address)
-
     function_args =
       InvokeContractArgs.new(
-        contract_address: contract_address,
+        contract_address: SCAddress.new(contract_address),
         function_name: function_name,
         args: function_args
       )
