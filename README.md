@@ -199,7 +199,7 @@ Struct.new([field1, field2])
 
 Interaction with the Soroban-RPC server is done through the `Soroban.RPC` module.
 
-To interact with another network than the futurenet, you can change the `:stellar_sdk` config, which will also change to the RPC endpoint that works with that network. e.g.
+Currently, `Soroban.ex` can run on `Futurenet`, `Testnet`, and `Local`, the former being the default network. To use the `Testnet` network change the :stellar_sdk setting, which will also change to the RPC endpoint that works with that network. e.g.
 
 ```elixir
 config :stellar_sdk, network: :test
