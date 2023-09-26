@@ -199,6 +199,12 @@ Struct.new([field1, field2])
 
 Interaction with the Soroban-RPC server is done through the `Soroban.RPC` module.
 
+Currently, `Soroban.ex` can run on `Futurenet`, `Testnet`, and `Local`, the former being the default network. To use the `Testnet` network change the :stellar_sdk setting, which will also change to the RPC endpoint that works with that network. e.g.
+
+```elixir
+config :stellar_sdk, network: :test
+```
+
 #### Simulate Transaction
 
 Submit a trial contract invocation to get back return values, expected ledger footprint, and expected costs.
