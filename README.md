@@ -199,6 +199,12 @@ Struct.new([field1, field2])
 
 Interaction with the Soroban-RPC server is done through the `Soroban.RPC` module.
 
+To interact with another network than the futurenet, you can change the `:stellar_sdk` config, which will also change to the RPC endpoint that works with that network. e.g.
+
+```elixir
+config :stellar_sdk, network: :test
+```
+
 #### Simulate Transaction
 
 Submit a trial contract invocation to get back return values, expected ledger footprint, and expected costs.

@@ -7,7 +7,11 @@ defmodule Soroban.RPC.Request do
 
   alias Soroban.RPC.{Client, Error, HTTPError}
 
-  @default_url "https://rpc-futurenet.stellar.org:443/"
+  @base_urls [
+    test: "https://soroban-testnet.stellar.org",
+    future: "https://rpc-futurenet.stellar.org",
+    local: "http://localhost:8000"
+  ]
 
   @type endpoint :: String.t()
   @type headers :: [{binary(), binary()}]
@@ -33,7 +37,8 @@ defmodule Soroban.RPC.Request do
 
   @spec new(endpoint :: endpoint(), opts :: opts()) :: t()
   def new(endpoint, opts \\ []) do
-    url = Keyword.get(opts, :url, @default_url)
+    default = @base_urls[:future]
+    url = Keyword.get(opts, :url) || Keyword.get(@base_urls, current_network(), default)
 
     %__MODULE__{
       endpoint: endpoint,
@@ -57,4 +62,7 @@ defmodule Soroban.RPC.Request do
   @spec results(response :: response(), opts :: opts()) :: parsed_response()
   def results({:ok, results}, as: resource), do: {:ok, resource.new(results)}
   def results({:error, error}, _resource), do: {:error, error}
+
+  @spec current_network() :: atom()
+  defp current_network, do: Application.get_env(:stellar_sdk, :network, :future)
 end
