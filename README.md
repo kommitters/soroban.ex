@@ -19,7 +19,7 @@
 ```elixir
 def deps do
   [
-    {:soroban, "~> 0.15.0"}
+    {:soroban, "~> 0.16.0"}
   ]
 end
 ```

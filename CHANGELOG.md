@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.16.0 (21.09.2023)
+
+- [Testnet Support](https://github.com/kommitters/soroban.ex/issues/131).
+
 ## 0.15.0 (21.09.2023)
 
 - [Soroban Preview 11 support](https://github.com/kommitters/soroban.ex/issues/126).
