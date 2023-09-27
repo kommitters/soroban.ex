@@ -19,7 +19,7 @@
 ```elixir
 def deps do
   [
-    {:soroban, "~> 0.15.0"}
+    {:soroban, "~> 0.16.0"}
   ]
 end
 ```
@@ -198,6 +198,12 @@ Struct.new([field1, field2])
 ### Soroban RPC endpoints
 
 Interaction with the Soroban-RPC server is done through the `Soroban.RPC` module.
+
+Currently, `Soroban.ex` can run on `Futurenet`, `Testnet`, and `Local`, the former being the default network. To use the `Testnet` network change the :stellar_sdk setting, which will also change to the RPC endpoint that works with that network. e.g.
+
+```elixir
+config :stellar_sdk, network: :test
+```
 
 #### Simulate Transaction
 

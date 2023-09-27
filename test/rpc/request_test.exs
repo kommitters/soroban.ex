@@ -29,7 +29,7 @@ defmodule Soroban.RPC.RequestTest do
       Application.delete_env(:soroban, :http_client_impl)
     end)
 
-    url = "https://rpc-futurenet.stellar.org:443/"
+    url = "https://rpc-futurenet.stellar.org"
     headers = [{"Content-Type", "application/json"}]
     endpoint = "getTransaction"
 
