@@ -651,6 +651,7 @@ secret_key = "SCA..."
 
 - `asset_code`: String from 1 to 12 characters indicating the asset symbol.
 - `secret_key`: Secret key of the function invoker responsible for signing the transaction.
+- `issuer_pub_key`: (optional) Public key of the asset issuer when the function invoker is not the same asset issuer.
 
 ```elixir
 alias Soroban.Contract
