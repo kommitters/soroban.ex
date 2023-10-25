@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.17.0 (26.10.2023)
+
+- [Allow deploying an asset contract by a diferent invoker than the asset issuer](https://github.com/kommitters/soroban.ex/issues/136).
+
 ## 0.16.0 (27.09.2023)
 
 - [Testnet Support](https://github.com/kommitters/soroban.ex/issues/131).
