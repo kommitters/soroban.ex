@@ -25,20 +25,20 @@ defmodule Soroban.Contract.DeployAssetContract do
   @type invoke_host_function :: InvokeHostFunction.t()
   @type secret_key :: binary()
   @type send_response :: {:ok, SendTransactionResponse.t()}
-  @type issuer_pub_key :: binary() | nil
+  @type asset_issuer :: binary()
 
   @spec deploy(
           asset_code :: asset_code(),
-          secret_key :: secret_key(),
-          issuer_pub_key :: issuer_pub_key()
+          asset_issuer :: asset_issuer(),
+          secret_key :: secret_key()
         ) :: send_response()
-  def deploy(asset_code, secret_key, issuer_pub_key \\ nil) do
+  def deploy(asset_code, asset_issuer, secret_key) do
     with {public_key, _secret} = keypair <- Stellar.KeyPair.from_secret_seed(secret_key),
          {:ok, seq_num} <- Accounts.fetch_next_sequence_number(public_key),
          %Account{} = source_account <- Account.new(public_key),
          %SequenceNumber{} = sequence_number <- SequenceNumber.new(seq_num),
          %Signature{} = signature <- Signature.new(keypair),
-         %Asset{} = asset <- Asset.new(code: asset_code, issuer: issuer_pub_key || public_key),
+         %Asset{} = asset <- Asset.new(code: asset_code, issuer: asset_issuer),
          %InvokeHostFunction{} = invoke_host_function_op <- create_host_function_deploy_op(asset) do
       invoke_host_function_op
       |> RPCCalls.simulate(source_account, sequence_number)

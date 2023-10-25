@@ -650,8 +650,8 @@ secret_key = "SCA..."
 **Parameters**
 
 - `asset_code`: String from 1 to 12 characters indicating the asset symbol.
+- `asset_issuer`: Public key of the asset issuer.
 - `secret_key`: Secret key of the function invoker responsible for signing the transaction.
-- `issuer_pub_key`: (optional) Public key of the asset issuer when the function invoker is not the same asset issuer.
 
 ```elixir
 alias Soroban.Contract
@@ -659,9 +659,10 @@ alias Soroban.RPC.SendTransactionResponse
 alias Soroban.Contract.DeployAssetContract
 
 asset_code = "DBZ"
+asset_issuer = "GBL..."
 secret_key = "SCA..."
 
-{:ok, %SendTransactionResponse{hash: hash}} = Contract.deploy_asset(asset_code, secret_key)
+{:ok, %SendTransactionResponse{hash: hash}} = Contract.deploy_asset(asset_code, asset_issuer, secret_key)
 
 {:ok,
 %Soroban.RPC.SendTransactionResponse{

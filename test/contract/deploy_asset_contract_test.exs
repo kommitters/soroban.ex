@@ -89,7 +89,7 @@ defmodule Soroban.Contract.DeployAssetContractTest do
     %{
       source_public: "GBNDWIM7DPYZJ2RLJ3IESXBIO4C2SVF6PWZXS3DLODJSBQWBMKY5U4M3",
       source_secret: "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24",
-      issuer_pub_key: "GB2LNFAIQWPJPMLQRDRD7FFY5VIJUBCZIQBWRR2L3RSOVWGH3T5Z56SN",
+      asset_issuer: "GB2LNFAIQWPJPMLQRDRD7FFY5VIJUBCZIQBWRR2L3RSOVWGH3T5Z56SN",
       asset_code: "ZZZ",
       envelope_xdr:
         "AAAAAgAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gABNuQABPEIAAAAPgAAAAAAAAAAAAAAAQAAAAAAAAAYAAAAAQAAAAEAAAABWlpaAAAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gAAAAEAAAAAAAAAAQAAAAAAAAACAAAABgAAAAEJjPko7iuhBRtsY0aDQ2Einilpmj/rDyGds/qx5seSNAAAABQAAAABAAAAB4w32Y19ZRfshxeO+Nw4BNSkE0ZhibcEWId4SVzs0PZPAAAAAABO+DAAABjwAAAAAAAAAAAAAAANAAAAAA=="
@@ -98,6 +98,7 @@ defmodule Soroban.Contract.DeployAssetContractTest do
 
   test "deploy/2", %{
     asset_code: asset_code,
+    source_public: source_public,
     source_secret: source_secret
   } do
     {:ok,
@@ -107,13 +108,13 @@ defmodule Soroban.Contract.DeployAssetContractTest do
        latest_ledger: "602691",
        latest_ledger_close_time: "1683814245",
        error_result_xdr: nil
-     }} = DeployAssetContract.deploy(asset_code, source_secret)
+     }} = DeployAssetContract.deploy(asset_code, source_public, source_secret)
   end
 
   test "deploy/2 with a different invoker than the issuer of the asset", %{
     asset_code: asset_code,
-    source_secret: source_secret,
-    issuer_pub_key: issuer_pub_key
+    asset_issuer: asset_issuer,
+    source_secret: source_secret
   } do
     {:ok,
      %SendTransactionResponse{
@@ -122,7 +123,7 @@ defmodule Soroban.Contract.DeployAssetContractTest do
        latest_ledger: "602691",
        latest_ledger_close_time: "1683814245",
        error_result_xdr: nil
-     }} = DeployAssetContract.deploy(asset_code, source_secret, issuer_pub_key)
+     }} = DeployAssetContract.deploy(asset_code, asset_issuer, source_secret)
   end
 
   test "retrieve_unsigned_xdr_to_deploy_asset/2", %{

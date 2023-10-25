@@ -48,6 +48,7 @@ defmodule Soroban.Contract do
 
   defdelegate deploy_asset(
                 asset_code,
+                asset_issuer,
                 source_secret_key
               ),
               to: DeployAssetContract,
