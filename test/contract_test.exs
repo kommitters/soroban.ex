@@ -372,7 +372,8 @@ defmodule Soroban.ContractTest do
 
   test "deploy_asset/2", %{
     asset_code: asset_code,
-    source_secret: source_secret
+    source_secret: source_secret,
+    source_public: source_public
   } do
     {:ok,
      %SendTransactionResponse{
@@ -384,6 +385,7 @@ defmodule Soroban.ContractTest do
      }} =
       Contract.deploy_asset(
         asset_code,
+        source_public,
         source_secret
       )
   end
