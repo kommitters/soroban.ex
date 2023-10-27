@@ -4,9 +4,9 @@ defmodule Soroban.Contract do
   """
 
   alias Soroban.Contract.{
-    ExtendFootprintTTL,
     DeployAssetContract,
     DeployContract,
+    ExtendFootprintTTL,
     InvokeContractFunction,
     RestoreFootprint,
     UploadContractCode
