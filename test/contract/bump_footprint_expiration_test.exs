@@ -14,7 +14,7 @@ defmodule Stellar.Horizon.Client.CannedBumpAccountRequests do
   end
 end
 
-defmodule Soroban.RPC.CannedBumpFootprintExpirationClientImpl do
+defmodule Soroban.RPC.CannedExtendFootprintTTLClientImpl do
   @moduledoc false
 
   @behaviour Soroban.RPC.Client.Spec
@@ -118,13 +118,13 @@ defmodule Soroban.RPC.CannedBumpFootprintExpirationClientImpl do
   end
 end
 
-defmodule Soroban.Contract.BumpFootprintExpirationTest do
+defmodule Soroban.Contract.ExtendFootprintTTLTest do
   use ExUnit.Case
 
-  alias Soroban.Contract.BumpFootprintExpiration
+  alias Soroban.Contract.ExtendFootprintTTL
 
   alias Soroban.RPC.{
-    CannedBumpFootprintExpirationClientImpl,
+    CannedExtendFootprintTTLClientImpl,
     SendTransactionResponse
   }
 
@@ -132,7 +132,7 @@ defmodule Soroban.Contract.BumpFootprintExpirationTest do
 
   setup do
     Application.put_env(:stellar_sdk, :http_client, CannedBumpAccountRequests)
-    Application.put_env(:soroban, :http_client_impl, CannedBumpFootprintExpirationClientImpl)
+    Application.put_env(:soroban, :http_client_impl, CannedExtendFootprintTTLClientImpl)
 
     on_exit(fn ->
       Application.delete_env(:stellar_sdk, :http_client)
@@ -145,14 +145,14 @@ defmodule Soroban.Contract.BumpFootprintExpirationTest do
       # GBNDWIM7DPYZJ2RLJ3IESXBIO4C2SVF6PWZXS3DLODJSBQWBMKY5U4M3
       source_secret: "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24",
       keys: [{:temporary, "Tmp"}, {:persistent, "Per"}],
-      ledgers_to_bump: 100_000
+      ledgers_to_extend: 100_000
     }
   end
 
   test "bump_contract/3", %{
     contract_address: contract_address,
     source_secret: source_secret,
-    ledgers_to_bump: ledgers_to_bump
+    ledgers_to_extend: ledgers_to_extend
   } do
     {:ok,
      %SendTransactionResponse{
@@ -162,10 +162,10 @@ defmodule Soroban.Contract.BumpFootprintExpirationTest do
        latest_ledger_close_time: "1683150612",
        error_result_xdr: nil
      }} =
-      BumpFootprintExpiration.bump_contract(
+      ExtendFootprintTTL.bump_contract(
         contract_address,
         source_secret,
-        ledgers_to_bump
+        ledgers_to_extend
       )
   end
 
@@ -174,7 +174,7 @@ defmodule Soroban.Contract.BumpFootprintExpirationTest do
     source_secret: source_secret
   } do
     {:error, :invalid_ledger_to_bump} =
-      BumpFootprintExpiration.bump_contract(
+      ExtendFootprintTTL.bump_contract(
         contract_address,
         source_secret,
         -100_000
@@ -184,7 +184,7 @@ defmodule Soroban.Contract.BumpFootprintExpirationTest do
   test "bump_contract_wasm/3", %{
     wasm_id: wasm_id,
     source_secret: source_secret,
-    ledgers_to_bump: ledgers_to_bump
+    ledgers_to_extend: ledgers_to_extend
   } do
     {:ok,
      %SendTransactionResponse{
@@ -194,17 +194,17 @@ defmodule Soroban.Contract.BumpFootprintExpirationTest do
        latest_ledger_close_time: "1683150612",
        error_result_xdr: nil
      }} =
-      BumpFootprintExpiration.bump_contract_wasm(
+      ExtendFootprintTTL.bump_contract_wasm(
         wasm_id,
         source_secret,
-        ledgers_to_bump
+        ledgers_to_extend
       )
   end
 
   test "bump_contract_keys/4", %{
     contract_address: contract_address,
     source_secret: source_secret,
-    ledgers_to_bump: ledgers_to_bump,
+    ledgers_to_extend: ledgers_to_extend,
     keys: keys
   } do
     {:ok,
@@ -215,10 +215,10 @@ defmodule Soroban.Contract.BumpFootprintExpirationTest do
        latest_ledger_close_time: "1683150612",
        error_result_xdr: nil
      }} =
-      BumpFootprintExpiration.bump_contract_keys(
+      ExtendFootprintTTL.bump_contract_keys(
         contract_address,
         source_secret,
-        ledgers_to_bump,
+        ledgers_to_extend,
         keys
       )
   end
@@ -226,13 +226,13 @@ defmodule Soroban.Contract.BumpFootprintExpirationTest do
   test "bump_contract_keys/4 with invalid keys", %{
     contract_address: contract_address,
     source_secret: source_secret,
-    ledgers_to_bump: ledgers_to_bump
+    ledgers_to_extend: ledgers_to_extend
   } do
     {:error, :invalid_keys} =
-      BumpFootprintExpiration.bump_contract_keys(
+      ExtendFootprintTTL.bump_contract_keys(
         contract_address,
         source_secret,
-        ledgers_to_bump,
+        ledgers_to_extend,
         :invalid
       )
   end

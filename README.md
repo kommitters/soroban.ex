@@ -376,7 +376,8 @@ Soroban.RPC.get_ledger_entries(keys)
      %{
        key: "AAAAB+qfy4GuVKKfazvyk4R9P9fpo2n9HICsr+xqvVcTF+DC",
        xdr: "AAAABwAAAADqn8uBrlSin2s78pOEfT/X6aNp/RyArK/sar1XExfgwgAAAAphIGNvbnRyYWN0AAA=",
-       last_modified_ledger_seq: "13"
+       last_modified_ledger_seq: "13",
+       liveUntilLedgerSeq: "320384"
      }
    ],
    latest_ledger: "179436"
@@ -432,7 +433,7 @@ limit = 1
 start_ledger = "674736"
 args = [Symbol.new("transfer"), "*", "*", "*"]
 topic_filter = [TopicFilter.new(args)]
-contract_ids = ["7d9defe0ccf9b680014a343b8880c22b160c2ea2c9a69df876decb28ddbd03dc"]
+contract_ids = ["CCEMOFO5TE7FGOAJOA3RDHPC6RW3CFXRVIGOFQPFE4ZGOKA2QEA636SN"]
 
 filters = [
   EventFilter.new(type: [:contract], contract_ids: contract_ids, topics: topic_filter)
@@ -452,7 +453,7 @@ Soroban.RPC.get_events(events_payload)
    latest_ledger: "685870",
    events: [
      %{
-       contract_id: "7d9defe0ccf9b680014a343b8880c22b160c2ea2c9a69df876decb28ddbd03dc",
+       contract_id: "CCEMOFO5TE7FGOAJOA3RDHPC6RW3CFXRVIGOFQPFE4ZGOKA2QEA636SN",
        id: "0002917807507378176-0000000000",
        in_successful_contract_call: true,
        ledger: "679355",
@@ -465,7 +466,7 @@ Soroban.RPC.get_events(events_payload)
          "AAAADQAAACVVU0RDOl3dfLGIo7lPPO+E0KPPSVxWCQ1qOen8umo/g+Jx8baEAAAA"
        ],
        type: "contract",
-       value: %{xdr: "AAAACgAAAAAF9eEAAAAAAAAAAAA="}
+       value: "AAAACgAAAAAF9eEAAAAAAAAAAAA="
      }
    ]
  }}
@@ -675,9 +676,9 @@ secret_key = "SCA..."
 
 ```
 
-#### BumpFootprint operation
+#### ExtendFootprintTTL operation
 
-##### Bump contract
+##### Extend contract
 
 Extends a contract instance lifetime.
 
@@ -685,7 +686,7 @@ Extends a contract instance lifetime.
 
 - `contract_address`: Identifier of the contract to be bumped, encoded as `StrKey`.
 - `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
-- `ledgers_to_bump`: The number of ledgers wanted to extend the contract lifetime.
+- `ledgers_to_extend`: The number of ledgers wanted to extend the contract lifetime.
 
 ```elixir
 alias Soroban.Contract
@@ -693,10 +694,10 @@ alias Soroban.RPC.SendTransactionResponse
 
 contract_address = "CAEYZ6JI5YV2CBI3NRRUNA2DMERJ4KLJTI76WDZBTWZ7VMPGY6JDIZD5"
 secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
-ledgers_to_bump = 100_000
+ledgers_to_extend = 100_000
 
 {:ok, %SendTransactionResponse{hash: hash}} =
-  Contract.bump_contract(contract_address, secret_key, ledgers_to_bump)
+  Contract.bump_contract(contract_address, secret_key, ledgers_to_extend)
 
 {:ok,
  %Soroban.RPC.SendTransactionResponse{
@@ -717,7 +718,7 @@ Extends the lifetime of a contract's uploaded wasm code.
 
 - `wasm_id`: Binary identification of an uploaded contract.
 - `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
-- `ledgers_to_bump`: The number of ledgers wanted to extend the wasm lifetime.
+- `ledgers_to_extend`: The number of ledgers wanted to extend the wasm lifetime.
 
 ```elixir
 alias Soroban.Contract
@@ -725,10 +726,10 @@ alias Soroban.RPC.SendTransactionResponse
 
 wasm_id = "067eb7ba419edd3e946e08eb17a81fbe1e850e690ed7692160875c2b65b45f21"
 secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
-ledgers_to_bump = 100_000
+ledgers_to_extend = 100_000
 
 {:ok, %SendTransactionResponse{hash: hash}} =
-  Contract.bump_contract_wasm(wasm_id, secret_key, ledgers_to_bump)
+  Contract.bump_contract_wasm(wasm_id, secret_key, ledgers_to_extend)
 
 {:ok,
  %Soroban.RPC.SendTransactionResponse{
@@ -749,7 +750,7 @@ Extends the lifetime of a contract's data entry keys.
 
 - `contract_address`: Identifier of the contract to be bumped, encoded as `StrKey`.
 - `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
-- `ledgers_to_bump`: The number of ledgers wanted to extend the contract lifetime.
+- `ledgers_to_extend`: The number of ledgers wanted to extend the contract lifetime.
 - `keys`: A list of tuples indicating the durability and the name of the data entry, to increase its lifetime.
   - `durability`: Allowed types `:persistent`, `:temporary`
   - `data entry`: Any `String` that is 32 characters or less.
@@ -760,11 +761,11 @@ alias Soroban.RPC.SendTransactionResponse
 
 contract_address = "CAEYZ6JI5YV2CBI3NRRUNA2DMERJ4KLJTI76WDZBTWZ7VMPGY6JDIZD5"
 secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
-ledgers_to_bump = 100_000
+ledgers_to_extend = 100_000
 keys =  [{:persistent, "Prst"}, {:temporary, "Tmp"}]
 
 {:ok, %SendTransactionResponse{hash: hash}} =
-  Contract.bump_contract_keys(contract_address, secret_key, ledgers_to_bump, keys)
+  Contract.bump_contract_keys(contract_address, secret_key, ledgers_to_extend, keys)
 
 {:ok,
  %Soroban.RPC.SendTransactionResponse{

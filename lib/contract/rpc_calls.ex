@@ -11,7 +11,7 @@ defmodule Soroban.Contract.RPCCalls do
   }
 
   alias Stellar.TxBuild
-  alias Stellar.TxBuild.{BumpFootprintExpiration, RestoreFootprint}
+  alias Stellar.TxBuild.{ExtendFootprintTTL, RestoreFootprint}
   alias Stellar.TxBuild.SorobanTransactionData, as: TxSorobanTransactionData
   alias StellarBase.XDR.{SorobanTransactionData, UInt32}
 
@@ -29,7 +29,7 @@ defmodule Soroban.Contract.RPCCalls do
   @type auths :: list(String.t()) | nil
   @type auth_secret_key :: String.t() | list() | nil
   @type envelope_xdr :: String.t()
-  @type footprint_operations :: BumpFootprintExpiration.t() | RestoreFootprint.t()
+  @type footprint_operations :: ExtendFootprintTTL.t() | RestoreFootprint.t()
   @type operation :: InvokeHostFunction.t() | footprint_operations()
   @type simulate_response :: {:ok, SimulateTransactionResponse.t()}
   @type send_response :: {:ok, SendTransactionResponse.t()}
@@ -281,7 +281,7 @@ defmodule Soroban.Contract.RPCCalls do
     do: {:error, :invalid_auth_secret_keys_length}
 
   @spec validate_operation(operation :: footprint_operations()) :: validation()
-  defp validate_operation(%BumpFootprintExpiration{} = operation), do: {:ok, operation}
+  defp validate_operation(%ExtendFootprintTTL{} = operation), do: {:ok, operation}
   defp validate_operation(%RestoreFootprint{} = operation), do: {:ok, operation}
 
   # This function is needed since when the function invoker is not the function authorizer

@@ -71,7 +71,7 @@ defmodule Soroban.Contract.DeployAssetContract do
   @spec create_host_function_deploy_op(asset :: asset()) :: invoke_host_function()
   defp create_host_function_deploy_op(asset) do
     contract_id_preimage = ContractIDPreimage.new(from_asset: asset)
-    contract_executable = ContractExecutable.new(:token)
+    contract_executable = ContractExecutable.new(:stellar_asset)
 
     create_contract_args =
       CreateContractArgs.new(

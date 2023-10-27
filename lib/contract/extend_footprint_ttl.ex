@@ -1,6 +1,6 @@
-defmodule Soroban.Contract.BumpFootprintExpiration do
+defmodule Soroban.Contract.ExtendFootprintTTL do
   @moduledoc """
-  `BumpFootprintExpiration` implementation to bump a contract.
+  `ExtendFootprintTTL` implementation to bump a contract.
   """
 
   alias Soroban.Contract.RPCCalls
@@ -9,7 +9,7 @@ defmodule Soroban.Contract.BumpFootprintExpiration do
 
   alias Stellar.TxBuild.{
     Account,
-    BumpFootprintExpiration,
+    ExtendFootprintTTL,
     LedgerFootprint,
     LedgerKey,
     SCAddress,
@@ -27,31 +27,31 @@ defmodule Soroban.Contract.BumpFootprintExpiration do
   @type contract_address :: String.t()
   @type wasm_id :: String.t()
   @type secret_key :: String.t()
-  @type ledgers_to_bump :: non_neg_integer()
+  @type ledgers_to_extend :: non_neg_integer()
   @type send_response :: {:ok, SendTransactionResponse.t()}
-  @type bump_footprint_validation :: {:ok, BumpFootprintExpiration.t()} | error()
+  @type extend_footprint_ttl_validation :: {:ok, ExtendFootprintTTL.t()} | error()
   @type soroban_data :: SorobanTransactionData.t()
 
   @spec bump_contract(
           contract_address :: contract_address(),
           secret_key :: secret_key(),
-          ledgers_to_bump :: ledgers_to_bump()
+          ledgers_to_extend :: ledgers_to_extend()
         ) :: send_response()
-  def bump_contract(contract_address, secret_key, ledgers_to_bump) do
+  def bump_contract(contract_address, secret_key, ledgers_to_extend) do
     with {public_key, _secret} = keypair <- Stellar.KeyPair.from_secret_seed(secret_key),
          {:ok, seq_num} <- Accounts.fetch_next_sequence_number(public_key),
-         {:ok, bump_footprint_op} <- create_bump_footprint_op(ledgers_to_bump),
+         {:ok, extend_footprint_ttl_op} <- create_extend_footprint_ttl_op(ledgers_to_extend),
          %SequenceNumber{} = sequence_number <- SequenceNumber.new(seq_num),
          %SorobanTransactionData{} = soroban_data <- create_soroban_data(contract_address),
          %Account{} = source_account <- Account.new(public_key),
          %Signature{} = signature <- Signature.new(keypair) do
-      bump_footprint_op
+      extend_footprint_ttl_op
       |> RPCCalls.simulate(source_account, sequence_number, soroban_data)
       |> RPCCalls.send_transaction(
         source_account,
         sequence_number,
         signature,
-        bump_footprint_op
+        extend_footprint_ttl_op
       )
     end
   end
@@ -59,23 +59,23 @@ defmodule Soroban.Contract.BumpFootprintExpiration do
   @spec bump_contract_wasm(
           wasm_id :: wasm_id(),
           secret_key :: secret_key(),
-          ledgers_to_bump :: ledgers_to_bump()
+          ledgers_to_extend :: ledgers_to_extend()
         ) :: send_response()
-  def bump_contract_wasm(wasm_id, secret_key, ledgers_to_bump) do
+  def bump_contract_wasm(wasm_id, secret_key, ledgers_to_extend) do
     with {public_key, _secret} = keypair <- Stellar.KeyPair.from_secret_seed(secret_key),
          {:ok, seq_num} <- Accounts.fetch_next_sequence_number(public_key),
-         {:ok, bump_footprint_op} <- create_bump_footprint_op(ledgers_to_bump),
+         {:ok, extend_footprint_ttl_op} <- create_extend_footprint_ttl_op(ledgers_to_extend),
          %SequenceNumber{} = sequence_number <- SequenceNumber.new(seq_num),
          %SorobanTransactionData{} = soroban_data <- create_wasm_soroban_data(wasm_id),
          %Account{} = source_account <- Account.new(public_key),
          %Signature{} = signature <- Signature.new(keypair) do
-      bump_footprint_op
+      extend_footprint_ttl_op
       |> RPCCalls.simulate(source_account, sequence_number, soroban_data)
       |> RPCCalls.send_transaction(
         source_account,
         sequence_number,
         signature,
-        bump_footprint_op
+        extend_footprint_ttl_op
       )
     end
   end
@@ -83,24 +83,24 @@ defmodule Soroban.Contract.BumpFootprintExpiration do
   @spec bump_contract_keys(
           contract_address :: contract_address(),
           secret_key :: secret_key(),
-          ledgers_to_bump :: ledgers_to_bump(),
+          ledgers_to_extend :: ledgers_to_extend(),
           keys :: keys()
         ) :: send_response()
-  def bump_contract_keys(contract_address, secret_key, ledgers_to_bump, keys) do
+  def bump_contract_keys(contract_address, secret_key, ledgers_to_extend, keys) do
     with {public_key, _secret} = keypair <- Stellar.KeyPair.from_secret_seed(secret_key),
          {:ok, seq_num} <- Accounts.fetch_next_sequence_number(public_key),
-         {:ok, bump_footprint_op} <- create_bump_footprint_op(ledgers_to_bump),
+         {:ok, extend_footprint_ttl_op} <- create_extend_footprint_ttl_op(ledgers_to_extend),
          %SequenceNumber{} = sequence_number <- SequenceNumber.new(seq_num),
          %SorobanTransactionData{} = soroban_data <- create_soroban_data(contract_address, keys),
          %Account{} = source_account <- Account.new(public_key),
          %Signature{} = signature <- Signature.new(keypair) do
-      bump_footprint_op
+      extend_footprint_ttl_op
       |> RPCCalls.simulate(source_account, sequence_number, soroban_data)
       |> RPCCalls.send_transaction(
         source_account,
         sequence_number,
         signature,
-        bump_footprint_op
+        extend_footprint_ttl_op
       )
     end
   end
@@ -117,7 +117,7 @@ defmodule Soroban.Contract.BumpFootprintExpiration do
         write_bytes: 0
       ]
       |> SorobanResources.new()
-      |> (&SorobanTransactionData.new(resources: &1, refundable_fee: 0)).()
+      |> (&SorobanTransactionData.new(resources: &1, resource_fee: 0)).()
     end
   end
 
@@ -135,16 +135,16 @@ defmodule Soroban.Contract.BumpFootprintExpiration do
       write_bytes: 0
     ]
     |> SorobanResources.new()
-    |> (&SorobanTransactionData.new(resources: &1, refundable_fee: 0)).()
+    |> (&SorobanTransactionData.new(resources: &1, resource_fee: 0)).()
   end
 
-  @spec create_bump_footprint_op(ledgers_to_bump :: ledgers_to_bump()) ::
-          bump_footprint_validation()
-  defp create_bump_footprint_op(ledgers_to_bump)
-       when is_integer(ledgers_to_bump) and ledgers_to_bump > 0,
-       do: {:ok, BumpFootprintExpiration.new(ledgers_to_expire: ledgers_to_bump)}
+  @spec create_extend_footprint_ttl_op(ledgers_to_extend :: ledgers_to_extend()) ::
+          extend_footprint_ttl_validation()
+  defp create_extend_footprint_ttl_op(ledgers_to_extend)
+       when is_integer(ledgers_to_extend) and ledgers_to_extend > 0,
+       do: {:ok, ExtendFootprintTTL.new(extend_to: ledgers_to_extend)}
 
-  defp create_bump_footprint_op(_ledgers_to_bump), do: {:error, :invalid_ledger_to_bump}
+  defp create_extend_footprint_ttl_op(_ledgers_to_extend), do: {:error, :invalid_ledger_to_bump}
 
   @spec create_keys(contract_address :: SCAddress.t(), keys :: keys()) ::
           list(LedgerKey.t()) | error()

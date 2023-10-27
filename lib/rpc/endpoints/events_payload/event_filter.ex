@@ -70,7 +70,7 @@ defmodule Soroban.RPC.EventFilter do
 
   defp validate_contract_ids(contract_ids)
        when is_list(contract_ids) and length(contract_ids) in 1..5 do
-    if Enum.all?(contract_ids, &is_binary/1),
+    if Enum.all?(contract_ids, &is_contract_id?(&1)),
       do: {:ok, contract_ids},
       else: {:error, :invalid_contract_ids}
   end
@@ -86,4 +86,13 @@ defmodule Soroban.RPC.EventFilter do
 
   defp validate_topics(nil), do: {:ok, nil}
   defp validate_topics(_topics), do: {:error, :invalid_topics}
+
+  defp is_contract_id?(contract_id) when is_binary(contract_id) do
+    case StellarBase.StrKey.decode(contract_id, :contract) do
+      {:ok, _decoded} -> true
+      {:error, _error} -> false
+    end
+  end
+
+  defp is_contract_id?(_contract_id), do: false
 end

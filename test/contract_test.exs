@@ -203,7 +203,7 @@ defmodule Soroban.ContractTest do
           254, 217, 11, 131, 45, 9, 151, 5, 194, 188, 205, 26>>,
       bump_wasm_id: "067eb7ba419edd3e946e08eb17a81fbe1e850e690ed7692160875c2b65b45f21",
       keys: [{:temporary, "Tmp"}, {:persistent, "Per"}],
-      ledgers_to_bump: 100_000,
+      ledgers_to_extend: 100_000,
       xdr_envelope:
         "AAAAAgAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gABNuQABPEIAAAAPgAAAAAAAAAAAAAAAQAAAAEAAAAAWjshnxvxlOorTtBJXCh3BalUvn2zeWxrcNMgwsFisdoAAAAYAAAAAAAAAAH2dqqbJGZMLCENZydgnMr1m1ftOuCMxioXBBazNxfRIAAAAA1mdW5jdGlvbl9uYW1lAAAAAAAAAQAAAA8AAAADQXJnAAAAAAAAAAABAAAAAAAAAAIAAAAGAAAAAQmM+SjuK6EFG2xjRoNDYSKeKWmaP+sPIZ2z+rHmx5I0AAAAFAAAAAEAAAAHjDfZjX1lF+yHF4743DgE1KQTRmGJtwRYh3hJXOzQ9k8AAAAAAE74MAAAGPAAAAAAAAAAAAAAAA0AAAAA",
       no_args_xdr_envelope:
@@ -393,7 +393,7 @@ defmodule Soroban.ContractTest do
   test "bump_contract/3", %{
     contract_address: contract_address,
     source_secret: source_secret,
-    ledgers_to_bump: ledgers_to_bump
+    ledgers_to_extend: ledgers_to_extend
   } do
     {:ok,
      %SendTransactionResponse{
@@ -406,14 +406,14 @@ defmodule Soroban.ContractTest do
       Contract.bump_contract(
         contract_address,
         source_secret,
-        ledgers_to_bump
+        ledgers_to_extend
       )
   end
 
   test "bump_contract_wasm/3", %{
     bump_wasm_id: bump_wasm_id,
     source_secret: source_secret,
-    ledgers_to_bump: ledgers_to_bump
+    ledgers_to_extend: ledgers_to_extend
   } do
     {:ok,
      %SendTransactionResponse{
@@ -426,14 +426,14 @@ defmodule Soroban.ContractTest do
       Contract.bump_contract_wasm(
         bump_wasm_id,
         source_secret,
-        ledgers_to_bump
+        ledgers_to_extend
       )
   end
 
   test "bump_contract_keys/4", %{
     contract_address: contract_address,
     source_secret: source_secret,
-    ledgers_to_bump: ledgers_to_bump,
+    ledgers_to_extend: ledgers_to_extend,
     keys: keys
   } do
     {:ok,
@@ -447,7 +447,7 @@ defmodule Soroban.ContractTest do
       Contract.bump_contract_keys(
         contract_address,
         source_secret,
-        ledgers_to_bump,
+        ledgers_to_extend,
         keys
       )
   end
