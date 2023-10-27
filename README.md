@@ -377,7 +377,7 @@ Soroban.RPC.get_ledger_entries(keys)
        key: "AAAAB+qfy4GuVKKfazvyk4R9P9fpo2n9HICsr+xqvVcTF+DC",
        xdr: "AAAABwAAAADqn8uBrlSin2s78pOEfT/X6aNp/RyArK/sar1XExfgwgAAAAphIGNvbnRyYWN0AAA=",
        last_modified_ledger_seq: "13",
-       liveUntilLedgerSeq: "320384"
+       live_until_ledger_seq: "320384"
      }
    ],
    latest_ledger: "179436"
