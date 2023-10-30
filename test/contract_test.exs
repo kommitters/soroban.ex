@@ -201,7 +201,7 @@ defmodule Soroban.ContractTest do
       wasm_id:
         <<66, 208, 35, 40, 82, 63, 24, 62, 0, 161, 91, 200, 46, 101, 45, 24, 216, 140, 130, 169,
           254, 217, 11, 131, 45, 9, 151, 5, 194, 188, 205, 26>>,
-      bump_wasm_id: "067eb7ba419edd3e946e08eb17a81fbe1e850e690ed7692160875c2b65b45f21",
+      extend_wasm_id: "067eb7ba419edd3e946e08eb17a81fbe1e850e690ed7692160875c2b65b45f21",
       keys: [{:temporary, "Tmp"}, {:persistent, "Per"}],
       ledgers_to_extend: 100_000,
       xdr_envelope:
@@ -390,7 +390,7 @@ defmodule Soroban.ContractTest do
       )
   end
 
-  test "bump_contract/3", %{
+  test "extend_contract/3", %{
     contract_address: contract_address,
     source_secret: source_secret,
     ledgers_to_extend: ledgers_to_extend
@@ -403,15 +403,15 @@ defmodule Soroban.ContractTest do
        latest_ledger_close_time: "1683150612",
        error_result_xdr: nil
      }} =
-      Contract.bump_contract(
+      Contract.extend_contract(
         contract_address,
         source_secret,
         ledgers_to_extend
       )
   end
 
-  test "bump_contract_wasm/3", %{
-    bump_wasm_id: bump_wasm_id,
+  test "extend_contract_wasm/3", %{
+    extend_wasm_id: extend_wasm_id,
     source_secret: source_secret,
     ledgers_to_extend: ledgers_to_extend
   } do
@@ -423,14 +423,14 @@ defmodule Soroban.ContractTest do
        latest_ledger_close_time: "1683150612",
        error_result_xdr: nil
      }} =
-      Contract.bump_contract_wasm(
-        bump_wasm_id,
+      Contract.extend_contract_wasm(
+        extend_wasm_id,
         source_secret,
         ledgers_to_extend
       )
   end
 
-  test "bump_contract_keys/4", %{
+  test "extend_contract_keys/4", %{
     contract_address: contract_address,
     source_secret: source_secret,
     ledgers_to_extend: ledgers_to_extend,
@@ -444,7 +444,7 @@ defmodule Soroban.ContractTest do
        latest_ledger_close_time: "1683150612",
        error_result_xdr: nil
      }} =
-      Contract.bump_contract_keys(
+      Contract.extend_contract_keys(
         contract_address,
         source_secret,
         ledgers_to_extend,
@@ -471,7 +471,7 @@ defmodule Soroban.ContractTest do
   end
 
   test "restore_contract_wasm/2", %{
-    bump_wasm_id: bump_wasm_id,
+    extend_wasm_id: extend_wasm_id,
     source_secret: source_secret
   } do
     {:ok,
@@ -483,7 +483,7 @@ defmodule Soroban.ContractTest do
        error_result_xdr: nil
      }} =
       Contract.restore_contract_wasm(
-        bump_wasm_id,
+        extend_wasm_id,
         source_secret
       )
   end

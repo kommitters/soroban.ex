@@ -54,17 +54,17 @@ defmodule Soroban.Contract do
               to: DeployAssetContract,
               as: :deploy
 
-  defdelegate bump_contract(contract_address, secret_key, ledgers_to_extend),
+  defdelegate extend_contract(contract_address, secret_key, ledgers_to_extend),
     to: ExtendFootprintTTL,
-    as: :bump_contract
+    as: :extend_contract
 
-  defdelegate bump_contract_wasm(wasm_id, secret_key, ledgers_to_extend),
+  defdelegate extend_contract_wasm(wasm_id, secret_key, ledgers_to_extend),
     to: ExtendFootprintTTL,
-    as: :bump_contract_wasm
+    as: :extend_contract_wasm
 
-  defdelegate bump_contract_keys(contract_address, secret_key, ledgers_to_extend, keys),
+  defdelegate extend_contract_keys(contract_address, secret_key, ledgers_to_extend, keys),
     to: ExtendFootprintTTL,
-    as: :bump_contract_keys
+    as: :extend_contract_keys
 
   defdelegate restore_contract(contract_address, secret_key),
     to: RestoreFootprint,

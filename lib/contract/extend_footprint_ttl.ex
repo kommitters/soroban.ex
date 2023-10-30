@@ -1,6 +1,6 @@
 defmodule Soroban.Contract.ExtendFootprintTTL do
   @moduledoc """
-  `ExtendFootprintTTL` implementation to bump a contract.
+  `ExtendFootprintTTL` implementation to extend a contract.
   """
 
   alias Soroban.Contract.RPCCalls
@@ -32,12 +32,12 @@ defmodule Soroban.Contract.ExtendFootprintTTL do
   @type extend_footprint_ttl_validation :: {:ok, ExtendFootprintTTL.t()} | error()
   @type soroban_data :: SorobanTransactionData.t()
 
-  @spec bump_contract(
+  @spec extend_contract(
           contract_address :: contract_address(),
           secret_key :: secret_key(),
           ledgers_to_extend :: ledgers_to_extend()
         ) :: send_response()
-  def bump_contract(contract_address, secret_key, ledgers_to_extend) do
+  def extend_contract(contract_address, secret_key, ledgers_to_extend) do
     with {public_key, _secret} = keypair <- Stellar.KeyPair.from_secret_seed(secret_key),
          {:ok, seq_num} <- Accounts.fetch_next_sequence_number(public_key),
          {:ok, extend_footprint_ttl_op} <- create_extend_footprint_ttl_op(ledgers_to_extend),
@@ -56,12 +56,12 @@ defmodule Soroban.Contract.ExtendFootprintTTL do
     end
   end
 
-  @spec bump_contract_wasm(
+  @spec extend_contract_wasm(
           wasm_id :: wasm_id(),
           secret_key :: secret_key(),
           ledgers_to_extend :: ledgers_to_extend()
         ) :: send_response()
-  def bump_contract_wasm(wasm_id, secret_key, ledgers_to_extend) do
+  def extend_contract_wasm(wasm_id, secret_key, ledgers_to_extend) do
     with {public_key, _secret} = keypair <- Stellar.KeyPair.from_secret_seed(secret_key),
          {:ok, seq_num} <- Accounts.fetch_next_sequence_number(public_key),
          {:ok, extend_footprint_ttl_op} <- create_extend_footprint_ttl_op(ledgers_to_extend),
@@ -80,13 +80,13 @@ defmodule Soroban.Contract.ExtendFootprintTTL do
     end
   end
 
-  @spec bump_contract_keys(
+  @spec extend_contract_keys(
           contract_address :: contract_address(),
           secret_key :: secret_key(),
           ledgers_to_extend :: ledgers_to_extend(),
           keys :: keys()
         ) :: send_response()
-  def bump_contract_keys(contract_address, secret_key, ledgers_to_extend, keys) do
+  def extend_contract_keys(contract_address, secret_key, ledgers_to_extend, keys) do
     with {public_key, _secret} = keypair <- Stellar.KeyPair.from_secret_seed(secret_key),
          {:ok, seq_num} <- Accounts.fetch_next_sequence_number(public_key),
          {:ok, extend_footprint_ttl_op} <- create_extend_footprint_ttl_op(ledgers_to_extend),
@@ -144,7 +144,7 @@ defmodule Soroban.Contract.ExtendFootprintTTL do
        when is_integer(ledgers_to_extend) and ledgers_to_extend > 0,
        do: {:ok, ExtendFootprintTTL.new(extend_to: ledgers_to_extend)}
 
-  defp create_extend_footprint_ttl_op(_ledgers_to_extend), do: {:error, :invalid_ledger_to_bump}
+  defp create_extend_footprint_ttl_op(_ledgers_to_extend), do: {:error, :invalid_ledger_to_extend}
 
   @spec create_keys(contract_address :: SCAddress.t(), keys :: keys()) ::
           list(LedgerKey.t()) | error()

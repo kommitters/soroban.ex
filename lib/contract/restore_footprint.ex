@@ -1,6 +1,6 @@
 defmodule Soroban.Contract.RestoreFootprint do
   @moduledoc """
-  `RestoreFootprint` implementation to bump a contract.
+  `RestoreFootprint` implementation to extend a contract.
   """
 
   alias Soroban.Contract.RPCCalls
