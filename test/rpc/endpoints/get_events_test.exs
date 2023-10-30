@@ -25,7 +25,7 @@ defmodule Soroban.RPC.CannedGetEventsClientImpl do
              "AAAADQAAACVVU0RDOl3dfLGIo7lPPO+E0KPPSVxWCQ1qOen8umo/g+Jx8baEAAAA"
            ],
            type: "contract",
-           value: %{xdr: "AAAACgAAAAAF9eEAAAAAAAAAAAA="}
+           value: "AAAACgAAAAAF9eEAAAAAAAAAAAA="
          }
        ]
      }}
@@ -92,7 +92,7 @@ defmodule Soroban.RPC.GetEventsTest do
              "AAAADQAAACVVU0RDOl3dfLGIo7lPPO+E0KPPSVxWCQ1qOen8umo/g+Jx8baEAAAA"
            ],
            type: "contract",
-           value: %{xdr: "AAAACgAAAAAF9eEAAAAAAAAAAAA="}
+           value: "AAAACgAAAAAF9eEAAAAAAAAAAAA="
          }
        ]
      }} = GetEvents.request(event)

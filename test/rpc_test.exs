@@ -145,7 +145,7 @@ defmodule Soroban.RPC.CannedRPCGetEventsClientImpl do
              "AAAADQAAACVVU0RDOl3dfLGIo7lPPO+E0KPPSVxWCQ1qOen8umo/g+Jx8baEAAAA"
            ],
            type: "contract",
-           value: %{xdr: "AAAACgAAAAAF9eEAAAAAAAAAAAA="}
+           value: "AAAACgAAAAAF9eEAAAAAAAAAAAA="
          }
        ]
      }}
@@ -426,7 +426,7 @@ defmodule Soroban.RPCTest do
                "AAAADQAAACVVU0RDOl3dfLGIo7lPPO+E0KPPSVxWCQ1qOen8umo/g+Jx8baEAAAA"
              ],
              type: "contract",
-             value: %{xdr: "AAAACgAAAAAF9eEAAAAAAAAAAAA="}
+             value: "AAAACgAAAAAF9eEAAAAAAAAAAAA="
            }
          ]
        }} = RPC.get_events(event)

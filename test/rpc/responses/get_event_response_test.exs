@@ -22,7 +22,7 @@ defmodule Soroban.RPC.GetEventsResponseTest do
               "AAAADQAAACAKDE4uoS6EI6aSc1it2t042bw51hbj8DhRp245ZZx5Hw=="
             ],
             type: "contract",
-            value: %{xdr: "AAAAAwAAAAE="}
+            value: "AAAAAwAAAAE="
           }
         ]
       }
@@ -48,7 +48,7 @@ defmodule Soroban.RPC.GetEventsResponseTest do
               "AAAADQAAACAKDE4uoS6EI6aSc1it2t042bw51hbj8DhRp245ZZx5Hw=="
             ],
             type: "contract",
-            value: %{xdr: "AAAAAwAAAAE="}
+            value: "AAAAAwAAAAE="
           }
         ]
       } = GetEventsResponse.new(result)
