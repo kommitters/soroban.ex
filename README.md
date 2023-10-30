@@ -710,7 +710,7 @@ ledgers_to_extend = 100_000
 
 ```
 
-##### extend contract wasm
+##### Extend contract wasm
 
 Extends the lifetime of a contract's uploaded wasm code.
 
@@ -742,7 +742,7 @@ ledgers_to_extend = 100_000
 
 ```
 
-##### extend contract keys
+##### Extend contract keys
 
 Extends the lifetime of a contract's data entry keys.
 
