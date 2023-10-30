@@ -1,6 +1,6 @@
 defmodule Soroban.Contract.RestoreFootprint do
   @moduledoc """
-  `RestoreFootprint` implementation to bump a contract.
+  `RestoreFootprint` implementation to extend a contract.
   """
 
   alias Soroban.Contract.RPCCalls
@@ -112,7 +112,7 @@ defmodule Soroban.Contract.RestoreFootprint do
         write_bytes: 0
       ]
       |> SorobanResources.new()
-      |> (&SorobanTransactionData.new(resources: &1, refundable_fee: 0)).()
+      |> (&SorobanTransactionData.new(resources: &1, resource_fee: 0)).()
     end
   end
 
@@ -130,7 +130,7 @@ defmodule Soroban.Contract.RestoreFootprint do
       write_bytes: 0
     ]
     |> SorobanResources.new()
-    |> (&SorobanTransactionData.new(resources: &1, refundable_fee: 0)).()
+    |> (&SorobanTransactionData.new(resources: &1, resource_fee: 0)).()
   end
 
   @spec create_restore_footprint_op() :: restore_footprint_validation()

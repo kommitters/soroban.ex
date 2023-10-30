@@ -44,7 +44,7 @@ defmodule Soroban.MixProject do
       {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.30", only: :dev, runtime: false},
       {:excoveralls, "~> 0.17", only: :test},
-      {:stellar_sdk, "~> 0.18.1"},
+      {:stellar_sdk, git: "https://github.com/kommitters/stellar_sdk.git", branch: "v0.20"},
       {:hackney, "~> 1.18"}
     ]
   end
@@ -89,7 +89,7 @@ defmodule Soroban.MixProject do
         Soroban.Contract.UploadContractCode,
         Soroban.Contract.DeployContract,
         Soroban.Contract.DeployAssetContract,
-        Soroban.Contract.BumpFootprintExpiration,
+        Soroban.Contract.ExtendFootprintTTL,
         Soroban.Contract.RestoreFootprint
       ],
       RPC: [

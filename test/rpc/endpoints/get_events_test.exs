@@ -12,7 +12,7 @@ defmodule Soroban.RPC.CannedGetEventsClientImpl do
        latest_ledger: "685196",
        events: [
          %{
-           contract_id: "7d9defe0ccf9b680014a343b8880c22b160c2ea2c9a69df876decb28ddbd03dc",
+           contract_id: "CCEMOFO5TE7FGOAJOA3RDHPC6RW3CFXRVIGOFQPFE4ZGOKA2QEA636SN",
            id: "0002917807507378176-0000000000",
            in_successful_contract_call: true,
            ledger: "679355",
@@ -25,7 +25,7 @@ defmodule Soroban.RPC.CannedGetEventsClientImpl do
              "AAAADQAAACVVU0RDOl3dfLGIo7lPPO+E0KPPSVxWCQ1qOen8umo/g+Jx8baEAAAA"
            ],
            type: "contract",
-           value: %{xdr: "AAAACgAAAAAF9eEAAAAAAAAAAAA="}
+           value: "AAAACgAAAAAF9eEAAAAAAAAAAAA="
          }
        ]
      }}
@@ -57,7 +57,7 @@ defmodule Soroban.RPC.GetEventsTest do
     start_ledger = "674736"
     args = [Symbol.new("transfer"), "*", "*", "*"]
     topic_filter = [TopicFilter.new(args)]
-    contract_ids = ["7d9defe0ccf9b680014a343b8880c22b160c2ea2c9a69df876decb28ddbd03dc"]
+    contract_ids = ["CCEMOFO5TE7FGOAJOA3RDHPC6RW3CFXRVIGOFQPFE4ZGOKA2QEA636SN"]
 
     filters = [
       EventFilter.new(type: [:contract], contract_ids: contract_ids, topics: topic_filter)
@@ -79,7 +79,7 @@ defmodule Soroban.RPC.GetEventsTest do
        latest_ledger: "685196",
        events: [
          %{
-           contract_id: "7d9defe0ccf9b680014a343b8880c22b160c2ea2c9a69df876decb28ddbd03dc",
+           contract_id: "CCEMOFO5TE7FGOAJOA3RDHPC6RW3CFXRVIGOFQPFE4ZGOKA2QEA636SN",
            id: "0002917807507378176-0000000000",
            in_successful_contract_call: true,
            ledger: "679355",
@@ -92,7 +92,7 @@ defmodule Soroban.RPC.GetEventsTest do
              "AAAADQAAACVVU0RDOl3dfLGIo7lPPO+E0KPPSVxWCQ1qOen8umo/g+Jx8baEAAAA"
            ],
            type: "contract",
-           value: %{xdr: "AAAACgAAAAAF9eEAAAAAAAAAAAA="}
+           value: "AAAACgAAAAAF9eEAAAAAAAAAAAA="
          }
        ]
      }} = GetEvents.request(event)
