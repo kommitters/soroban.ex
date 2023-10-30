@@ -684,7 +684,7 @@ Extends a contract instance lifetime.
 
 **Parameters**
 
-- `contract_address`: Identifier of the contract to be bumped, encoded as `StrKey`.
+- `contract_address`: Identifier of the contract to be extended, encoded as `StrKey`.
 - `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
 - `ledgers_to_extend`: The number of ledgers wanted to extend the contract lifetime.
 
@@ -697,7 +697,7 @@ secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
 ledgers_to_extend = 100_000
 
 {:ok, %SendTransactionResponse{hash: hash}} =
-  Contract.bump_contract(contract_address, secret_key, ledgers_to_extend)
+  Contract.extend_contract(contract_address, secret_key, ledgers_to_extend)
 
 {:ok,
  %Soroban.RPC.SendTransactionResponse{
@@ -710,7 +710,7 @@ ledgers_to_extend = 100_000
 
 ```
 
-##### Bump contract wasm
+##### extend contract wasm
 
 Extends the lifetime of a contract's uploaded wasm code.
 
@@ -729,7 +729,7 @@ secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
 ledgers_to_extend = 100_000
 
 {:ok, %SendTransactionResponse{hash: hash}} =
-  Contract.bump_contract_wasm(wasm_id, secret_key, ledgers_to_extend)
+  Contract.extend_contract_wasm(wasm_id, secret_key, ledgers_to_extend)
 
 {:ok,
  %Soroban.RPC.SendTransactionResponse{
@@ -742,13 +742,13 @@ ledgers_to_extend = 100_000
 
 ```
 
-##### Bump contract keys
+##### extend contract keys
 
 Extends the lifetime of a contract's data entry keys.
 
 **Parameters**
 
-- `contract_address`: Identifier of the contract to be bumped, encoded as `StrKey`.
+- `contract_address`: Identifier of the contract to be extended, encoded as `StrKey`.
 - `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
 - `ledgers_to_extend`: The number of ledgers wanted to extend the contract lifetime.
 - `keys`: A list of tuples indicating the durability and the name of the data entry, to increase its lifetime.
@@ -765,7 +765,7 @@ ledgers_to_extend = 100_000
 keys =  [{:persistent, "Prst"}, {:temporary, "Tmp"}]
 
 {:ok, %SendTransactionResponse{hash: hash}} =
-  Contract.bump_contract_keys(contract_address, secret_key, ledgers_to_extend, keys)
+  Contract.extend_contract_keys(contract_address, secret_key, ledgers_to_extend, keys)
 
 {:ok,
  %Soroban.RPC.SendTransactionResponse{
