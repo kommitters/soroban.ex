@@ -9,7 +9,7 @@ defmodule Soroban.RPC.SimulateTransaction do
   @endpoint "simulateTransaction"
 
   @impl true
-  def request(transaction, addl_resources \\ nil) do
+  def request(transaction, addl_resources \\ []) do
     params = get_params(transaction, addl_resources)
 
     @endpoint
@@ -20,8 +20,8 @@ defmodule Soroban.RPC.SimulateTransaction do
     |> Request.results(as: SimulateTransactionResponse)
   end
 
-  defp get_params(transaction, nil), do: %{transaction: transaction}
+  defp get_params(transaction, []), do: %{transaction: transaction}
 
-  defp get_params(transaction, %{cpu_instructions: cpu_instructions}),
+  defp get_params(transaction, cpu_instructions: cpu_instructions),
     do: %{transaction: transaction, resourceConfig: %{instructionLeeway: cpu_instructions}}
 end

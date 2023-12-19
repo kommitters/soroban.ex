@@ -31,13 +31,15 @@ defmodule Soroban.Contract.ExtendFootprintTTL do
   @type send_response :: {:ok, SendTransactionResponse.t()}
   @type extend_footprint_ttl_validation :: {:ok, ExtendFootprintTTL.t()} | error()
   @type soroban_data :: SorobanTransactionData.t()
+  @type addl_resources :: keyword()
 
   @spec extend_contract(
           contract_address :: contract_address(),
           secret_key :: secret_key(),
-          ledgers_to_extend :: ledgers_to_extend()
+          ledgers_to_extend :: ledgers_to_extend(),
+          addl_resources :: addl_resources()
         ) :: send_response()
-  def extend_contract(contract_address, secret_key, ledgers_to_extend) do
+  def extend_contract(contract_address, secret_key, ledgers_to_extend, addl_resources \\ []) do
     with {public_key, _secret} = keypair <- Stellar.KeyPair.from_secret_seed(secret_key),
          {:ok, seq_num} <- Accounts.fetch_next_sequence_number(public_key),
          {:ok, extend_footprint_ttl_op} <- create_extend_footprint_ttl_op(ledgers_to_extend),
@@ -46,7 +48,7 @@ defmodule Soroban.Contract.ExtendFootprintTTL do
          %Account{} = source_account <- Account.new(public_key),
          %Signature{} = signature <- Signature.new(keypair) do
       extend_footprint_ttl_op
-      |> RPCCalls.simulate(source_account, sequence_number, soroban_data)
+      |> RPCCalls.simulate(source_account, sequence_number, addl_resources, soroban_data)
       |> RPCCalls.send_transaction(
         source_account,
         sequence_number,
@@ -59,9 +61,10 @@ defmodule Soroban.Contract.ExtendFootprintTTL do
   @spec extend_contract_wasm(
           wasm_id :: wasm_id(),
           secret_key :: secret_key(),
-          ledgers_to_extend :: ledgers_to_extend()
+          ledgers_to_extend :: ledgers_to_extend(),
+          addl_resources :: addl_resources()
         ) :: send_response()
-  def extend_contract_wasm(wasm_id, secret_key, ledgers_to_extend) do
+  def extend_contract_wasm(wasm_id, secret_key, ledgers_to_extend, addl_resources \\ []) do
     with {public_key, _secret} = keypair <- Stellar.KeyPair.from_secret_seed(secret_key),
          {:ok, seq_num} <- Accounts.fetch_next_sequence_number(public_key),
          {:ok, extend_footprint_ttl_op} <- create_extend_footprint_ttl_op(ledgers_to_extend),
@@ -70,7 +73,7 @@ defmodule Soroban.Contract.ExtendFootprintTTL do
          %Account{} = source_account <- Account.new(public_key),
          %Signature{} = signature <- Signature.new(keypair) do
       extend_footprint_ttl_op
-      |> RPCCalls.simulate(source_account, sequence_number, soroban_data)
+      |> RPCCalls.simulate(source_account, sequence_number, addl_resources, soroban_data)
       |> RPCCalls.send_transaction(
         source_account,
         sequence_number,
@@ -84,9 +87,16 @@ defmodule Soroban.Contract.ExtendFootprintTTL do
           contract_address :: contract_address(),
           secret_key :: secret_key(),
           ledgers_to_extend :: ledgers_to_extend(),
-          keys :: keys()
+          keys :: keys(),
+          addl_resources :: addl_resources()
         ) :: send_response()
-  def extend_contract_keys(contract_address, secret_key, ledgers_to_extend, keys) do
+  def extend_contract_keys(
+        contract_address,
+        secret_key,
+        ledgers_to_extend,
+        keys,
+        addl_resources \\ []
+      ) do
     with {public_key, _secret} = keypair <- Stellar.KeyPair.from_secret_seed(secret_key),
          {:ok, seq_num} <- Accounts.fetch_next_sequence_number(public_key),
          {:ok, extend_footprint_ttl_op} <- create_extend_footprint_ttl_op(ledgers_to_extend),
@@ -95,7 +105,7 @@ defmodule Soroban.Contract.ExtendFootprintTTL do
          %Account{} = source_account <- Account.new(public_key),
          %Signature{} = signature <- Signature.new(keypair) do
       extend_footprint_ttl_op
-      |> RPCCalls.simulate(source_account, sequence_number, soroban_data)
+      |> RPCCalls.simulate(source_account, sequence_number, addl_resources, soroban_data)
       |> RPCCalls.send_transaction(
         source_account,
         sequence_number,

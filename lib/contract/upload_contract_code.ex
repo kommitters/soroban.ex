@@ -22,9 +22,11 @@ defmodule Soroban.Contract.UploadContractCode do
   @type send_response :: {:ok, SendTransactionResponse.t()}
   @type sequence_number :: SequenceNumber.t()
   @type signature :: Signature.t()
+  @type addl_resources :: keyword()
 
-  @spec upload(wasm :: wasm(), secret_key :: binary()) :: send_response()
-  def upload(wasm, secret_key) do
+  @spec upload(wasm :: wasm(), secret_key :: binary(), addl_resources :: addl_resources()) ::
+          send_response()
+  def upload(wasm, secret_key, addl_resources \\ []) do
     with {public_key, _secret} = keypair <- Stellar.KeyPair.from_secret_seed(secret_key),
          {:ok, seq_num} <- Accounts.fetch_next_sequence_number(public_key),
          %Account{} = source_account <- Account.new(public_key),
@@ -32,7 +34,7 @@ defmodule Soroban.Contract.UploadContractCode do
          %Signature{} = signature <- Signature.new(keypair),
          %InvokeHostFunction{} = invoke_host_function_op <- create_host_function_upload_op(wasm) do
       invoke_host_function_op
-      |> RPCCalls.simulate(source_account, sequence_number)
+      |> RPCCalls.simulate(source_account, sequence_number, addl_resources)
       |> RPCCalls.send_transaction(
         source_account,
         sequence_number,
@@ -44,15 +46,16 @@ defmodule Soroban.Contract.UploadContractCode do
 
   @spec retrieve_unsigned_xdr_to_upload(
           wasm :: wasm(),
-          source_public_key :: binary()
+          source_public_key :: binary(),
+          addl_resources :: addl_resources()
         ) :: envelope_xdr()
-  def retrieve_unsigned_xdr_to_upload(wasm, source_public_key) do
+  def retrieve_unsigned_xdr_to_upload(wasm, source_public_key, addl_resources \\ []) do
     with {:ok, seq_num} <- Accounts.fetch_next_sequence_number(source_public_key),
          %Account{} = source_account <- Account.new(source_public_key),
          %SequenceNumber{} = sequence_number <- SequenceNumber.new(seq_num),
          %InvokeHostFunction{} = invoke_host_function_op <- create_host_function_upload_op(wasm) do
       invoke_host_function_op
-      |> RPCCalls.simulate(source_account, sequence_number)
+      |> RPCCalls.simulate(source_account, sequence_number, addl_resources)
       |> RPCCalls.retrieve_unsigned_xdr(source_account, sequence_number, invoke_host_function_op)
     end
   end

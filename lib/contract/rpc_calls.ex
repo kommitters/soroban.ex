@@ -13,7 +13,6 @@ defmodule Soroban.Contract.RPCCalls do
   alias Stellar.TxBuild
   alias Stellar.TxBuild.{ExtendFootprintTTL, RestoreFootprint}
   alias Stellar.TxBuild.SorobanTransactionData, as: TxSorobanTransactionData
-  alias StellarBase.XDR.{SorobanTransactionData, UInt32}
 
   alias Stellar.TxBuild.{
     Account,
@@ -41,19 +40,25 @@ defmodule Soroban.Contract.RPCCalls do
           source_account :: account(),
           sequence_number :: sequence_number()
         ) :: simulate_response()
-  def simulate(_operation, _source_account, _sequence_number, soroban_data \\ nil)
+  def simulate(
+        _operation,
+        _source_account,
+        _sequence_number,
+        addl_resources \\ [],
+        soroban_data \\ nil
+      )
 
-  def simulate(operation, source_account, sequence_number, nil) do
+  def simulate(operation, source_account, sequence_number, addl_resources, nil) do
     {:ok, envelop_xdr} =
       source_account
       |> TxBuild.new(sequence_number: sequence_number)
       |> TxBuild.add_operation(operation)
       |> TxBuild.envelope()
 
-    RPC.simulate_transaction(envelop_xdr)
+    RPC.simulate_transaction(envelop_xdr, addl_resources)
   end
 
-  def simulate(operation, source_account, sequence_number, soroban_data) do
+  def simulate(operation, source_account, sequence_number, addl_resources, soroban_data) do
     soroban_data = TxSorobanTransactionData.to_xdr(soroban_data)
 
     {:ok, envelop_xdr} =
@@ -63,7 +68,7 @@ defmodule Soroban.Contract.RPCCalls do
       |> TxBuild.set_soroban_data(soroban_data)
       |> TxBuild.envelope()
 
-    RPC.simulate_transaction(envelop_xdr)
+    RPC.simulate_transaction(envelop_xdr, addl_resources)
   end
 
   @spec send_transaction(
