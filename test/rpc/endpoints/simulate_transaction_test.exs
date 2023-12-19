@@ -80,7 +80,7 @@ defmodule Soroban.RPC.SimulateTransactionTest do
          }
        ],
        cost: %{cpu_insns: "1048713", mem_bytes: "1201148"},
-       latest_ledger: "475528",
+       latest_ledger: 45_075_181,
        error: nil
      }} = SimulateTransaction.request(transaction_xdr, %{cpu_instructions: 100})
   end
