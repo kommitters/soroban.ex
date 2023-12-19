@@ -20,7 +20,7 @@ defmodule Soroban.RPC.SimulateTransactionCannedClientImpl do
          }
        ],
        cost: %{cpu_insns: "1048713", mem_bytes: "1201148"},
-       latest_ledger: "475528"
+       latest_ledger: 45_075_181
      }}
   end
 end
@@ -53,7 +53,7 @@ defmodule Soroban.RPC.SimulateTransactionTest do
        transaction_data:
          "AAAAAwAAAAAAAAAAYvwdC9CRsrYcDdZWNGsqaNfTR8bywsjubQRHAlb8BfcAAAAG4avr0cYyEk0etiaStUgJ889XGSqUqZEZcCyR+ma87LIAAAAUAAAAB8zDhJ3ZTMHmdBjlVh/7d1HDdo+QI1ZXGmeRzBwVAoVXAAAAAQAAAAbhq+vRxjISTR62JpK1SAnzz1cZKpSpkRlwLJH6ZrzssgAAABUAAAAAAAAAAGL8HQvQkbK2HA3WVjRrKmjX00fG8sLI7m0ERwJW/AX3ACb/vgAAFcQAAAC0AAABrAAAAAAAAABUAAAAAA==",
        events: nil,
-       min_resource_fee: "79488",
+       min_resource_fee: 79_488,
        results: [
          %{
            auth: nil,
@@ -61,7 +61,7 @@ defmodule Soroban.RPC.SimulateTransactionTest do
          }
        ],
        cost: %{cpu_insns: "1048713", mem_bytes: "1201148"},
-       latest_ledger: "475528",
+       latest_ledger: 45_075_181,
        error: nil
      }} = SimulateTransaction.request(transaction_xdr)
   end

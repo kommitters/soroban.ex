@@ -16,7 +16,7 @@ defmodule Soroban.RPC.CannedGetLedgerEntriesClientImpl do
            last_modified_ledger_seq: "13"
          }
        ],
-       latest_ledger: "179436"
+       latest_ledger: 45_075_181
      }}
   end
 end
@@ -50,7 +50,7 @@ defmodule Soroban.RPC.GetLedgerEntriesTest do
            last_modified_ledger_seq: "13"
          }
        ],
-       latest_ledger: "179436"
+       latest_ledger: 45_075_181
      }} = GetLedgerEntries.request(keys)
   end
 end
