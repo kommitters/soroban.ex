@@ -290,7 +290,7 @@ Soroban.RPC.get_transaction(hash)
    status: "SUCCESS",
    latest_ledger: 45075181,
    latest_ledger_close_time: "1683151229",
-   oldest_ledger: "475097",
+   oldest_ledger: 475097,
    oldest_ledger_close_time: "1683143656",
    application_order: 1,
    envelope_xdr:
@@ -299,7 +299,7 @@ Soroban.RPC.get_transaction(hash)
      "AAAAAAAAAGQAAAAAAAAAAQAAAAAAAAAYAAAAAAAAABAAAAABAAAAAgAAAA8AAAAFSGVsbG8AAAAAAAAPAAAABXdvcmxkAAAAAAAAAA==",
    result_meta_xdr:
      "AAAAAwAAAAIAAAADAAdFBQAAAAAAAAAAwT6e0zIpycpZ5/unUFyQAjXNeSxfmidj8tQWkeD9dCQAAAAXDNwRHAAAUF8AAAAgAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAwAAAAAAB0J+AAAAAGRSydYAAAAAAAAAAQAHRQUAAAAAAAAAAME+ntMyKcnKWef7p1BckAI1zXksX5onY/LUFpHg/XQkAAAAFwzcERwAAFBfAAAAIQAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAMAAAAAAAdFBQAAAABkUtcZAAAAAAAAAAEAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAGQAAAAAAAAAAQAAAAAAAAAYAAAAAAAAABAAAAABAAAAAgAAAA8AAAAFSGVsbG8AAAAAAAAPAAAABXdvcmxkAAAAAAAAAKQ1a84I/mDKy5j2B/YFeyfTCsTBoKJtON5QDfqS06qwy7xIdQ3ruFNQk7Per4isf0z/h0JVdqWN4rrHVKzbRhYD6NIFNZRcltVrmGLx9Y+ku182sxlHjDdsZ28pYul9HwAAAAA=",
-   ledger: "476421"
+   ledger: 476421
  }}
 
 ```
@@ -376,8 +376,8 @@ Soroban.RPC.get_ledger_entries(keys)
      %{
        key: "AAAAB+qfy4GuVKKfazvyk4R9P9fpo2n9HICsr+xqvVcTF+DC",
        xdr: "AAAABwAAAADqn8uBrlSin2s78pOEfT/X6aNp/RyArK/sar1XExfgwgAAAAphIGNvbnRyYWN0AAA=",
-       last_modified_ledger_seq: "13",
-       live_until_ledger_seq: "320384"
+       last_modified_ledger_seq: 13,
+       live_until_ledger_seq: 320384
      }
    ],
    latest_ledger: 45075181
@@ -456,7 +456,7 @@ Soroban.RPC.get_events(events_payload)
        contract_id: "CCEMOFO5TE7FGOAJOA3RDHPC6RW3CFXRVIGOFQPFE4ZGOKA2QEA636SN",
        id: "0002917807507378176-0000000000",
        in_successful_contract_call: true,
-       ledger: "679355",
+       ledger: 679355,
        ledger_closed_at: "2023-05-16T06:02:47Z",
        paging_token: "0002917807507378176-0000000000",
        topic: [
