@@ -6,7 +6,7 @@ defmodule Soroban.RPC.SendTransactionResponse do
 
   @type status :: String.t()
   @type hash :: binary()
-  @type latest_ledger :: String.t()
+  @type latest_ledger :: non_neg_integer()
   @type latest_ledger_close_time :: String.t()
   @type error_result_xdr :: String.t() | nil
   @type t :: %__MODULE__{

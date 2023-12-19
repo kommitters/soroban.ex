@@ -6,7 +6,7 @@ defmodule Soroban.RPC.GetNetworkResponse do
 
   @type friendbot_url :: String.t()
   @type passphrase :: String.t()
-  @type protocol_version :: String.t()
+  @type protocol_version :: non_neg_integer()
   @type t :: %__MODULE__{
           friendbot_url: friendbot_url(),
           passphrase: passphrase(),

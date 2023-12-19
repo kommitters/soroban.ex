@@ -8,7 +8,7 @@ defmodule Soroban.RPC.GetNetworkResponseTest do
       result: %{
         friendbot_url: "https://friendbot-futurenet.stellar.org/",
         passphrase: "Test SDF Future Network ; October 2022",
-        protocol_version: "20"
+        protocol_version: 20
       }
     }
   end

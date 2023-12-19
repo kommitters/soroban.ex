@@ -11,7 +11,7 @@ defmodule Soroban.RPC.CannedGetNetworkClientImpl do
      %{
        friendbot_url: "https://friendbot-futurenet.stellar.org/",
        passphrase: "Test SDF Future Network ; October 2022",
-       protocol_version: "20"
+       protocol_version: 20
      }}
   end
 end
@@ -38,7 +38,7 @@ defmodule Soroban.RPC.GetNetworkTest do
      %GetNetworkResponse{
        friendbot_url: "https://friendbot-futurenet.stellar.org/",
        passphrase: "Test SDF Future Network ; October 2022",
-       protocol_version: "20"
+       protocol_version: 20
      }} = GetNetwork.request()
   end
 end

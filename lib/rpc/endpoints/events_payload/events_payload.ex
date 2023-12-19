@@ -10,7 +10,7 @@ defmodule Soroban.RPC.EventsPayload do
   @type limit :: number() | nil
   @type limit_validation :: {:ok, limit()}
   @type error :: {:error, atom()}
-  @type start_ledger :: String.t() | nil
+  @type start_ledger :: non_neg_integer() | nil
   @type start_ledger_validation :: {:ok, start_ledger()} | error()
   @type filters :: list(EventFilter.t()) | nil
   @type filters_validation :: {:ok, filters()} | error()
@@ -67,7 +67,9 @@ defmodule Soroban.RPC.EventsPayload do
   def to_request_args(_struct), do: :error
 
   @spec validate_start_ledger(start_ledger :: start_ledger()) :: start_ledger_validation()
-  defp validate_start_ledger(start_ledger) when is_binary(start_ledger), do: {:ok, start_ledger}
+  defp validate_start_ledger(start_ledger) when is_number(start_ledger) and start_ledger >= 0,
+    do: {:ok, start_ledger}
+
   defp validate_start_ledger(nil), do: {:ok, nil}
   defp validate_start_ledger(_start_ledger), do: {:error, :invalid_start_ledger}
 

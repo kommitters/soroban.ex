@@ -7,7 +7,7 @@ defmodule Soroban.RPC.EventsPayloadTest do
   setup do
     cursor = "1234-1"
     limit = 2
-    start_ledger = "674736"
+    start_ledger = 674_736
     args = [Symbol.new("transfer"), "*", "*", "*"]
     topic_filter = [TopicFilter.new(args)]
     contract_ids = ["CCEMOFO5TE7FGOAJOA3RDHPC6RW3CFXRVIGOFQPFE4ZGOKA2QEA636SN"]
