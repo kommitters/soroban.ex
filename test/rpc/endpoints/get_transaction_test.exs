@@ -10,7 +10,7 @@ defmodule Soroban.RPC.GetTransactionCannedClientImpl do
     {:ok,
      %{
        status: "SUCCESS",
-       latest_ledger: "476536",
+       latest_ledger: 45_075_181,
        latest_ledger_close_time: "1683151229",
        oldest_ledger: "475097",
        oldest_ledger_close_time: "1683143656",
@@ -51,7 +51,7 @@ defmodule Soroban.RPC.GetTransactionTest do
     {:ok,
      %GetTransactionResponse{
        status: "SUCCESS",
-       latest_ledger: "476536",
+       latest_ledger: 45_075_181,
        latest_ledger_close_time: "1683151229",
        oldest_ledger: "475097",
        oldest_ledger_close_time: "1683143656",

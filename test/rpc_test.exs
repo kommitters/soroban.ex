@@ -11,7 +11,7 @@ defmodule Soroban.RPC.CannedRPCSendTransactionClientImpl do
      %{
        status: "PENDING",
        hash: "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4",
-       latest_ledger: "476420",
+       latest_ledger: 45_075_181,
        latest_ledger_close_time: "1683150612"
      }}
   end
@@ -38,7 +38,7 @@ defmodule Soroban.RPC.CannedRPCSimulateTransactionClientImpl do
          }
        ],
        cost: %{cpu_insns: "1048713", mem_bytes: "1201148"},
-       latest_ledger: "475528"
+       latest_ledger: 45_075_181
      }}
   end
 end
@@ -113,7 +113,7 @@ defmodule Soroban.RPC.CannedRPCGetLedgerEntriesClientImpl do
            last_modified_ledger_seq: "13"
          }
        ],
-       latest_ledger: "179436"
+       latest_ledger: 45_075_181
      }}
   end
 end
@@ -129,7 +129,7 @@ defmodule Soroban.RPC.CannedRPCGetEventsClientImpl do
 
     {:ok,
      %{
-       latest_ledger: "685196",
+       latest_ledger: 45_075_181,
        events: [
          %{
            contract_id: "CCEMOFO5TE7FGOAJOA3RDHPC6RW3CFXRVIGOFQPFE4ZGOKA2QEA636SN",
@@ -164,7 +164,7 @@ defmodule Soroban.RPC.CannedRPCGetTransactionClientImpl do
     {:ok,
      %{
        status: "SUCCESS",
-       latest_ledger: "476536",
+       latest_ledger: 45_075_181,
        latest_ledger_close_time: "1683151229",
        oldest_ledger: "475097",
        oldest_ledger_close_time: "1683143656",
@@ -236,7 +236,7 @@ defmodule Soroban.RPCTest do
            }
          ],
          cost: %{cpu_insns: "1048713", mem_bytes: "1201148"},
-         latest_ledger: "475528",
+         latest_ledger: 45_075_181,
          error: nil
        }} = RPC.simulate_transaction(base64_envelope)
     end
@@ -261,7 +261,7 @@ defmodule Soroban.RPCTest do
        %SendTransactionResponse{
          status: "PENDING",
          hash: "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4",
-         latest_ledger: "476420",
+         latest_ledger: 45_075_181,
          latest_ledger_close_time: "1683150612",
          error_result_xdr: nil
        }} = RPC.send_transaction(base64_envelope)
@@ -285,7 +285,7 @@ defmodule Soroban.RPCTest do
       {:ok,
        %GetTransactionResponse{
          status: "SUCCESS",
-         latest_ledger: "476536",
+         latest_ledger: 45_075_181,
          latest_ledger_close_time: "1683151229",
          oldest_ledger: "475097",
          oldest_ledger_close_time: "1683143656",
@@ -374,7 +374,7 @@ defmodule Soroban.RPCTest do
              last_modified_ledger_seq: "13"
            }
          ],
-         latest_ledger: "179436"
+         latest_ledger: 45_075_181
        }} = RPC.get_ledger_entries(keys)
     end
   end
@@ -410,7 +410,7 @@ defmodule Soroban.RPCTest do
     test "request/1", %{event: event} do
       {:ok,
        %GetEventsResponse{
-         latest_ledger: "685196",
+         latest_ledger: 45_075_181,
          events: [
            %{
              contract_id: "CCEMOFO5TE7FGOAJOA3RDHPC6RW3CFXRVIGOFQPFE4ZGOKA2QEA636SN",

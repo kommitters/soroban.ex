@@ -131,7 +131,7 @@ defmodule Soroban.RPC.CannedContractClientImpl do
          }
        ],
        cost: %{cpu_insns: "1048713", mem_bytes: "1201148"},
-       latest_ledger: "475528"
+       latest_ledger: 45_075_181
      }}
   end
 
@@ -143,7 +143,7 @@ defmodule Soroban.RPC.CannedContractClientImpl do
      %{
        status: "PENDING",
        hash: "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4",
-       latest_ledger: "476420",
+       latest_ledger: 45_075_181,
        latest_ledger_close_time: "1683150612"
      }}
   end
@@ -157,7 +157,7 @@ defmodule Soroban.RPC.CannedContractClientImpl do
        min_resource_fee: "79488",
        results: nil,
        cost: %{cpu_insns: "1048713", mem_bytes: "1201148"},
-       latest_ledger: "475528"
+       latest_ledger: 45_075_181
      }}
   end
 end
@@ -226,7 +226,7 @@ defmodule Soroban.ContractTest do
      %SendTransactionResponse{
        status: "PENDING",
        hash: "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4",
-       latest_ledger: "476420",
+       latest_ledger: 45_075_181,
        latest_ledger_close_time: "1683150612",
        error_result_xdr: nil
      }} =
@@ -247,7 +247,7 @@ defmodule Soroban.ContractTest do
      %SendTransactionResponse{
        status: "PENDING",
        hash: "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4",
-       latest_ledger: "476420",
+       latest_ledger: 45_075_181,
        latest_ledger_close_time: "1683150612",
        error_result_xdr: nil
      }} =
@@ -270,7 +270,7 @@ defmodule Soroban.ContractTest do
      %SendTransactionResponse{
        status: "PENDING",
        hash: "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4",
-       latest_ledger: "476420",
+       latest_ledger: 45_075_181,
        latest_ledger_close_time: "1683150612",
        error_result_xdr: nil
      }} =
@@ -295,7 +295,7 @@ defmodule Soroban.ContractTest do
      %SendTransactionResponse{
        status: "PENDING",
        hash: "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4",
-       latest_ledger: "476420",
+       latest_ledger: 45_075_181,
        latest_ledger_close_time: "1683150612",
        error_result_xdr: nil
      }} =
@@ -319,12 +319,12 @@ defmodule Soroban.ContractTest do
        transaction_data:
          "AAAAAAAAAAIAAAAGAAAAAQmM+SjuK6EFG2xjRoNDYSKeKWmaP+sPIZ2z+rHmx5I0AAAAFAAAAAEAAAAHjDfZjX1lF+yHF4743DgE1KQTRmGJtwRYh3hJXOzQ9k8AAAAAAE74MAAAGPAAAAAAAAAAAAAAAA0=",
        events: nil,
-       min_resource_fee: "79488",
+       min_resource_fee: 79488,
        results: [
          %{auth: nil, xdr: "AAAAEAAAAAEAAAACAAAADwAAAAVIZWxsbwAAAAAAAA8AAAAFd29ybGQAAAA="}
        ],
        cost: %{cpu_insns: "1048713", mem_bytes: "1201148"},
-       latest_ledger: "475528",
+       latest_ledger: 45_075_181,
        error: nil
      }} =
       Contract.simulate_invoke(
@@ -342,7 +342,7 @@ defmodule Soroban.ContractTest do
      %SendTransactionResponse{
        status: "PENDING",
        hash: "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4",
-       latest_ledger: "476420",
+       latest_ledger: 45_075_181,
        latest_ledger_close_time: "1683150612",
        error_result_xdr: nil
      }} =
@@ -360,7 +360,7 @@ defmodule Soroban.ContractTest do
      %SendTransactionResponse{
        status: "PENDING",
        hash: "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4",
-       latest_ledger: "476420",
+       latest_ledger: 45_075_181,
        latest_ledger_close_time: "1683150612",
        error_result_xdr: nil
      }} =
@@ -379,7 +379,7 @@ defmodule Soroban.ContractTest do
      %SendTransactionResponse{
        status: "PENDING",
        hash: "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4",
-       latest_ledger: "476420",
+       latest_ledger: 45_075_181,
        latest_ledger_close_time: "1683150612",
        error_result_xdr: nil
      }} =
@@ -399,7 +399,7 @@ defmodule Soroban.ContractTest do
      %SendTransactionResponse{
        status: "PENDING",
        hash: "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4",
-       latest_ledger: "476420",
+       latest_ledger: 45_075_181,
        latest_ledger_close_time: "1683150612",
        error_result_xdr: nil
      }} =
@@ -419,7 +419,7 @@ defmodule Soroban.ContractTest do
      %SendTransactionResponse{
        status: "PENDING",
        hash: "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4",
-       latest_ledger: "476420",
+       latest_ledger: 45_075_181,
        latest_ledger_close_time: "1683150612",
        error_result_xdr: nil
      }} =
@@ -440,7 +440,7 @@ defmodule Soroban.ContractTest do
      %SendTransactionResponse{
        status: "PENDING",
        hash: "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4",
-       latest_ledger: "476420",
+       latest_ledger: 45_075_181,
        latest_ledger_close_time: "1683150612",
        error_result_xdr: nil
      }} =
@@ -460,7 +460,7 @@ defmodule Soroban.ContractTest do
      %SendTransactionResponse{
        status: "PENDING",
        hash: "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4",
-       latest_ledger: "476420",
+       latest_ledger: 45_075_181,
        latest_ledger_close_time: "1683150612",
        error_result_xdr: nil
      }} =
@@ -478,7 +478,7 @@ defmodule Soroban.ContractTest do
      %SendTransactionResponse{
        status: "PENDING",
        hash: "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4",
-       latest_ledger: "476420",
+       latest_ledger: 45_075_181,
        latest_ledger_close_time: "1683150612",
        error_result_xdr: nil
      }} =
@@ -496,7 +496,7 @@ defmodule Soroban.ContractTest do
      %SendTransactionResponse{
        status: "PENDING",
        hash: "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4",
-       latest_ledger: "476420",
+       latest_ledger: 45_075_181,
        latest_ledger_close_time: "1683150612",
        error_result_xdr: nil
      }} =

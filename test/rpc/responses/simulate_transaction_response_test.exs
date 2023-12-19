@@ -46,15 +46,15 @@ defmodule Soroban.RPC.SimulateTransactionResponseTest do
 
   describe "new/1" do
     test "when successful transaction", %{
-      result:
-        %{
-          transaction_data: transaction_data,
-          events: events,
-          min_resource_fee: min_resource_fee,
-          results: results,
-          cost: cost,
-          latest_ledger: latest_ledger
-        } = result
+      result: %{
+        transaction_data: transaction_data,
+        events: events,
+        min_resource_fee: min_resource_fee,
+        results: results,
+        cost: cost,
+        latest_ledger: latest_ledger
+      },
+      attrs: attrs
     } do
       %SimulateTransactionResponse{
         transaction_data: ^transaction_data,
@@ -63,7 +63,7 @@ defmodule Soroban.RPC.SimulateTransactionResponseTest do
         results: ^results,
         cost: ^cost,
         latest_ledger: ^latest_ledger
-      } = SimulateTransactionResponse.new(result)
+      } = SimulateTransactionResponse.new(attrs)
     end
 
     test "when error transaction", %{

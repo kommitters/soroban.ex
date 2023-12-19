@@ -9,7 +9,7 @@ defmodule Soroban.RPC.CannedGetEventsClientImpl do
 
     {:ok,
      %{
-       latest_ledger: "685196",
+       latest_ledger: 45_075_181,
        events: [
          %{
            contract_id: "CCEMOFO5TE7FGOAJOA3RDHPC6RW3CFXRVIGOFQPFE4ZGOKA2QEA636SN",
@@ -76,7 +76,7 @@ defmodule Soroban.RPC.GetEventsTest do
   test "request/1", %{event: event} do
     {:ok,
      %GetEventsResponse{
-       latest_ledger: "685196",
+       latest_ledger: 45_075_181,
        events: [
          %{
            contract_id: "CCEMOFO5TE7FGOAJOA3RDHPC6RW3CFXRVIGOFQPFE4ZGOKA2QEA636SN",

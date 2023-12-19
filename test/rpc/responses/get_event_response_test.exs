@@ -6,7 +6,7 @@ defmodule Soroban.RPC.GetEventsResponseTest do
   setup do
     %{
       result: %{
-        latest_ledger: "669450",
+        latest_ledger: 45_075_181,
         events: [
           %{
             contract_id: "6e34123e6328b38075f4e670175221452db7535ceeb3def1af6dddc232c1eae4",
@@ -32,7 +32,7 @@ defmodule Soroban.RPC.GetEventsResponseTest do
   describe "new/1" do
     test "when successful transaction", %{result: result} do
       %GetEventsResponse{
-        latest_ledger: "669450",
+        latest_ledger: 45_075_181,
         events: [
           %{
             contract_id: "6e34123e6328b38075f4e670175221452db7535ceeb3def1af6dddc232c1eae4",

@@ -37,7 +37,6 @@ defmodule Soroban.RPC.SimulateTransactionResponse do
 
   @impl true
   def new(attrs) do
-    # If :min_resource_fee is present, convert it to an integer
     new_attrs =
       if Map.has_key?(attrs, :min_resource_fee) do
         Map.put(attrs, :min_resource_fee, String.to_integer(attrs.min_resource_fee))
