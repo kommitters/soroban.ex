@@ -25,7 +25,7 @@ defmodule Soroban.RPC.SimulateTransactionResponseTest do
     cost = %{cpu_insns: "2222468", mem_bytes: "2204681"}
     error_cost = %{cpu_insns: "0", mem_bytes: "0"}
 
-    latest_ledger = 23456
+    latest_ledger = 23_456
     error = "Could not unmarshal transaction"
 
     attrs = %{

@@ -396,7 +396,7 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
        transaction_data:
          "AAAAAAAAAAEAAAAHjDfZjX1lF+yHF4743DgE1KQTRmGJtwRYh3hJXOzQ9k8AAAABAAAABgAAAAEJjPko7iuhBRtsY0aDQ2Einilpmj/rDyGds/qx5seSNAAAABQAAAABAFBD8gAAGPAAAAEkAAAAAAAAAAY=",
        events: nil,
-       min_resource_fee: 79488,
+       min_resource_fee: 79_488,
        results: [
          %{
            auth: [

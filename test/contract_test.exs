@@ -319,7 +319,7 @@ defmodule Soroban.ContractTest do
        transaction_data:
          "AAAAAAAAAAIAAAAGAAAAAQmM+SjuK6EFG2xjRoNDYSKeKWmaP+sPIZ2z+rHmx5I0AAAAFAAAAAEAAAAHjDfZjX1lF+yHF4743DgE1KQTRmGJtwRYh3hJXOzQ9k8AAAAAAE74MAAAGPAAAAAAAAAAAAAAAA0=",
        events: nil,
-       min_resource_fee: 79488,
+       min_resource_fee: 79_488,
        results: [
          %{auth: nil, xdr: "AAAAEAAAAAEAAAACAAAADwAAAAVIZWxsbwAAAAAAAA8AAAAFd29ybGQAAAA="}
        ],
