@@ -234,6 +234,7 @@ Soroban.RPC.simulate_transaction(base64_envelope)
    ],
    cost: %{cpu_insns: "1048713", mem_bytes: "1201148"},
    latest_ledger: 45075181,
+   restore_preamble: nil,
    error: nil
  }}
 
