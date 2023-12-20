@@ -501,7 +501,9 @@ function_name = "hello"
 
 function_args = [String.new("world")]
 
-Contract.invoke(contract_address, source_secret_key, function_name, function_args, extra_fee_rate)
+addl_resources = [cpu_instructions: 100]
+
+Contract.invoke(contract_address, source_secret_key, function_name, function_args, extra_fee_rate, [], addl_resources)
 
 {:ok,
   %Soroban.RPC.SendTransactionResponse{
@@ -531,7 +533,9 @@ Contract.invoke(contract_address, source_secret_key, function_name, function_arg
     UInt128.new(2)
   ]
 
-  Contract.invoke(contract_address, source_secret_key, function_name, function_args, extra_fee_rate)
+  addl_resources = [cpu_instructions: 100]
+
+  Contract.invoke(contract_address, source_secret_key, function_name, function_args, extra_fee_rate, [], addl_resources)
 
   {:ok,
     %Soroban.RPC.SendTransactionResponse{
@@ -569,13 +573,16 @@ Contract.invoke(contract_address, source_secret_key, function_name, function_arg
     "SDLOYUOMX67YX6NK7TZLWTGYU3V4FIEBL5RFRX36EYDZ4OM46VSJXV7C"
   ]
 
+  addl_resources = [cpu_instructions: 100]
+
   Contract.invoke(
     contract_address,
     source_secret_key,
     function_name,
     function_args,
     extra_fee_rate,
-    auth_secret_keys
+    auth_secret_keys,
+    addl_resources
   )
 
   {:ok,
@@ -605,8 +612,9 @@ alias Soroban.RPC.SendTransactionResponse
 
 wasm = File.read!("../your_wasm_path/hello.wasm")
 secret_key = "SCA..."
+addl_resources = [cpu_instructions: 100]
 
-{:ok, %SendTransactionResponse{hash: hash}} = Contract.upload(wasm, secret_key)
+{:ok, %SendTransactionResponse{hash: hash}} = Contract.upload(wasm, secret_key, addl_resources)
 
 {:ok,
   %Soroban.RPC.SendTransactionResponse{
@@ -633,8 +641,9 @@ alias Soroban.Contract.DeployContract
 
 wasm_id = <<187, 187, 69, ...>>
 secret_key = "SCA..."
+addl_resources = [cpu_instructions: 100]
 
-{:ok, %SendTransactionResponse{hash: hash}} = Contract.deploy(wasm_id, secret_key)
+{:ok, %SendTransactionResponse{hash: hash}} = Contract.deploy(wasm_id, secret_key, addl_resources)
 
 {:ok,
   %Soroban.RPC.SendTransactionResponse{
@@ -663,8 +672,9 @@ alias Soroban.Contract.DeployAssetContract
 asset_code = "DBZ"
 asset_issuer = "GBL..."
 secret_key = "SCA..."
+addl_resources = [cpu_instructions: 100]
 
-{:ok, %SendTransactionResponse{hash: hash}} = Contract.deploy_asset(asset_code, asset_issuer, secret_key)
+{:ok, %SendTransactionResponse{hash: hash}} = Contract.deploy_asset(asset_code, asset_issuer, secret_key, addl_resources)
 
 {:ok,
 %Soroban.RPC.SendTransactionResponse{
@@ -696,9 +706,10 @@ alias Soroban.RPC.SendTransactionResponse
 contract_address = "CAEYZ6JI5YV2CBI3NRRUNA2DMERJ4KLJTI76WDZBTWZ7VMPGY6JDIZD5"
 secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
 ledgers_to_extend = 100_000
+addl_resources = [cpu_instructions: 100]
 
 {:ok, %SendTransactionResponse{hash: hash}} =
-  Contract.extend_contract(contract_address, secret_key, ledgers_to_extend)
+  Contract.extend_contract(contract_address, secret_key, ledgers_to_extend, addl_resources)
 
 {:ok,
  %Soroban.RPC.SendTransactionResponse{
@@ -728,9 +739,10 @@ alias Soroban.RPC.SendTransactionResponse
 wasm_id = "067eb7ba419edd3e946e08eb17a81fbe1e850e690ed7692160875c2b65b45f21"
 secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
 ledgers_to_extend = 100_000
+addl_resources = [cpu_instructions: 100]
 
 {:ok, %SendTransactionResponse{hash: hash}} =
-  Contract.extend_contract_wasm(wasm_id, secret_key, ledgers_to_extend)
+  Contract.extend_contract_wasm(wasm_id, secret_key, ledgers_to_extend, addl_resources)
 
 {:ok,
  %Soroban.RPC.SendTransactionResponse{
@@ -764,9 +776,10 @@ contract_address = "CAEYZ6JI5YV2CBI3NRRUNA2DMERJ4KLJTI76WDZBTWZ7VMPGY6JDIZD5"
 secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
 ledgers_to_extend = 100_000
 keys =  [{:persistent, "Prst"}, {:temporary, "Tmp"}]
+addl_resources = [cpu_instructions: 100]
 
 {:ok, %SendTransactionResponse{hash: hash}} =
-  Contract.extend_contract_keys(contract_address, secret_key, ledgers_to_extend, keys)
+  Contract.extend_contract_keys(contract_address, secret_key, ledgers_to_extend, keys, addl_resources)
 
 {:ok,
  %Soroban.RPC.SendTransactionResponse{
@@ -796,9 +809,10 @@ alias Soroban.RPC.SendTransactionResponse
 
 contract_address = "CAEYZ6JI5YV2CBI3NRRUNA2DMERJ4KLJTI76WDZBTWZ7VMPGY6JDIZD5"
 secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
+addl_resources = [cpu_instructions: 100]
 
 {:ok, %SendTransactionResponse{hash: hash}} =
-  Contract.restore_contract(contract_address, secret_key)
+  Contract.restore_contract(contract_address, secret_key, addl_resources)
 
 {:ok,
  %Soroban.RPC.SendTransactionResponse{
@@ -828,8 +842,9 @@ alias Soroban.RPC.SendTransactionResponse
 
 wasm_id = "067eb7ba419edd3e946e08eb17a81fbe1e850e690ed7692160875c2b65b45f21"
 secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
+addl_resources = [cpu_instructions: 100]
 
-{:ok, %SendTransactionResponse{hash: hash}} = Contract.restore_contract_wasm(wasm_id, secret_key)
+{:ok, %SendTransactionResponse{hash: hash}} = Contract.restore_contract_wasm(wasm_id, secret_key, addl_resources)
 
 {:ok,
  %Soroban.RPC.SendTransactionResponse{
@@ -863,9 +878,10 @@ alias Soroban.RPC.SendTransactionResponse
 contract_address = "CAEYZ6JI5YV2CBI3NRRUNA2DMERJ4KLJTI76WDZBTWZ7VMPGY6JDIZD5"
 secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
 keys =  [persistent: ["Prst"]]
+addl_resources = [cpu_instructions: 100]
 
 {:ok, %SendTransactionResponse{hash: hash}} =
-  Contract.restore_contract_keys(contract_address, secret_key, keys)
+  Contract.restore_contract_keys(contract_address, secret_key, keys, addl_resources)
 
 {:ok,
  %Soroban.RPC.SendTransactionResponse{
@@ -905,12 +921,15 @@ function_name = "hello"
 
 function_args = [String.new("world")]
 
+addl_resources = [cpu_instructions: 100]
+
 Contract.retrieve_unsigned_xdr_to_invoke(
   contract_address,
   source_public_key,
   function_name,
   function_args,
-  extra_fee_rate
+  extra_fee_rate,
+  addl_resources
 )
 
 "AAAAAgAAAAD...QAAAAAAAAAAAAAAAAAAAAA="
@@ -929,8 +948,9 @@ alias Soroban.Contract
 
 wasm = File.read!("../your_wasm_path/hello.wasm")
 source_public_key = "GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"
+addl_resources = [cpu_instructions: 100]
 
-Contract.retrieve_unsigned_xdr_to_upload(wasm, source_public_key)
+Contract.retrieve_unsigned_xdr_to_upload(wasm, source_public_key, addl_resources)
 
 "AAAAAgAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gAAAGQAADg8AAAAOgAAAAAAAAAAAAAAAQAAAAAAAAAYAA..."
 
@@ -949,8 +969,9 @@ alias Soroban.Contract
 wasm_id = <<43, 175, 217, 68, 182, 222, 246, 123, 230, 77, 134, 236, 60, 179, 45, 137, 54,
   44, 8, 19, 0, 134, 104, 112, 90, 233, 87, 199, 60, 136, 151, 169>>
 source_public_key = "GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"
+addl_resources = [cpu_instructions: 100]
 
-Contract.retrieve_unsigned_xdr_to_deploy(wasm_id, source_public_key)
+Contract.retrieve_unsigned_xdr_to_deploy(wasm_id, source_public_key, addl_resources)
 
 "AAAAAgAAAAD...ZAAAAFAAAAAAAAAAAAAAAAA=="
 
@@ -968,8 +989,9 @@ alias Soroban.Contract
 
 asset_code = "DBZ"
 source_public_key = "GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"
+addl_resources = [cpu_instructions: 100]
 
-Contract.retrieve_unsigned_xdr_to_deploy_asset(asset_code, source_public_key)
+Contract.retrieve_unsigned_xdr_to_deploy_asset(asset_code, source_public_key, addl_resources)
 
 "AAAAAgAAAADJ...d4kfn7AAAAFAAAAAAAAAAAAAAAAA=="
 
