@@ -212,6 +212,8 @@ Submit a trial contract invocation to get back return values, expected ledger fo
 **Parameters**
 
 - `base64_envelope`: `<xdr.TransactionEnvelope>` - The transaction to be simulated (serialized in base64).
+- `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
+  - `cpu_instructions`: Number of additional CPU instructions to reserve.
 
 **Example**
 
