@@ -5,6 +5,7 @@
 - [Stellar Protocol 20 support](https://github.com/kommitters/soroban.ex/issues/140).
 - [Remove percentages of additional resources + update SimulateTransactionResponse](https://github.com/kommitters/soroban.ex/pull/142).
 - [Support resource leeway in simulate transaction](https://github.com/kommitters/soroban.ex/pull/143).
+- Add www.bestpractices.dev to scorecards workflow.
 
 ## 0.17.0 (26.10.2023)
 
