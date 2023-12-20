@@ -487,6 +487,8 @@ The deployment and invocation of Soroban smart contracts is done through the `So
 - `function_args`: List of `Soroban.Types` representing the arguments required by the indicated function (`function_name`). They should be provided in the specific order expected by the function.
 - `extra_fee_rate`: Float number to increment the transaction fee to pay, useful when the operation returns an insufficient fee error.
 - `auth_secret_key`: (optional) Secret key used to authorize the function invocation when the function invoker is not the same function authorizer.
+- `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
+  - `cpu_instructions`: Number of additional CPU instructions to reserve.
 
 ##### Simple invocation - no authorization required
 
@@ -603,6 +605,8 @@ Contract.invoke(contract_address, source_secret_key, function_name, function_arg
 
 - `wasm`: Binary of the web assembly (WASM) file resulting from building the contract.
 - `secret_key`: Secret key of the function invoker responsible for signing the transaction.
+- `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
+  - `cpu_instructions`: Number of additional CPU instructions to reserve.
 
 ```elixir
 alias Soroban.Contract
@@ -633,6 +637,8 @@ addl_resources = [cpu_instructions: 100]
 
 - `wasm_id`: Binary identification of the uploaded contract to deploy.
 - `secret_key`: Secret key of the function invoker responsible for signing the transaction.
+- `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
+  - `cpu_instructions`: Number of additional CPU instructions to reserve.
 
 ```elixir
 alias Soroban.Contract
@@ -663,6 +669,8 @@ addl_resources = [cpu_instructions: 100]
 - `asset_code`: String from 1 to 12 characters indicating the asset symbol.
 - `asset_issuer`: Public key of the asset issuer.
 - `secret_key`: Secret key of the function invoker responsible for signing the transaction.
+- `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
+  - `cpu_instructions`: Number of additional CPU instructions to reserve.
 
 ```elixir
 alias Soroban.Contract
@@ -698,6 +706,8 @@ Extends a contract instance lifetime.
 - `contract_address`: Identifier of the contract to be extended, encoded as `StrKey`.
 - `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
 - `ledgers_to_extend`: The number of ledgers wanted to extend the contract lifetime.
+- `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
+  - `cpu_instructions`: Number of additional CPU instructions to reserve.
 
 ```elixir
 alias Soroban.Contract
@@ -731,6 +741,8 @@ Extends the lifetime of a contract's uploaded wasm code.
 - `wasm_id`: Binary identification of an uploaded contract.
 - `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
 - `ledgers_to_extend`: The number of ledgers wanted to extend the wasm lifetime.
+- `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
+  - `cpu_instructions`: Number of additional CPU instructions to reserve.
 
 ```elixir
 alias Soroban.Contract
@@ -767,6 +779,8 @@ Extends the lifetime of a contract's data entry keys.
 - `keys`: A list of tuples indicating the durability and the name of the data entry, to increase its lifetime.
   - `durability`: Allowed types `:persistent`, `:temporary`
   - `data entry`: Any `String` that is 32 characters or less.
+- `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
+  - `cpu_instructions`: Number of additional CPU instructions to reserve.
 
 ```elixir
 alias Soroban.Contract
@@ -802,6 +816,8 @@ Restores a contract instance.
 
 - `contract_address`: Identifier of the contract to be restored, encoded as `StrKey`.
 - `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
+- `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
+  - `cpu_instructions`: Number of additional CPU instructions to reserve.
 
 ```elixir
 alias Soroban.Contract
@@ -835,6 +851,8 @@ Restores a contract uploaded wasm code.
 
 - `wasm_id`: Binary identification of an uploaded contract.
 - `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
+- `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
+  - `cpu_instructions`: Number of additional CPU instructions to reserve.
 
 ```elixir
 alias Soroban.Contract
@@ -870,6 +888,8 @@ Restore contract's data entry keys.
 - `keys`: A keyword list indicating the durability and the name of the data entry, to restore.
   - `durability`: Allowed types `:persistent`
   - `data entry`: Any `String` that is 32 characters or less.
+- `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
+  - `cpu_instructions`: Number of additional CPU instructions to reserve.
 
 ```elixir
 alias Soroban.Contract
@@ -909,6 +929,8 @@ This XDR is required by wallets to sign transactions before they can be submitte
 - `function_name`: String value indicating the name of the function to be invoked.
 - `function_args`: List of `Soroban.Types` representing the arguments required by the indicated function (`function_name`). They should be provided in the specific order expected by the function.
 - `extra_fee_rate`: Float number to increment the transaction fee to pay, useful when the operation returns an insufficient fee error.
+- `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
+  - `cpu_instructions`: Number of additional CPU instructions to reserve.
 
 ```elixir
 alias Soroban.Contract
@@ -942,6 +964,8 @@ Contract.retrieve_unsigned_xdr_to_invoke(
 
 - `wasm`: Binary of the web assembly (WASM) file resulting from building the contract.
 - `source_public_key`: Public key of the function invoker responsible for signing the transaction.
+- `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
+  - `cpu_instructions`: Number of additional CPU instructions to reserve.
 
 ```elixir
 alias Soroban.Contract
@@ -962,6 +986,8 @@ Contract.retrieve_unsigned_xdr_to_upload(wasm, source_public_key, addl_resources
 
 - `wasm_id`: Binary identification of the uploaded contract to deploy.
 - `source_public_key`: Public key of the function invoker responsible for signing the transaction.
+- `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
+  - `cpu_instructions`: Number of additional CPU instructions to reserve.
 
 ```elixir
 alias Soroban.Contract
@@ -983,6 +1009,8 @@ Contract.retrieve_unsigned_xdr_to_deploy(wasm_id, source_public_key, addl_resour
 
 - `asset_code`: String from 1 to 12 characters indicating the asset symbol.
 - `source_public_key`: Public key of the function invoker responsible for signing the transaction.
+- `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
+  - `cpu_instructions`: Number of additional CPU instructions to reserve.
 
 ```elixir
 alias Soroban.Contract
