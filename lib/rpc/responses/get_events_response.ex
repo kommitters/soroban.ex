@@ -4,7 +4,7 @@ defmodule Soroban.RPC.GetEventsResponse do
   """
   @behaviour Soroban.RPC.Response.Spec
 
-  @type latest_ledger :: String.t()
+  @type latest_ledger :: non_neg_integer()
   @type events :: list()
   @type t :: %__MODULE__{
           latest_ledger: latest_ledger(),

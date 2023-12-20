@@ -15,7 +15,7 @@ defmodule Soroban.RPC.CannedGetEventsClientImpl do
            contract_id: "CCEMOFO5TE7FGOAJOA3RDHPC6RW3CFXRVIGOFQPFE4ZGOKA2QEA636SN",
            id: "0002917807507378176-0000000000",
            in_successful_contract_call: true,
-           ledger: "679355",
+           ledger: 679_355,
            ledger_closed_at: "2023-05-16T06:02:47Z",
            paging_token: "0002917807507378176-0000000000",
            topic: [
@@ -54,7 +54,7 @@ defmodule Soroban.RPC.GetEventsTest do
     end)
 
     limit = 1
-    start_ledger = "674736"
+    start_ledger = 674_736
     args = [Symbol.new("transfer"), "*", "*", "*"]
     topic_filter = [TopicFilter.new(args)]
     contract_ids = ["CCEMOFO5TE7FGOAJOA3RDHPC6RW3CFXRVIGOFQPFE4ZGOKA2QEA636SN"]
@@ -82,7 +82,7 @@ defmodule Soroban.RPC.GetEventsTest do
            contract_id: "CCEMOFO5TE7FGOAJOA3RDHPC6RW3CFXRVIGOFQPFE4ZGOKA2QEA636SN",
            id: "0002917807507378176-0000000000",
            in_successful_contract_call: true,
-           ledger: "679355",
+           ledger: 679_355,
            ledger_closed_at: "2023-05-16T06:02:47Z",
            paging_token: "0002917807507378176-0000000000",
            topic: [

@@ -15,7 +15,11 @@ defmodule Soroban.RPC do
   }
 
   defdelegate send_transaction(base64_envelope), to: SendTransaction, as: :request
-  defdelegate simulate_transaction(base64_envelope), to: SimulateTransaction, as: :request
+
+  defdelegate simulate_transaction(base64_envelope, addl_resources \\ []),
+    to: SimulateTransaction,
+    as: :request
+
   defdelegate get_transaction(hash), to: GetTransaction, as: :request
   defdelegate get_ledger_entries(key), to: GetLedgerEntries, as: :request
   defdelegate get_events(payload), to: GetEvents, as: :request

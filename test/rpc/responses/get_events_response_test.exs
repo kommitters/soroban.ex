@@ -12,7 +12,7 @@ defmodule Soroban.RPC.GetEventsResponseTest do
             contract_id: "6e34123e6328b38075f4e670175221452db7535ceeb3def1af6dddc232c1eae4",
             id: "0002832986198249472-0000000000",
             in_successful_contract_call: true,
-            ledger: "659606",
+            ledger: 659_606,
             ledger_closed_at: "2023-05-15T01:14:16Z",
             paging_token: "0002832986198249472-0000000000",
             topic: [
@@ -38,7 +38,7 @@ defmodule Soroban.RPC.GetEventsResponseTest do
             contract_id: "6e34123e6328b38075f4e670175221452db7535ceeb3def1af6dddc232c1eae4",
             id: "0002832986198249472-0000000000",
             in_successful_contract_call: true,
-            ledger: "659606",
+            ledger: 659_606,
             ledger_closed_at: "2023-05-15T01:14:16Z",
             paging_token: "0002832986198249472-0000000000",
             topic: [
