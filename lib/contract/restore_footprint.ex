@@ -1,6 +1,6 @@
 defmodule Soroban.Contract.RestoreFootprint do
   @moduledoc """
-  `RestoreFootprint` implementation to bump a contract.
+  `RestoreFootprint` implementation to extend a contract.
   """
 
   alias Soroban.Contract.RPCCalls
@@ -28,12 +28,14 @@ defmodule Soroban.Contract.RestoreFootprint do
   @type send_response :: {:ok, SendTransactionResponse.t()}
   @type restore_footprint_validation :: {:ok, RestoreFootprint.t()} | error()
   @type soroban_data :: SorobanTransactionData.t()
+  @type addl_resources :: keyword()
 
   @spec restore_contract(
           contract_address :: contract_address(),
-          secret_key :: secret_key()
+          secret_key :: secret_key(),
+          addl_resources :: addl_resources()
         ) :: send_response()
-  def restore_contract(contract_address, secret_key) do
+  def restore_contract(contract_address, secret_key, addl_resources \\ []) do
     with {public_key, _secret} = keypair <- Stellar.KeyPair.from_secret_seed(secret_key),
          {:ok, seq_num} <- Accounts.fetch_next_sequence_number(public_key),
          {:ok, restore_footprint_op} <- create_restore_footprint_op(),
@@ -42,7 +44,7 @@ defmodule Soroban.Contract.RestoreFootprint do
          %Account{} = source_account <- Account.new(public_key),
          %Signature{} = signature <- Signature.new(keypair) do
       restore_footprint_op
-      |> RPCCalls.simulate(source_account, sequence_number, soroban_data)
+      |> RPCCalls.simulate(source_account, sequence_number, addl_resources, soroban_data)
       |> RPCCalls.send_transaction(
         source_account,
         sequence_number,
@@ -54,9 +56,10 @@ defmodule Soroban.Contract.RestoreFootprint do
 
   @spec restore_contract_wasm(
           wasm_id :: wasm_id(),
-          secret_key :: secret_key()
+          secret_key :: secret_key(),
+          addl_resources :: addl_resources()
         ) :: send_response()
-  def restore_contract_wasm(wasm_id, secret_key) do
+  def restore_contract_wasm(wasm_id, secret_key, addl_resources \\ []) do
     with {public_key, _secret} = keypair <- Stellar.KeyPair.from_secret_seed(secret_key),
          {:ok, seq_num} <- Accounts.fetch_next_sequence_number(public_key),
          {:ok, restore_footprint_op} <- create_restore_footprint_op(),
@@ -65,7 +68,7 @@ defmodule Soroban.Contract.RestoreFootprint do
          %Account{} = source_account <- Account.new(public_key),
          %Signature{} = signature <- Signature.new(keypair) do
       restore_footprint_op
-      |> RPCCalls.simulate(source_account, sequence_number, soroban_data)
+      |> RPCCalls.simulate(source_account, sequence_number, addl_resources, soroban_data)
       |> RPCCalls.send_transaction(
         source_account,
         sequence_number,
@@ -78,9 +81,10 @@ defmodule Soroban.Contract.RestoreFootprint do
   @spec restore_contract_keys(
           contract_address :: contract_address(),
           secret_key :: secret_key(),
-          keys :: keys()
+          keys :: keys(),
+          addl_resources :: addl_resources()
         ) :: send_response()
-  def restore_contract_keys(contract_address, secret_key, keys) do
+  def restore_contract_keys(contract_address, secret_key, keys, addl_resources \\ []) do
     with {public_key, _secret} = keypair <- Stellar.KeyPair.from_secret_seed(secret_key),
          {:ok, seq_num} <- Accounts.fetch_next_sequence_number(public_key),
          {:ok, restore_footprint_op} <- create_restore_footprint_op(),
@@ -89,7 +93,7 @@ defmodule Soroban.Contract.RestoreFootprint do
          %Account{} = source_account <- Account.new(public_key),
          %Signature{} = signature <- Signature.new(keypair) do
       restore_footprint_op
-      |> RPCCalls.simulate(source_account, sequence_number, soroban_data)
+      |> RPCCalls.simulate(source_account, sequence_number, addl_resources, soroban_data)
       |> RPCCalls.send_transaction(
         source_account,
         sequence_number,
@@ -112,7 +116,7 @@ defmodule Soroban.Contract.RestoreFootprint do
         write_bytes: 0
       ]
       |> SorobanResources.new()
-      |> (&SorobanTransactionData.new(resources: &1, refundable_fee: 0)).()
+      |> (&SorobanTransactionData.new(resources: &1, resource_fee: 0)).()
     end
   end
 
@@ -130,7 +134,7 @@ defmodule Soroban.Contract.RestoreFootprint do
       write_bytes: 0
     ]
     |> SorobanResources.new()
-    |> (&SorobanTransactionData.new(resources: &1, refundable_fee: 0)).()
+    |> (&SorobanTransactionData.new(resources: &1, resource_fee: 0)).()
   end
 
   @spec create_restore_footprint_op() :: restore_footprint_validation()

@@ -6,19 +6,19 @@ defmodule Soroban.RPC.GetTransactionResponseTest do
   setup do
     not_found_result = %{
       status: :not_found,
-      latest_ledger: "45075181",
+      latest_ledger: 45_075_181,
       latest_ledger_close_time: "1677115742",
-      oldest_ledger: "45070000",
+      oldest_ledger: 45_070_000,
       oldest_ledger_close_time: "1677000000"
     }
 
     success_result = %{
       status: :success,
-      latest_ledger: "45075181",
+      latest_ledger: 45_075_181,
       latest_ledger_close_time: "1677115742",
-      oldest_ledger: "45070000",
+      oldest_ledger: 45_070_000,
       oldest_ledger_close_time: "1677000000",
-      ledger: "45070700",
+      ledger: 45_070_700,
       created_at: "1677009000",
       application_order: 1,
       fee_bump: false,
@@ -32,11 +32,11 @@ defmodule Soroban.RPC.GetTransactionResponseTest do
 
     failed_result = %{
       status: "FAILED",
-      latest_ledger: "45075181",
+      latest_ledger: 45_075_181,
       latest_ledger_close_time: "1677115742",
-      oldest_ledger: "45070000",
+      oldest_ledger: 45_070_000,
       oldest_ledger_close_time: "1677000000",
-      ledger: "45070700",
+      ledger: 45_070_700,
       created_at: "1677009000",
       application_order: 1,
       fee_bump: false,

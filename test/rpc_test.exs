@@ -11,7 +11,7 @@ defmodule Soroban.RPC.CannedRPCSendTransactionClientImpl do
      %{
        status: "PENDING",
        hash: "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4",
-       latest_ledger: "476420",
+       latest_ledger: 45_075_181,
        latest_ledger_close_time: "1683150612"
      }}
   end
@@ -38,7 +38,7 @@ defmodule Soroban.RPC.CannedRPCSimulateTransactionClientImpl do
          }
        ],
        cost: %{cpu_insns: "1048713", mem_bytes: "1201148"},
-       latest_ledger: "475528"
+       latest_ledger: 45_075_181
      }}
   end
 end
@@ -113,7 +113,7 @@ defmodule Soroban.RPC.CannedRPCGetLedgerEntriesClientImpl do
            last_modified_ledger_seq: "13"
          }
        ],
-       latest_ledger: "179436"
+       latest_ledger: 45_075_181
      }}
   end
 end
@@ -129,10 +129,10 @@ defmodule Soroban.RPC.CannedRPCGetEventsClientImpl do
 
     {:ok,
      %{
-       latest_ledger: "685196",
+       latest_ledger: 45_075_181,
        events: [
          %{
-           contract_id: "7d9defe0ccf9b680014a343b8880c22b160c2ea2c9a69df876decb28ddbd03dc",
+           contract_id: "CCEMOFO5TE7FGOAJOA3RDHPC6RW3CFXRVIGOFQPFE4ZGOKA2QEA636SN",
            id: "0002917807507378176-0000000000",
            in_successful_contract_call: true,
            ledger: "679355",
@@ -145,7 +145,7 @@ defmodule Soroban.RPC.CannedRPCGetEventsClientImpl do
              "AAAADQAAACVVU0RDOl3dfLGIo7lPPO+E0KPPSVxWCQ1qOen8umo/g+Jx8baEAAAA"
            ],
            type: "contract",
-           value: %{xdr: "AAAACgAAAAAF9eEAAAAAAAAAAAA="}
+           value: "AAAACgAAAAAF9eEAAAAAAAAAAAA="
          }
        ]
      }}
@@ -164,7 +164,7 @@ defmodule Soroban.RPC.CannedRPCGetTransactionClientImpl do
     {:ok,
      %{
        status: "SUCCESS",
-       latest_ledger: "476536",
+       latest_ledger: 45_075_181,
        latest_ledger_close_time: "1683151229",
        oldest_ledger: "475097",
        oldest_ledger_close_time: "1683143656",
@@ -236,7 +236,7 @@ defmodule Soroban.RPCTest do
            }
          ],
          cost: %{cpu_insns: "1048713", mem_bytes: "1201148"},
-         latest_ledger: "475528",
+         latest_ledger: 45_075_181,
          error: nil
        }} = RPC.simulate_transaction(base64_envelope)
     end
@@ -261,7 +261,7 @@ defmodule Soroban.RPCTest do
        %SendTransactionResponse{
          status: "PENDING",
          hash: "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4",
-         latest_ledger: "476420",
+         latest_ledger: 45_075_181,
          latest_ledger_close_time: "1683150612",
          error_result_xdr: nil
        }} = RPC.send_transaction(base64_envelope)
@@ -285,7 +285,7 @@ defmodule Soroban.RPCTest do
       {:ok,
        %GetTransactionResponse{
          status: "SUCCESS",
-         latest_ledger: "476536",
+         latest_ledger: 45_075_181,
          latest_ledger_close_time: "1683151229",
          oldest_ledger: "475097",
          oldest_ledger_close_time: "1683143656",
@@ -374,7 +374,7 @@ defmodule Soroban.RPCTest do
              last_modified_ledger_seq: "13"
            }
          ],
-         latest_ledger: "179436"
+         latest_ledger: 45_075_181
        }} = RPC.get_ledger_entries(keys)
     end
   end
@@ -388,10 +388,10 @@ defmodule Soroban.RPCTest do
       end)
 
       limit = 1
-      start_ledger = "674736"
+      start_ledger = 674_736
       args = [Symbol.new("transfer"), "*", "*", "*"]
       topic_filter = [TopicFilter.new(args)]
-      contract_ids = ["7d9defe0ccf9b680014a343b8880c22b160c2ea2c9a69df876decb28ddbd03dc"]
+      contract_ids = ["CCEMOFO5TE7FGOAJOA3RDHPC6RW3CFXRVIGOFQPFE4ZGOKA2QEA636SN"]
 
       filters = [
         EventFilter.new(type: [:contract], contract_ids: contract_ids, topics: topic_filter)
@@ -410,10 +410,10 @@ defmodule Soroban.RPCTest do
     test "request/1", %{event: event} do
       {:ok,
        %GetEventsResponse{
-         latest_ledger: "685196",
+         latest_ledger: 45_075_181,
          events: [
            %{
-             contract_id: "7d9defe0ccf9b680014a343b8880c22b160c2ea2c9a69df876decb28ddbd03dc",
+             contract_id: "CCEMOFO5TE7FGOAJOA3RDHPC6RW3CFXRVIGOFQPFE4ZGOKA2QEA636SN",
              id: "0002917807507378176-0000000000",
              in_successful_contract_call: true,
              ledger: "679355",
@@ -426,7 +426,7 @@ defmodule Soroban.RPCTest do
                "AAAADQAAACVVU0RDOl3dfLGIo7lPPO+E0KPPSVxWCQ1qOen8umo/g+Jx8baEAAAA"
              ],
              type: "contract",
-             value: %{xdr: "AAAACgAAAAAF9eEAAAAAAAAAAAA="}
+             value: "AAAACgAAAAAF9eEAAAAAAAAAAAA="
            }
          ]
        }} = RPC.get_events(event)

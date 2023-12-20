@@ -7,7 +7,7 @@ defmodule Soroban.RPC.EventFilterTest do
   setup do
     args = [Symbol.new("increase_allowance"), "*", "*", "*"]
     topic_filter = [TopicFilter.new(args)]
-    contract_ids = ["6e34123e6328b38075f4e670175221452db7535ceeb3def1af6dddc232c1eae4"]
+    contract_ids = ["CCEMOFO5TE7FGOAJOA3RDHPC6RW3CFXRVIGOFQPFE4ZGOKA2QEA636SN"]
 
     event_filter =
       EventFilter.new(type: [:contract], contract_ids: contract_ids, topics: topic_filter)
@@ -64,6 +64,13 @@ defmodule Soroban.RPC.EventFilterTest do
 
     test "with invalid contract_ids values" do
       {:error, :invalid_contract_ids} = EventFilter.new(contract_ids: [:invalid])
+    end
+
+    test "with invalid contract_ids hash" do
+      {:error, :invalid_contract_ids} =
+        EventFilter.new(
+          contract_ids: ["7d9defe0ccf9b680014a343b8880c22b160c2ea2c9a69df876decb28ddbd03dc"]
+        )
     end
 
     test "with invalid topics" do

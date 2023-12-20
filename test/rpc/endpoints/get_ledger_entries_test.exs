@@ -13,10 +13,11 @@ defmodule Soroban.RPC.CannedGetLedgerEntriesClientImpl do
          %{
            key: "AAAAB+qfy4GuVKKfazvyk4R9P9fpo2n9HICsr+xqvVcTF+DC",
            xdr: "AAAABwAAAADqn8uBrlSin2s78pOEfT/X6aNp/RyArK/sar1XExfgwgAAAAphIGNvbnRyYWN0AAA=",
-           last_modified_ledger_seq: "13"
+           last_modified_ledger_seq: 2_552_504,
+           live_until_ledger_seq: 2_552_504
          }
        ],
-       latest_ledger: "179436"
+       latest_ledger: 45_075_181
      }}
   end
 end
@@ -47,10 +48,11 @@ defmodule Soroban.RPC.GetLedgerEntriesTest do
          %{
            key: "AAAAB+qfy4GuVKKfazvyk4R9P9fpo2n9HICsr+xqvVcTF+DC",
            xdr: "AAAABwAAAADqn8uBrlSin2s78pOEfT/X6aNp/RyArK/sar1XExfgwgAAAAphIGNvbnRyYWN0AAA=",
-           last_modified_ledger_seq: "13"
+           last_modified_ledger_seq: 2_552_504,
+           live_until_ledger_seq: 2_552_504
          }
        ],
-       latest_ledger: "179436"
+       latest_ledger: 45_075_181
      }} = GetLedgerEntries.request(keys)
   end
 end

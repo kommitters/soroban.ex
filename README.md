@@ -19,7 +19,7 @@
 ```elixir
 def deps do
   [
-    {:soroban, "~> 0.17.0"}
+    {:soroban, "~> 0.18.0"}
   ]
 end
 ```
@@ -212,6 +212,8 @@ Submit a trial contract invocation to get back return values, expected ledger fo
 **Parameters**
 
 - `base64_envelope`: `<xdr.TransactionEnvelope>` - The transaction to be simulated (serialized in base64).
+- `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
+  - `cpu_instructions`: Number of additional CPU instructions to reserve.
 
 **Example**
 
@@ -219,7 +221,9 @@ Submit a trial contract invocation to get back return values, expected ledger fo
 base64_envelope =
   "AAAAAgAAAADWKIRtrzg/aTCtUHeZnpyYu0iNxJxcn4tr0jXG2hOIlwAAAGQABzbWAAAAAwAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAGAAAAAAAAAAEAAAADQAAACC8xDySpTRgcsckFZY9QBvIP3LL70Jp0xG3cmpCvp0d/QAAAA8AAAAJaW5jcmVtZW50AAAAAAAAEwAAAAAAAAAA1iiEba84P2kwrVB3mZ6cmLtIjcScXJ+La9I1xtoTiJcAAAADAAAACgAAAAAAAAAAAAAAAQAAAAC8xDySpTRgcsckFZY9QBvIP3LL70Jp0xG3cmpCvp0d/QAAAAlpbmNyZW1lbnQAAAAAAAACAAAAEwAAAAAAAAAA1iiEba84P2kwrVB3mZ6cmLtIjcScXJ+La9I1xtoTiJcAAAADAAAACgAAAAAAAAAAAAAAAAAAAAA="
 
-Soroban.RPC.simulate_transaction(base64_envelope)
+addl_resources = [cpu_instructions: 100]
+
+Soroban.RPC.simulate_transaction(base64_envelope, addl_resources)
 
 {:ok,
  %Soroban.RPC.SimulateTransactionResponse{
@@ -233,7 +237,8 @@ Soroban.RPC.simulate_transaction(base64_envelope)
      }
    ],
    cost: %{cpu_insns: "1048713", mem_bytes: "1201148"},
-   latest_ledger: "475528",
+   latest_ledger: 45075181,
+   restore_preamble: nil,
    error: nil
  }}
 
@@ -263,7 +268,7 @@ Soroban.RPC.send_transaction(base64_envelope)
  %Soroban.RPC.SendTransactionResponse{
    status: "PENDING",
    hash: "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4",
-   latest_ledger: "476420",
+   latest_ledger: 45075181,
    latest_ledger_close_time: "1683150612",
    error_result_xdr: nil
  }}
@@ -288,9 +293,9 @@ Soroban.RPC.get_transaction(hash)
 {:ok,
  %Soroban.RPC.GetTransactionResponse{
    status: "SUCCESS",
-   latest_ledger: "476536",
+   latest_ledger: 45075181,
    latest_ledger_close_time: "1683151229",
-   oldest_ledger: "475097",
+   oldest_ledger: 475097,
    oldest_ledger_close_time: "1683143656",
    application_order: 1,
    envelope_xdr:
@@ -299,7 +304,7 @@ Soroban.RPC.get_transaction(hash)
      "AAAAAAAAAGQAAAAAAAAAAQAAAAAAAAAYAAAAAAAAABAAAAABAAAAAgAAAA8AAAAFSGVsbG8AAAAAAAAPAAAABXdvcmxkAAAAAAAAAA==",
    result_meta_xdr:
      "AAAAAwAAAAIAAAADAAdFBQAAAAAAAAAAwT6e0zIpycpZ5/unUFyQAjXNeSxfmidj8tQWkeD9dCQAAAAXDNwRHAAAUF8AAAAgAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAwAAAAAAB0J+AAAAAGRSydYAAAAAAAAAAQAHRQUAAAAAAAAAAME+ntMyKcnKWef7p1BckAI1zXksX5onY/LUFpHg/XQkAAAAFwzcERwAAFBfAAAAIQAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAMAAAAAAAdFBQAAAABkUtcZAAAAAAAAAAEAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAGQAAAAAAAAAAQAAAAAAAAAYAAAAAAAAABAAAAABAAAAAgAAAA8AAAAFSGVsbG8AAAAAAAAPAAAABXdvcmxkAAAAAAAAAKQ1a84I/mDKy5j2B/YFeyfTCsTBoKJtON5QDfqS06qwy7xIdQ3ruFNQk7Per4isf0z/h0JVdqWN4rrHVKzbRhYD6NIFNZRcltVrmGLx9Y+ku182sxlHjDdsZ28pYul9HwAAAAA=",
-   ledger: "476421"
+   ledger: 476421
  }}
 
 ```
@@ -376,10 +381,11 @@ Soroban.RPC.get_ledger_entries(keys)
      %{
        key: "AAAAB+qfy4GuVKKfazvyk4R9P9fpo2n9HICsr+xqvVcTF+DC",
        xdr: "AAAABwAAAADqn8uBrlSin2s78pOEfT/X6aNp/RyArK/sar1XExfgwgAAAAphIGNvbnRyYWN0AAA=",
-       last_modified_ledger_seq: "13"
+       last_modified_ledger_seq: 13,
+       live_until_ledger_seq: 320384
      }
    ],
-   latest_ledger: "179436"
+   latest_ledger: 45075181
  }}
 
 ```
@@ -432,7 +438,7 @@ limit = 1
 start_ledger = "674736"
 args = [Symbol.new("transfer"), "*", "*", "*"]
 topic_filter = [TopicFilter.new(args)]
-contract_ids = ["7d9defe0ccf9b680014a343b8880c22b160c2ea2c9a69df876decb28ddbd03dc"]
+contract_ids = ["CCEMOFO5TE7FGOAJOA3RDHPC6RW3CFXRVIGOFQPFE4ZGOKA2QEA636SN"]
 
 filters = [
   EventFilter.new(type: [:contract], contract_ids: contract_ids, topics: topic_filter)
@@ -449,13 +455,13 @@ Soroban.RPC.get_events(events_payload)
 
 {:ok,
  %Soroban.RPC.GetEventsResponse{
-   latest_ledger: "685870",
+   latest_ledger: 45075181,
    events: [
      %{
-       contract_id: "7d9defe0ccf9b680014a343b8880c22b160c2ea2c9a69df876decb28ddbd03dc",
+       contract_id: "CCEMOFO5TE7FGOAJOA3RDHPC6RW3CFXRVIGOFQPFE4ZGOKA2QEA636SN",
        id: "0002917807507378176-0000000000",
        in_successful_contract_call: true,
-       ledger: "679355",
+       ledger: 679355,
        ledger_closed_at: "2023-05-16T06:02:47Z",
        paging_token: "0002917807507378176-0000000000",
        topic: [
@@ -465,7 +471,7 @@ Soroban.RPC.get_events(events_payload)
          "AAAADQAAACVVU0RDOl3dfLGIo7lPPO+E0KPPSVxWCQ1qOen8umo/g+Jx8baEAAAA"
        ],
        type: "contract",
-       value: %{xdr: "AAAACgAAAAAF9eEAAAAAAAAAAAA="}
+       value: "AAAACgAAAAAF9eEAAAAAAAAAAAA="
      }
    ]
  }}
@@ -485,6 +491,8 @@ The deployment and invocation of Soroban smart contracts is done through the `So
 - `function_args`: List of `Soroban.Types` representing the arguments required by the indicated function (`function_name`). They should be provided in the specific order expected by the function.
 - `extra_fee_rate`: Float number to increment the transaction fee to pay, useful when the operation returns an insufficient fee error.
 - `auth_secret_key`: (optional) Secret key used to authorize the function invocation when the function invoker is not the same function authorizer.
+- `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
+  - `cpu_instructions`: Number of additional CPU instructions to reserve.
 
 ##### Simple invocation - no authorization required
 
@@ -499,13 +507,15 @@ function_name = "hello"
 
 function_args = [String.new("world")]
 
-Contract.invoke(contract_address, source_secret_key, function_name, function_args, extra_fee_rate)
+addl_resources = [cpu_instructions: 100]
+
+Contract.invoke(contract_address, source_secret_key, function_name, function_args, extra_fee_rate, [], addl_resources)
 
 {:ok,
   %Soroban.RPC.SendTransactionResponse{
     status: "PENDING",
     hash: "f62cb9e20c6d297316f49dca2041be4bf1af6b069c784764e51ac008b313d716",
-    latest_ledger: "570194",
+    latest_ledger: 45075181,
     latest_ledger_close_time: "1683643419",
     error_result_xdr: nil
   }}
@@ -529,13 +539,15 @@ Contract.invoke(contract_address, source_secret_key, function_name, function_arg
     UInt128.new(2)
   ]
 
-  Contract.invoke(contract_address, source_secret_key, function_name, function_args, extra_fee_rate)
+  addl_resources = [cpu_instructions: 100]
+
+  Contract.invoke(contract_address, source_secret_key, function_name, function_args, extra_fee_rate, [], addl_resources)
 
   {:ok,
     %Soroban.RPC.SendTransactionResponse{
       status: "PENDING",
       hash: "e888193b4fed9b3ca6ad2beca3c1ed5bef3e0099e558756de85d03511cbaa00b",
-      latest_ledger: "570253",
+      latest_ledger: 45075181,
       latest_ledger_close_time: "1683643728",
       error_result_xdr: nil
     }}
@@ -567,20 +579,23 @@ Contract.invoke(contract_address, source_secret_key, function_name, function_arg
     "SDLOYUOMX67YX6NK7TZLWTGYU3V4FIEBL5RFRX36EYDZ4OM46VSJXV7C"
   ]
 
+  addl_resources = [cpu_instructions: 100]
+
   Contract.invoke(
     contract_address,
     source_secret_key,
     function_name,
     function_args,
     extra_fee_rate,
-    auth_secret_keys
+    auth_secret_keys,
+    addl_resources
   )
 
   {:ok,
     %Soroban.RPC.SendTransactionResponse{
       status: "PENDING",
       hash: "da263f59a8f8b29f415e7e26758cad6e8d88caec875112641b88757ce8e01873",
-      latest_ledger: "570349",
+      latest_ledger: 45075181,
       latest_ledger_close_time: "1683644240",
       error_result_xdr: nil
     }}
@@ -594,6 +609,8 @@ Contract.invoke(contract_address, source_secret_key, function_name, function_arg
 
 - `wasm`: Binary of the web assembly (WASM) file resulting from building the contract.
 - `secret_key`: Secret key of the function invoker responsible for signing the transaction.
+- `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
+  - `cpu_instructions`: Number of additional CPU instructions to reserve.
 
 ```elixir
 alias Soroban.Contract
@@ -603,14 +620,15 @@ alias Soroban.RPC.SendTransactionResponse
 
 wasm = File.read!("../your_wasm_path/hello.wasm")
 secret_key = "SCA..."
+addl_resources = [cpu_instructions: 100]
 
-{:ok, %SendTransactionResponse{hash: hash}} = Contract.upload(wasm, secret_key)
+{:ok, %SendTransactionResponse{hash: hash}} = Contract.upload(wasm, secret_key, addl_resources)
 
 {:ok,
   %Soroban.RPC.SendTransactionResponse{
     status: "PENDING",
     hash: "65d...",
-    latest_ledger: "1",
+    latest_ledger: 45075181,
     latest_ledger_close_time: "16",
     error_result_xdr: nil
   }}
@@ -623,6 +641,8 @@ secret_key = "SCA..."
 
 - `wasm_id`: Binary identification of the uploaded contract to deploy.
 - `secret_key`: Secret key of the function invoker responsible for signing the transaction.
+- `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
+  - `cpu_instructions`: Number of additional CPU instructions to reserve.
 
 ```elixir
 alias Soroban.Contract
@@ -631,14 +651,15 @@ alias Soroban.Contract.DeployContract
 
 wasm_id = <<187, 187, 69, ...>>
 secret_key = "SCA..."
+addl_resources = [cpu_instructions: 100]
 
-{:ok, %SendTransactionResponse{hash: hash}} = Contract.deploy(wasm_id, secret_key)
+{:ok, %SendTransactionResponse{hash: hash}} = Contract.deploy(wasm_id, secret_key, addl_resources)
 
 {:ok,
   %Soroban.RPC.SendTransactionResponse{
     status: "PENDING",
     hash: "f95...",
-    latest_ledger: "1",
+    latest_ledger: 45075181,
     latest_ledger_close_time: "16",
     error_result_xdr: nil
   }}
@@ -652,6 +673,8 @@ secret_key = "SCA..."
 - `asset_code`: String from 1 to 12 characters indicating the asset symbol.
 - `asset_issuer`: Public key of the asset issuer.
 - `secret_key`: Secret key of the function invoker responsible for signing the transaction.
+- `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
+  - `cpu_instructions`: Number of additional CPU instructions to reserve.
 
 ```elixir
 alias Soroban.Contract
@@ -661,31 +684,34 @@ alias Soroban.Contract.DeployAssetContract
 asset_code = "DBZ"
 asset_issuer = "GBL..."
 secret_key = "SCA..."
+addl_resources = [cpu_instructions: 100]
 
-{:ok, %SendTransactionResponse{hash: hash}} = Contract.deploy_asset(asset_code, asset_issuer, secret_key)
+{:ok, %SendTransactionResponse{hash: hash}} = Contract.deploy_asset(asset_code, asset_issuer, secret_key, addl_resources)
 
 {:ok,
 %Soroban.RPC.SendTransactionResponse{
   status: "PENDING",
   hash: "b667...",
-  latest_ledger: "1",
+  latest_ledger: 45075181,
   latest_ledger_close_time: "16",
   error_result_xdr: nil
 }}
 
 ```
 
-#### BumpFootprint operation
+#### ExtendFootprintTTL operation
 
-##### Bump contract
+##### Extend contract
 
 Extends a contract instance lifetime.
 
 **Parameters**
 
-- `contract_address`: Identifier of the contract to be bumped, encoded as `StrKey`.
+- `contract_address`: Identifier of the contract to be extended, encoded as `StrKey`.
 - `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
-- `ledgers_to_bump`: The number of ledgers wanted to extend the contract lifetime.
+- `ledgers_to_extend`: The number of ledgers wanted to extend the contract lifetime.
+- `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
+  - `cpu_instructions`: Number of additional CPU instructions to reserve.
 
 ```elixir
 alias Soroban.Contract
@@ -693,23 +719,24 @@ alias Soroban.RPC.SendTransactionResponse
 
 contract_address = "CAEYZ6JI5YV2CBI3NRRUNA2DMERJ4KLJTI76WDZBTWZ7VMPGY6JDIZD5"
 secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
-ledgers_to_bump = 100_000
+ledgers_to_extend = 100_000
+addl_resources = [cpu_instructions: 100]
 
 {:ok, %SendTransactionResponse{hash: hash}} =
-  Contract.bump_contract(contract_address, secret_key, ledgers_to_bump)
+  Contract.extend_contract(contract_address, secret_key, ledgers_to_extend, addl_resources)
 
 {:ok,
  %Soroban.RPC.SendTransactionResponse{
    status: "PENDING",
    hash: "2f6f...",
-   latest_ledger: "279954",
+   latest_ledger: 45075181,
    latest_ledger_close_time: "1691441432",
    error_result_xdr: nil
 }}
 
 ```
 
-##### Bump contract wasm
+##### Extend contract wasm
 
 Extends the lifetime of a contract's uploaded wasm code.
 
@@ -717,7 +744,9 @@ Extends the lifetime of a contract's uploaded wasm code.
 
 - `wasm_id`: Binary identification of an uploaded contract.
 - `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
-- `ledgers_to_bump`: The number of ledgers wanted to extend the wasm lifetime.
+- `ledgers_to_extend`: The number of ledgers wanted to extend the wasm lifetime.
+- `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
+  - `cpu_instructions`: Number of additional CPU instructions to reserve.
 
 ```elixir
 alias Soroban.Contract
@@ -725,34 +754,37 @@ alias Soroban.RPC.SendTransactionResponse
 
 wasm_id = "067eb7ba419edd3e946e08eb17a81fbe1e850e690ed7692160875c2b65b45f21"
 secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
-ledgers_to_bump = 100_000
+ledgers_to_extend = 100_000
+addl_resources = [cpu_instructions: 100]
 
 {:ok, %SendTransactionResponse{hash: hash}} =
-  Contract.bump_contract_wasm(wasm_id, secret_key, ledgers_to_bump)
+  Contract.extend_contract_wasm(wasm_id, secret_key, ledgers_to_extend, addl_resources)
 
 {:ok,
  %Soroban.RPC.SendTransactionResponse{
    status: "PENDING",
    hash: "2f6f...",
-   latest_ledger: "279954",
+   latest_ledger: 45075181,
    latest_ledger_close_time: "1691441432",
    error_result_xdr: nil
 }}
 
 ```
 
-##### Bump contract keys
+##### Extend contract keys
 
 Extends the lifetime of a contract's data entry keys.
 
 **Parameters**
 
-- `contract_address`: Identifier of the contract to be bumped, encoded as `StrKey`.
+- `contract_address`: Identifier of the contract to be extended, encoded as `StrKey`.
 - `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
-- `ledgers_to_bump`: The number of ledgers wanted to extend the contract lifetime.
+- `ledgers_to_extend`: The number of ledgers wanted to extend the contract lifetime.
 - `keys`: A list of tuples indicating the durability and the name of the data entry, to increase its lifetime.
   - `durability`: Allowed types `:persistent`, `:temporary`
   - `data entry`: Any `String` that is 32 characters or less.
+- `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
+  - `cpu_instructions`: Number of additional CPU instructions to reserve.
 
 ```elixir
 alias Soroban.Contract
@@ -760,17 +792,18 @@ alias Soroban.RPC.SendTransactionResponse
 
 contract_address = "CAEYZ6JI5YV2CBI3NRRUNA2DMERJ4KLJTI76WDZBTWZ7VMPGY6JDIZD5"
 secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
-ledgers_to_bump = 100_000
+ledgers_to_extend = 100_000
 keys =  [{:persistent, "Prst"}, {:temporary, "Tmp"}]
+addl_resources = [cpu_instructions: 100]
 
 {:ok, %SendTransactionResponse{hash: hash}} =
-  Contract.bump_contract_keys(contract_address, secret_key, ledgers_to_bump, keys)
+  Contract.extend_contract_keys(contract_address, secret_key, ledgers_to_extend, keys, addl_resources)
 
 {:ok,
  %Soroban.RPC.SendTransactionResponse{
    status: "PENDING",
    hash: "2f6f...",
-   latest_ledger: "279954",
+   latest_ledger: 45075181,
    latest_ledger_close_time: "1691441432",
    error_result_xdr: nil
 }}
@@ -787,6 +820,8 @@ Restores a contract instance.
 
 - `contract_address`: Identifier of the contract to be restored, encoded as `StrKey`.
 - `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
+- `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
+  - `cpu_instructions`: Number of additional CPU instructions to reserve.
 
 ```elixir
 alias Soroban.Contract
@@ -794,15 +829,16 @@ alias Soroban.RPC.SendTransactionResponse
 
 contract_address = "CAEYZ6JI5YV2CBI3NRRUNA2DMERJ4KLJTI76WDZBTWZ7VMPGY6JDIZD5"
 secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
+addl_resources = [cpu_instructions: 100]
 
 {:ok, %SendTransactionResponse{hash: hash}} =
-  Contract.restore_contract(contract_address, secret_key)
+  Contract.restore_contract(contract_address, secret_key, addl_resources)
 
 {:ok,
  %Soroban.RPC.SendTransactionResponse{
    status: "PENDING",
    hash: "eedb...",
-   latest_ledger: "295506",
+   latest_ledger: 45075181,
    latest_ledger_close_time: "1691523150",
    error_result_xdr: nil
  }}
@@ -819,6 +855,8 @@ Restores a contract uploaded wasm code.
 
 - `wasm_id`: Binary identification of an uploaded contract.
 - `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
+- `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
+  - `cpu_instructions`: Number of additional CPU instructions to reserve.
 
 ```elixir
 alias Soroban.Contract
@@ -826,14 +864,15 @@ alias Soroban.RPC.SendTransactionResponse
 
 wasm_id = "067eb7ba419edd3e946e08eb17a81fbe1e850e690ed7692160875c2b65b45f21"
 secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
+addl_resources = [cpu_instructions: 100]
 
-{:ok, %SendTransactionResponse{hash: hash}} = Contract.restore_contract_wasm(wasm_id, secret_key)
+{:ok, %SendTransactionResponse{hash: hash}} = Contract.restore_contract_wasm(wasm_id, secret_key, addl_resources)
 
 {:ok,
  %Soroban.RPC.SendTransactionResponse{
    status: "PENDING",
    hash: "eedb...",
-   latest_ledger: "295508",
+   latest_ledger: 45075181,
    latest_ledger_close_time: "1691523689",
    error_result_xdr: nil
  }}
@@ -853,6 +892,8 @@ Restore contract's data entry keys.
 - `keys`: A keyword list indicating the durability and the name of the data entry, to restore.
   - `durability`: Allowed types `:persistent`
   - `data entry`: Any `String` that is 32 characters or less.
+- `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
+  - `cpu_instructions`: Number of additional CPU instructions to reserve.
 
 ```elixir
 alias Soroban.Contract
@@ -861,15 +902,16 @@ alias Soroban.RPC.SendTransactionResponse
 contract_address = "CAEYZ6JI5YV2CBI3NRRUNA2DMERJ4KLJTI76WDZBTWZ7VMPGY6JDIZD5"
 secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
 keys =  [persistent: ["Prst"]]
+addl_resources = [cpu_instructions: 100]
 
 {:ok, %SendTransactionResponse{hash: hash}} =
-  Contract.restore_contract_keys(contract_address, secret_key, keys)
+  Contract.restore_contract_keys(contract_address, secret_key, keys, addl_resources)
 
 {:ok,
  %Soroban.RPC.SendTransactionResponse{
    status: "PENDING",
    hash: "0521...",
-   latest_ledger: "295768",
+   latest_ledger: 45075181,
    latest_ledger_close_time: "1691524532",
    error_result_xdr: nil
  }}
@@ -891,6 +933,8 @@ This XDR is required by wallets to sign transactions before they can be submitte
 - `function_name`: String value indicating the name of the function to be invoked.
 - `function_args`: List of `Soroban.Types` representing the arguments required by the indicated function (`function_name`). They should be provided in the specific order expected by the function.
 - `extra_fee_rate`: Float number to increment the transaction fee to pay, useful when the operation returns an insufficient fee error.
+- `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
+  - `cpu_instructions`: Number of additional CPU instructions to reserve.
 
 ```elixir
 alias Soroban.Contract
@@ -903,12 +947,15 @@ function_name = "hello"
 
 function_args = [String.new("world")]
 
+addl_resources = [cpu_instructions: 100]
+
 Contract.retrieve_unsigned_xdr_to_invoke(
   contract_address,
   source_public_key,
   function_name,
   function_args,
-  extra_fee_rate
+  extra_fee_rate,
+  addl_resources
 )
 
 "AAAAAgAAAAD...QAAAAAAAAAAAAAAAAAAAAA="
@@ -921,14 +968,17 @@ Contract.retrieve_unsigned_xdr_to_invoke(
 
 - `wasm`: Binary of the web assembly (WASM) file resulting from building the contract.
 - `source_public_key`: Public key of the function invoker responsible for signing the transaction.
+- `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
+  - `cpu_instructions`: Number of additional CPU instructions to reserve.
 
 ```elixir
 alias Soroban.Contract
 
 wasm = File.read!("../your_wasm_path/hello.wasm")
 source_public_key = "GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"
+addl_resources = [cpu_instructions: 100]
 
-Contract.retrieve_unsigned_xdr_to_upload(wasm, source_public_key)
+Contract.retrieve_unsigned_xdr_to_upload(wasm, source_public_key, addl_resources)
 
 "AAAAAgAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gAAAGQAADg8AAAAOgAAAAAAAAAAAAAAAQAAAAAAAAAYAA..."
 
@@ -940,6 +990,8 @@ Contract.retrieve_unsigned_xdr_to_upload(wasm, source_public_key)
 
 - `wasm_id`: Binary identification of the uploaded contract to deploy.
 - `source_public_key`: Public key of the function invoker responsible for signing the transaction.
+- `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
+  - `cpu_instructions`: Number of additional CPU instructions to reserve.
 
 ```elixir
 alias Soroban.Contract
@@ -947,8 +999,9 @@ alias Soroban.Contract
 wasm_id = <<43, 175, 217, 68, 182, 222, 246, 123, 230, 77, 134, 236, 60, 179, 45, 137, 54,
   44, 8, 19, 0, 134, 104, 112, 90, 233, 87, 199, 60, 136, 151, 169>>
 source_public_key = "GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"
+addl_resources = [cpu_instructions: 100]
 
-Contract.retrieve_unsigned_xdr_to_deploy(wasm_id, source_public_key)
+Contract.retrieve_unsigned_xdr_to_deploy(wasm_id, source_public_key, addl_resources)
 
 "AAAAAgAAAAD...ZAAAAFAAAAAAAAAAAAAAAAA=="
 
@@ -960,14 +1013,17 @@ Contract.retrieve_unsigned_xdr_to_deploy(wasm_id, source_public_key)
 
 - `asset_code`: String from 1 to 12 characters indicating the asset symbol.
 - `source_public_key`: Public key of the function invoker responsible for signing the transaction.
+- `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
+  - `cpu_instructions`: Number of additional CPU instructions to reserve.
 
 ```elixir
 alias Soroban.Contract
 
 asset_code = "DBZ"
 source_public_key = "GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"
+addl_resources = [cpu_instructions: 100]
 
-Contract.retrieve_unsigned_xdr_to_deploy_asset(asset_code, source_public_key)
+Contract.retrieve_unsigned_xdr_to_deploy_asset(asset_code, source_public_key, addl_resources)
 
 "AAAAAgAAAADJ...d4kfn7AAAAFAAAAAAAAAAAAAAAAA=="
 

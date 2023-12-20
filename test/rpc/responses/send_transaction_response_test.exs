@@ -7,7 +7,7 @@ defmodule Soroban.RPC.SendTransactionResponseTest do
     result = %{
       hash: "d70916f8b8aa55c13d5974a38e32a3efe440ef6870c0f0a07075d1c128d23698",
       status: :pending,
-      latest_ledger: "45075181",
+      latest_ledger: 45_075_181,
       latest_ledger_close_time: "1677115742"
     }
 

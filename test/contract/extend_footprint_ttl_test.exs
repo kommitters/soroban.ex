@@ -1,4 +1,4 @@
-defmodule Stellar.Horizon.Client.CannedBumpAccountRequests do
+defmodule Stellar.Horizon.Client.CannedExtendAccountRequests do
   @moduledoc false
 
   @base_url "https://horizon-testnet.stellar.org"
@@ -14,7 +14,7 @@ defmodule Stellar.Horizon.Client.CannedBumpAccountRequests do
   end
 end
 
-defmodule Soroban.RPC.CannedBumpFootprintExpirationClientImpl do
+defmodule Soroban.RPC.CannedExtendFootprintTTLClientImpl do
   @moduledoc false
 
   @behaviour Soroban.RPC.Client.Spec
@@ -40,7 +40,7 @@ defmodule Soroban.RPC.CannedBumpFootprintExpirationClientImpl do
        min_resource_fee: "79488",
        results: nil,
        cost: %{cpu_insns: "1048713", mem_bytes: "1201148"},
-       latest_ledger: "475528"
+       latest_ledger: 45_075_181
      }}
   end
 
@@ -64,7 +64,7 @@ defmodule Soroban.RPC.CannedBumpFootprintExpirationClientImpl do
        min_resource_fee: "79488",
        results: nil,
        cost: %{cpu_insns: "1048713", mem_bytes: "1201148"},
-       latest_ledger: "475528"
+       latest_ledger: 45_075_181
      }}
   end
 
@@ -88,7 +88,7 @@ defmodule Soroban.RPC.CannedBumpFootprintExpirationClientImpl do
        min_resource_fee: "79488",
        results: nil,
        cost: %{cpu_insns: "1048713", mem_bytes: "1201148"},
-       latest_ledger: "475528"
+       latest_ledger: 45_075_181
      }}
   end
 
@@ -100,7 +100,7 @@ defmodule Soroban.RPC.CannedBumpFootprintExpirationClientImpl do
      %{
        status: "PENDING",
        hash: "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4",
-       latest_ledger: "476420",
+       latest_ledger: 45_075_181,
        latest_ledger_close_time: "1683150612"
      }}
   end
@@ -118,21 +118,21 @@ defmodule Soroban.RPC.CannedBumpFootprintExpirationClientImpl do
   end
 end
 
-defmodule Soroban.Contract.BumpFootprintExpirationTest do
+defmodule Soroban.Contract.ExtendFootprintTTLTest do
   use ExUnit.Case
 
-  alias Soroban.Contract.BumpFootprintExpiration
+  alias Soroban.Contract.ExtendFootprintTTL
 
   alias Soroban.RPC.{
-    CannedBumpFootprintExpirationClientImpl,
+    CannedExtendFootprintTTLClientImpl,
     SendTransactionResponse
   }
 
-  alias Stellar.Horizon.Client.CannedBumpAccountRequests
+  alias Stellar.Horizon.Client.CannedExtendAccountRequests
 
   setup do
-    Application.put_env(:stellar_sdk, :http_client, CannedBumpAccountRequests)
-    Application.put_env(:soroban, :http_client_impl, CannedBumpFootprintExpirationClientImpl)
+    Application.put_env(:stellar_sdk, :http_client, CannedExtendAccountRequests)
+    Application.put_env(:soroban, :http_client_impl, CannedExtendFootprintTTLClientImpl)
 
     on_exit(fn ->
       Application.delete_env(:stellar_sdk, :http_client)
@@ -145,94 +145,94 @@ defmodule Soroban.Contract.BumpFootprintExpirationTest do
       # GBNDWIM7DPYZJ2RLJ3IESXBIO4C2SVF6PWZXS3DLODJSBQWBMKY5U4M3
       source_secret: "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24",
       keys: [{:temporary, "Tmp"}, {:persistent, "Per"}],
-      ledgers_to_bump: 100_000
+      ledgers_to_extend: 100_000
     }
   end
 
-  test "bump_contract/3", %{
+  test "extend_contract/3", %{
     contract_address: contract_address,
     source_secret: source_secret,
-    ledgers_to_bump: ledgers_to_bump
+    ledgers_to_extend: ledgers_to_extend
   } do
     {:ok,
      %SendTransactionResponse{
        status: "PENDING",
        hash: "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4",
-       latest_ledger: "476420",
+       latest_ledger: 45_075_181,
        latest_ledger_close_time: "1683150612",
        error_result_xdr: nil
      }} =
-      BumpFootprintExpiration.bump_contract(
+      ExtendFootprintTTL.extend_contract(
         contract_address,
         source_secret,
-        ledgers_to_bump
+        ledgers_to_extend
       )
   end
 
-  test "bump_contract/3 with invalid ledger", %{
+  test "extend_contract/3 with invalid ledger", %{
     contract_address: contract_address,
     source_secret: source_secret
   } do
-    {:error, :invalid_ledger_to_bump} =
-      BumpFootprintExpiration.bump_contract(
+    {:error, :invalid_ledger_to_extend} =
+      ExtendFootprintTTL.extend_contract(
         contract_address,
         source_secret,
         -100_000
       )
   end
 
-  test "bump_contract_wasm/3", %{
+  test "extend_contract_wasm/3", %{
     wasm_id: wasm_id,
     source_secret: source_secret,
-    ledgers_to_bump: ledgers_to_bump
+    ledgers_to_extend: ledgers_to_extend
   } do
     {:ok,
      %SendTransactionResponse{
        status: "PENDING",
        hash: "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4",
-       latest_ledger: "476420",
+       latest_ledger: 45_075_181,
        latest_ledger_close_time: "1683150612",
        error_result_xdr: nil
      }} =
-      BumpFootprintExpiration.bump_contract_wasm(
+      ExtendFootprintTTL.extend_contract_wasm(
         wasm_id,
         source_secret,
-        ledgers_to_bump
+        ledgers_to_extend
       )
   end
 
-  test "bump_contract_keys/4", %{
+  test "extend_contract_keys/4", %{
     contract_address: contract_address,
     source_secret: source_secret,
-    ledgers_to_bump: ledgers_to_bump,
+    ledgers_to_extend: ledgers_to_extend,
     keys: keys
   } do
     {:ok,
      %SendTransactionResponse{
        status: "PENDING",
        hash: "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4",
-       latest_ledger: "476420",
+       latest_ledger: 45_075_181,
        latest_ledger_close_time: "1683150612",
        error_result_xdr: nil
      }} =
-      BumpFootprintExpiration.bump_contract_keys(
+      ExtendFootprintTTL.extend_contract_keys(
         contract_address,
         source_secret,
-        ledgers_to_bump,
+        ledgers_to_extend,
         keys
       )
   end
 
-  test "bump_contract_keys/4 with invalid keys", %{
+  test "extend_contract_keys/4 with invalid keys", %{
     contract_address: contract_address,
     source_secret: source_secret,
-    ledgers_to_bump: ledgers_to_bump
+    ledgers_to_extend: ledgers_to_extend
   } do
     {:error, :invalid_keys} =
-      BumpFootprintExpiration.bump_contract_keys(
+      ExtendFootprintTTL.extend_contract_keys(
         contract_address,
         source_secret,
-        ledgers_to_bump,
+        ledgers_to_extend,
         :invalid
       )
   end

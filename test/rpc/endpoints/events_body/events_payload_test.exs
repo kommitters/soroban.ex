@@ -7,10 +7,10 @@ defmodule Soroban.RPC.EventsPayloadTest do
   setup do
     cursor = "1234-1"
     limit = 2
-    start_ledger = "674736"
+    start_ledger = 674_736
     args = [Symbol.new("transfer"), "*", "*", "*"]
     topic_filter = [TopicFilter.new(args)]
-    contract_ids = ["7d9defe0ccf9b680014a343b8880c22b160c2ea2c9a69df876decb28ddbd03dc"]
+    contract_ids = ["CCEMOFO5TE7FGOAJOA3RDHPC6RW3CFXRVIGOFQPFE4ZGOKA2QEA636SN"]
 
     filters = [
       EventFilter.new(type: [:contract], contract_ids: contract_ids, topics: topic_filter)
@@ -112,7 +112,7 @@ defmodule Soroban.RPC.EventsPayloadTest do
         startLedger: ^start_ledger,
         filters: [
           %{
-            contractIds: ["7d9defe0ccf9b680014a343b8880c22b160c2ea2c9a69df876decb28ddbd03dc"],
+            contractIds: ["CCEMOFO5TE7FGOAJOA3RDHPC6RW3CFXRVIGOFQPFE4ZGOKA2QEA636SN"],
             topics: [["AAAADwAAAAh0cmFuc2Zlcg==", "*", "*", "*"]],
             type: "contract"
           }

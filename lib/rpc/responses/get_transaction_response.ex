@@ -5,11 +5,11 @@ defmodule Soroban.RPC.GetTransactionResponse do
   @behaviour Soroban.RPC.Response.Spec
 
   @type status :: String.t()
-  @type latest_ledger :: String.t()
+  @type latest_ledger :: non_neg_integer()
   @type latest_ledger_close_time :: String.t()
-  @type oldest_ledger :: String.t()
+  @type oldest_ledger :: non_neg_integer()
   @type oldest_ledger_close_time :: String.t()
-  @type ledger :: String.t() | nil
+  @type ledger :: non_neg_integer() | nil
   @type created_at :: String.t() | nil
   @type application_order :: number() | nil
   @type fee_bump :: boolean() | nil

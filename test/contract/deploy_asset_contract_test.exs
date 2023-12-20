@@ -42,7 +42,7 @@ defmodule Soroban.RPC.CannedDeployAssetInvokeHostFunctionClientImpl do
          }
        ],
        cost: %{cpu_insns: "1048713", mem_bytes: "1201148"},
-       latest_ledger: "475528"
+       latest_ledger: 45_075_181
      }}
   end
 
@@ -54,7 +54,7 @@ defmodule Soroban.RPC.CannedDeployAssetInvokeHostFunctionClientImpl do
      %{
        status: "PENDING",
        hash: "308f5f3c7b2c0a690e7e19b6d14c22af87763f5ae483d6d1af43b9639732d206",
-       latest_ledger: "602691",
+       latest_ledger: 45_075_181,
        latest_ledger_close_time: "1683814245"
      }}
   end
@@ -105,7 +105,7 @@ defmodule Soroban.Contract.DeployAssetContractTest do
      %SendTransactionResponse{
        status: "PENDING",
        hash: "308f5f3c7b2c0a690e7e19b6d14c22af87763f5ae483d6d1af43b9639732d206",
-       latest_ledger: "602691",
+       latest_ledger: 45_075_181,
        latest_ledger_close_time: "1683814245",
        error_result_xdr: nil
      }} = DeployAssetContract.deploy(asset_code, source_public, source_secret)
@@ -120,7 +120,7 @@ defmodule Soroban.Contract.DeployAssetContractTest do
      %SendTransactionResponse{
        status: "PENDING",
        hash: "308f5f3c7b2c0a690e7e19b6d14c22af87763f5ae483d6d1af43b9639732d206",
-       latest_ledger: "602691",
+       latest_ledger: 45_075_181,
        latest_ledger_close_time: "1683814245",
        error_result_xdr: nil
      }} = DeployAssetContract.deploy(asset_code, asset_issuer, source_secret)

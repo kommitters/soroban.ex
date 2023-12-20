@@ -26,13 +26,15 @@ defmodule Soroban.Contract.DeployAssetContract do
   @type secret_key :: binary()
   @type send_response :: {:ok, SendTransactionResponse.t()}
   @type asset_issuer :: binary()
+  @type addl_resources :: keyword()
 
   @spec deploy(
           asset_code :: asset_code(),
           asset_issuer :: asset_issuer(),
-          secret_key :: secret_key()
+          secret_key :: secret_key(),
+          addl_resources :: addl_resources()
         ) :: send_response()
-  def deploy(asset_code, asset_issuer, secret_key) do
+  def deploy(asset_code, asset_issuer, secret_key, addl_resources \\ []) do
     with {public_key, _secret} = keypair <- Stellar.KeyPair.from_secret_seed(secret_key),
          {:ok, seq_num} <- Accounts.fetch_next_sequence_number(public_key),
          %Account{} = source_account <- Account.new(public_key),
@@ -41,7 +43,7 @@ defmodule Soroban.Contract.DeployAssetContract do
          %Asset{} = asset <- Asset.new(code: asset_code, issuer: asset_issuer),
          %InvokeHostFunction{} = invoke_host_function_op <- create_host_function_deploy_op(asset) do
       invoke_host_function_op
-      |> RPCCalls.simulate(source_account, sequence_number)
+      |> RPCCalls.simulate(source_account, sequence_number, addl_resources)
       |> RPCCalls.send_transaction(
         source_account,
         sequence_number,
@@ -53,9 +55,10 @@ defmodule Soroban.Contract.DeployAssetContract do
 
   @spec retrieve_unsigned_xdr_to_deploy_asset(
           asset_code :: asset_code(),
-          source_public_key :: binary()
+          source_public_key :: binary(),
+          addl_resources :: addl_resources()
         ) :: envelope_xdr()
-  def retrieve_unsigned_xdr_to_deploy_asset(asset_code, source_public_key) do
+  def retrieve_unsigned_xdr_to_deploy_asset(asset_code, source_public_key, addl_resources \\ []) do
     with {:ok, seq_num} <- Accounts.fetch_next_sequence_number(source_public_key),
          %Account{} = source_account <- Account.new(source_public_key),
          %SequenceNumber{} = sequence_number <- SequenceNumber.new(seq_num),
@@ -63,7 +66,7 @@ defmodule Soroban.Contract.DeployAssetContract do
          %InvokeHostFunction{} = invoke_host_function_op <-
            create_host_function_deploy_op(asset) do
       invoke_host_function_op
-      |> RPCCalls.simulate(source_account, sequence_number)
+      |> RPCCalls.simulate(source_account, sequence_number, addl_resources)
       |> RPCCalls.retrieve_unsigned_xdr(source_account, sequence_number, invoke_host_function_op)
     end
   end
@@ -71,7 +74,7 @@ defmodule Soroban.Contract.DeployAssetContract do
   @spec create_host_function_deploy_op(asset :: asset()) :: invoke_host_function()
   defp create_host_function_deploy_op(asset) do
     contract_id_preimage = ContractIDPreimage.new(from_asset: asset)
-    contract_executable = ContractExecutable.new(:token)
+    contract_executable = ContractExecutable.new(:stellar_asset)
 
     create_contract_args =
       CreateContractArgs.new(

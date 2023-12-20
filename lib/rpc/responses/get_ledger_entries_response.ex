@@ -5,7 +5,7 @@ defmodule Soroban.RPC.GetLedgerEntriesResponse do
   @behaviour Soroban.RPC.Response.Spec
 
   @type entries :: list(map())
-  @type latest_ledger :: String.t()
+  @type latest_ledger :: non_neg_integer()
   @type t :: %__MODULE__{
           entries: entries(),
           latest_ledger: latest_ledger()
