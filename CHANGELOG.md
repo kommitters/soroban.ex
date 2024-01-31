@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.19.0 (31.01.2024)
+
+- Support `diagnostic_events_xdr` field in `SendTransactionResponse` struct. See [stellar_sdk#350](https://github.com/kommitters/stellar_sdk/issues/350).
+
 ## 0.18.0 (20.12.2023)
 
 - [Stellar Protocol 20 support](https://github.com/kommitters/soroban.ex/issues/140).

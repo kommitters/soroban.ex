@@ -19,7 +19,7 @@
 ```elixir
 def deps do
   [
-    {:soroban, "~> 0.18.0"}
+    {:soroban, "~> 0.19.0"}
   ]
 end
 ```
@@ -270,7 +270,8 @@ Soroban.RPC.send_transaction(base64_envelope)
    hash: "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4",
    latest_ledger: 45075181,
    latest_ledger_close_time: "1683150612",
-   error_result_xdr: nil
+   error_result_xdr: nil,
+   diagnostic_events_xdr: nil
  }}
 ```
 
@@ -517,7 +518,8 @@ Contract.invoke(contract_address, source_secret_key, function_name, function_arg
     hash: "f62cb9e20c6d297316f49dca2041be4bf1af6b069c784764e51ac008b313d716",
     latest_ledger: 45075181,
     latest_ledger_close_time: "1683643419",
-    error_result_xdr: nil
+    error_result_xdr: nil,
+    diagnostic_events_xdr: nil
   }}
 ```
 
@@ -549,7 +551,8 @@ Contract.invoke(contract_address, source_secret_key, function_name, function_arg
       hash: "e888193b4fed9b3ca6ad2beca3c1ed5bef3e0099e558756de85d03511cbaa00b",
       latest_ledger: 45075181,
       latest_ledger_close_time: "1683643728",
-      error_result_xdr: nil
+      error_result_xdr: nil,
+      diagnostic_events_xdr: nil
     }}
   ```
 
@@ -597,7 +600,8 @@ Contract.invoke(contract_address, source_secret_key, function_name, function_arg
       hash: "da263f59a8f8b29f415e7e26758cad6e8d88caec875112641b88757ce8e01873",
       latest_ledger: 45075181,
       latest_ledger_close_time: "1683644240",
-      error_result_xdr: nil
+      error_result_xdr: nil,
+      diagnostic_events_xdr: nil
     }}
   ```
 
@@ -630,7 +634,8 @@ addl_resources = [cpu_instructions: 100]
     hash: "65d...",
     latest_ledger: 45075181,
     latest_ledger_close_time: "16",
-    error_result_xdr: nil
+    error_result_xdr: nil,
+    diagnostic_events_xdr: nil
   }}
 
 ```
@@ -661,7 +666,8 @@ addl_resources = [cpu_instructions: 100]
     hash: "f95...",
     latest_ledger: 45075181,
     latest_ledger_close_time: "16",
-    error_result_xdr: nil
+    error_result_xdr: nil,
+    diagnostic_events_xdr: nil
   }}
 
 ```
@@ -694,7 +700,8 @@ addl_resources = [cpu_instructions: 100]
   hash: "b667...",
   latest_ledger: 45075181,
   latest_ledger_close_time: "16",
-  error_result_xdr: nil
+  error_result_xdr: nil,
+  diagnostic_events_xdr: nil
 }}
 
 ```
@@ -731,7 +738,8 @@ addl_resources = [cpu_instructions: 100]
    hash: "2f6f...",
    latest_ledger: 45075181,
    latest_ledger_close_time: "1691441432",
-   error_result_xdr: nil
+   error_result_xdr: nil,
+   diagnostic_events_xdr: nil
 }}
 
 ```
@@ -766,7 +774,8 @@ addl_resources = [cpu_instructions: 100]
    hash: "2f6f...",
    latest_ledger: 45075181,
    latest_ledger_close_time: "1691441432",
-   error_result_xdr: nil
+   error_result_xdr: nil,
+   diagnostic_events_xdr: nil
 }}
 
 ```
@@ -805,7 +814,8 @@ addl_resources = [cpu_instructions: 100]
    hash: "2f6f...",
    latest_ledger: 45075181,
    latest_ledger_close_time: "1691441432",
-   error_result_xdr: nil
+   error_result_xdr: nil,
+   diagnostic_events_xdr: nil
 }}
 
 ```
@@ -840,7 +850,8 @@ addl_resources = [cpu_instructions: 100]
    hash: "eedb...",
    latest_ledger: 45075181,
    latest_ledger_close_time: "1691523150",
-   error_result_xdr: nil
+   error_result_xdr: nil,
+   diagnostic_events_xdr: nil
  }}
 
 ```
@@ -874,7 +885,8 @@ addl_resources = [cpu_instructions: 100]
    hash: "eedb...",
    latest_ledger: 45075181,
    latest_ledger_close_time: "1691523689",
-   error_result_xdr: nil
+   error_result_xdr: nil,
+   diagnostic_events_xdr: nil
  }}
 
 ```
@@ -913,7 +925,8 @@ addl_resources = [cpu_instructions: 100]
    hash: "0521...",
    latest_ledger: 45075181,
    latest_ledger_close_time: "1691524532",
-   error_result_xdr: nil
+   error_result_xdr: nil,
+   diagnostic_events_xdr: nil
  }}
 
 ```

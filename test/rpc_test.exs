@@ -263,7 +263,8 @@ defmodule Soroban.RPCTest do
          hash: "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4",
          latest_ledger: 45_075_181,
          latest_ledger_close_time: "1683150612",
-         error_result_xdr: nil
+         error_result_xdr: nil,
+         diagnostic_events_xdr: nil
        }} = RPC.send_transaction(base64_envelope)
     end
   end
