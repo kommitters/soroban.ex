@@ -114,7 +114,8 @@ defmodule Soroban.Contract.DeployContractTest do
        hash: "308f5f3c7b2c0a690e7e19b6d14c22af87763f5ae483d6d1af43b9639732d206",
        latest_ledger: 45_075_181,
        latest_ledger_close_time: "1683814245",
-       error_result_xdr: nil
+       error_result_xdr: nil,
+       diagnostic_events_xdr: nil
      }} = DeployContract.deploy(wasm_id, source_secret)
   end
 
