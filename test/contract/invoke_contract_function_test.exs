@@ -1,73 +1,32 @@
-defmodule Stellar.Horizon.Client.CannedAccountRequests do
-  @moduledoc false
-
-  @base_url "https://horizon-testnet.stellar.org"
-
-  def request(
-        :get,
-        @base_url <> "/accounts/GBNDWIM7DPYZJ2RLJ3IESXBIO4C2SVF6PWZXS3DLODJSBQWBMKY5U4M3",
-        _headers,
-        _body,
-        _opts
-      ) do
-    {:ok, 200, [], "{\"sequence\":\"1390916568875069\"}"}
-  end
-
-  def request(
-        :get,
-        @base_url <> "/accounts/GDDZSR7Y6TIMSBM72WYVGUH6FB6P7MF6Y6DU7MCNAPFRXI5GCWGWWFRS",
-        _headers,
-        _body,
-        _opts
-      ) do
-    {:ok, 200, [], "{\"sequence\":\"1390916568875069\"}"}
-  end
-
-  def request(
-        :get,
-        @base_url <> "/accounts/GASY52GNGVKEMXSGH7VSCZQKRWQMIQD77J53KHXEBAV2BODWH6FDDZ3F",
-        _headers,
-        _body,
-        _opts
-      ) do
-    {:ok, 200, [], "{\"sequence\":\"1390916568875069\"}"}
-  end
-
-  def request(
-        :get,
-        @base_url <> "/accounts/GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM",
-        _headers,
-        _body,
-        _opts
-      ) do
-    {:ok, 200, [], "{\"sequence\":\"1390916568875069\"}"}
-  end
-
-  def request(
-        :get,
-        @base_url <> "/accounts/GCODO4TKGGIBN2EWNFXTJADNYIQOPQ2XUO6IBSCHA2NM4CGTKL2TJTRE",
-        _headers,
-        _body,
-        _opts
-      ) do
-    {:ok, 200, [], "{\"sequence\":\"1390916568875069\"}"}
-  end
-
-  def request(
-        :get,
-        @base_url <> "/accounts/GCJFPGZINFE3WI6PAKCT42OMI35UMTXZZ6DT6VZOSEIK3YORRXWDEGOM",
-        _headers,
-        _body,
-        _opts
-      ) do
-    {:ok, 200, [], "{\"sequence\":\"1390916568875069\"}"}
-  end
-end
-
 defmodule Soroban.RPC.CannedInvokeContractFunctionClientImpl do
   @moduledoc false
 
   @behaviour Soroban.RPC.Client.Spec
+
+  @impl true
+  def request(
+        "getLedgerEntries",
+        _url,
+        _headers,
+        _body,
+        _opts
+      ) do
+    send(self(), {:request, "RESPONSE"})
+
+    {:ok,
+     %{
+       entries: [
+         %{
+           key: "AAAAAAAAAAB8VFyuIrnqhGA3aSvFShpwVwYZGwD3Yx5guKZGcn1ofQ==",
+           last_modified_ledger_seq: 462_965,
+           #  this xdr is a LedgerEntryData of type account with sequence number 1_390_916_568_875_069
+           xdr:
+             "AAAAAAAAAAB8VFyuIrnqhGA3aSvFShpwVwYZGwD3Yx5guKZGcn1ofQAAABdIdugAAATxCAAAAD0AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAA"
+         }
+       ],
+       latest_ledger: 462_966
+     }}
+  end
 
   @impl true
   def request(
@@ -275,14 +234,14 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
 
   alias Soroban.Contract.InvokeContractFunction
   alias Soroban.Types.Symbol
+  alias Stellar.Network
 
   alias Soroban.RPC.{
     CannedInvokeContractFunctionClientImpl,
     SendTransactionResponse,
+    Server,
     SimulateTransactionResponse
   }
-
-  alias Stellar.Horizon.Client.CannedAccountRequests
 
   setup do
     Application.put_env(:stellar_sdk, :http_client, CannedAccountRequests)
@@ -294,6 +253,8 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
     end)
 
     %{
+      server: Server.testnet(),
+      network_passphrase: Network.testnet_passphrase(),
       extra_fee_rate: 0.05,
       contract_address: "CD3HNKU3ERTEYLBBBVTSOYE4ZL2ZWV7NHLQIZRRKC4CBNMZXC7ISBXHV",
       source_public: "GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM",
@@ -316,6 +277,8 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
   end
 
   test "invoke host function without authorization", %{
+    server: server,
+    network_passphrase: network_passphrase,
     contract_address: contract_address,
     source_secret: source_secret,
     function_name: function_name,
@@ -331,6 +294,8 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
        diagnostic_events_xdr: nil
      }} =
       InvokeContractFunction.invoke(
+        server,
+        network_passphrase,
         contract_address,
         source_secret,
         function_name,
@@ -339,6 +304,8 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
   end
 
   test "invoke host function without signed authorization", %{
+    server: server,
+    network_passphrase: network_passphrase,
     contract_address: contract_address,
     source_secret_with_auth: source_secret_with_auth,
     function_name: function_name,
@@ -354,6 +321,8 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
        diagnostic_events_xdr: nil
      }} =
       InvokeContractFunction.invoke(
+        server,
+        network_passphrase,
         contract_address,
         source_secret_with_auth,
         function_name,
@@ -362,6 +331,8 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
   end
 
   test "invoke host function with signed authorization", %{
+    server: server,
+    network_passphrase: network_passphrase,
     contract_address: contract_address,
     source_secret_with_auths: source_secret_with_auths,
     function_name: function_name,
@@ -379,6 +350,8 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
        diagnostic_events_xdr: nil
      }} =
       InvokeContractFunction.invoke(
+        server,
+        network_passphrase,
         contract_address,
         source_secret_with_auths,
         function_name,
@@ -389,6 +362,8 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
   end
 
   test "simulate invoke", %{
+    server: server,
+    network_passphrase: network_passphrase,
     contract_address: contract_address,
     source_public: source_public,
     function_name: function_name,
@@ -413,6 +388,8 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
        error: nil
      }} =
       InvokeContractFunction.simulate_invoke(
+        server,
+        network_passphrase,
         contract_address,
         source_public,
         function_name,
@@ -421,6 +398,8 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
   end
 
   test "invoke host function invalid length of auth keys", %{
+    server: server,
+    network_passphrase: network_passphrase,
     contract_address: contract_address,
     source_secret_auths_error: source_secret_auths_error,
     function_name: function_name,
@@ -430,6 +409,8 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
   } do
     {:error, :invalid_auth_secret_keys_length} =
       InvokeContractFunction.invoke(
+        server,
+        network_passphrase,
         contract_address,
         source_secret_auths_error,
         function_name,
@@ -440,6 +421,8 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
   end
 
   test "invoke host function with simulate error", %{
+    server: server,
+    network_passphrase: network_passphrase,
     contract_address: contract_address,
     source_secret_with_error: source_secret_with_error,
     function_name: function_name,
@@ -451,6 +434,8 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
        error: "error"
      }} =
       InvokeContractFunction.invoke(
+        server,
+        network_passphrase,
         contract_address,
         source_secret_with_error,
         function_name,
@@ -460,6 +445,8 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
   end
 
   test "retrieve_unsigned_xdr_to_invoke without authorization", %{
+    server: server,
+    network_passphrase: network_passphrase,
     contract_address: contract_address,
     source_public: source_public,
     function_name: function_name,
@@ -469,6 +456,8 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
   } do
     ^xdr_envelope =
       InvokeContractFunction.retrieve_unsigned_xdr_to_invoke(
+        server,
+        network_passphrase,
         contract_address,
         source_public,
         function_name,
@@ -478,6 +467,8 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
   end
 
   test "retrieve_unsigned_xdr_to_invoke host function with simulate error", %{
+    server: server,
+    network_passphrase: network_passphrase,
     contract_address: contract_address,
     source_public_with_error: source_public_with_error,
     function_name: function_name,
@@ -488,6 +479,8 @@ defmodule Soroban.Contract.InvokeContractFunctionTest do
        error: "error"
      }} =
       InvokeContractFunction.retrieve_unsigned_xdr_to_invoke(
+        server,
+        network_passphrase,
         contract_address,
         source_public_with_error,
         function_name,

@@ -13,6 +13,8 @@ defmodule Soroban.Contract do
   }
 
   defdelegate invoke(
+                server,
+                network_passphrase,
                 contract_address,
                 source_secret_key,
                 function_name,
@@ -25,6 +27,8 @@ defmodule Soroban.Contract do
               as: :invoke
 
   defdelegate simulate_invoke(
+                server,
+                network_passphrase,
                 contract_address,
                 source_public_key,
                 function_name,
@@ -95,6 +99,8 @@ defmodule Soroban.Contract do
     as: :restore_contract_keys
 
   defdelegate retrieve_unsigned_xdr_to_invoke(
+                server,
+                network_passphrase,
                 contract_address,
                 source_public_key,
                 function_name,
