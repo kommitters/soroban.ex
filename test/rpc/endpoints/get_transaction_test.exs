@@ -32,7 +32,8 @@ defmodule Soroban.RPC.GetTransactionTest do
   alias Soroban.RPC.{
     GetTransaction,
     GetTransactionCannedClientImpl,
-    GetTransactionResponse
+    GetTransactionResponse,
+    Server
   }
 
   setup do
@@ -44,10 +45,10 @@ defmodule Soroban.RPC.GetTransactionTest do
 
     hash = "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4"
 
-    %{hash: hash}
+    %{hash: hash, server: Server.testnet()}
   end
 
-  test "request/1", %{hash: hash} do
+  test "request/1", %{hash: hash, server: server} do
     {:ok,
      %GetTransactionResponse{
        status: "SUCCESS",
@@ -63,6 +64,6 @@ defmodule Soroban.RPC.GetTransactionTest do
        result_meta_xdr:
          "AAAAAwAAAAIAAAADAAdFBQAAAAAAAAAAwT6e0zIpycpZ5/unUFyQAjXNeSxfmidj8tQWkeD9dCQAAAAXDNwRHAAAUF8AAAAgAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAwAAAAAAB0J+AAAAAGRSydYAAAAAAAAAAQAHRQUAAAAAAAAAAME+ntMyKcnKWef7p1BckAI1zXksX5onY/LUFpHg/XQkAAAAFwzcERwAAFBfAAAAIQAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAMAAAAAAAdFBQAAAABkUtcZAAAAAAAAAAEAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAGQAAAAAAAAAAQAAAAAAAAAYAAAAAAAAABAAAAABAAAAAgAAAA8AAAAFSGVsbG8AAAAAAAAPAAAABXdvcmxkAAAAAAAAAKQ1a84I/mDKy5j2B/YFeyfTCsTBoKJtON5QDfqS06qwy7xIdQ3ruFNQk7Per4isf0z/h0JVdqWN4rrHVKzbRhYD6NIFNZRcltVrmGLx9Y+ku182sxlHjDdsZ28pYul9HwAAAAA=",
        ledger: 476_421
-     }} = GetTransaction.request(hash)
+     }} = GetTransaction.request(server, hash)
   end
 end

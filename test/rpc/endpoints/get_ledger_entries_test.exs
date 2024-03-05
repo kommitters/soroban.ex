@@ -28,7 +28,8 @@ defmodule Soroban.RPC.GetLedgerEntriesTest do
   alias Soroban.RPC.{
     CannedGetLedgerEntriesClientImpl,
     GetLedgerEntries,
-    GetLedgerEntriesResponse
+    GetLedgerEntriesResponse,
+    Server
   }
 
   setup do
@@ -38,10 +39,10 @@ defmodule Soroban.RPC.GetLedgerEntriesTest do
       Application.delete_env(:soroban, :http_client_impl)
     end)
 
-    %{keys: ["AAAAB+qfy4GuVKKfazvyk4R9P9fpo2n9HICsr+xqvVcTF+DC"]}
+    %{keys: ["AAAAB+qfy4GuVKKfazvyk4R9P9fpo2n9HICsr+xqvVcTF+DC"], server: Server.testnet()}
   end
 
-  test "request/1", %{keys: keys} do
+  test "request/1", %{keys: keys, server: server} do
     {:ok,
      %GetLedgerEntriesResponse{
        entries: [
@@ -53,6 +54,6 @@ defmodule Soroban.RPC.GetLedgerEntriesTest do
          }
        ],
        latest_ledger: 45_075_181
-     }} = GetLedgerEntries.request(keys)
+     }} = GetLedgerEntries.request(server, keys)
   end
 end

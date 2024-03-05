@@ -41,7 +41,8 @@ defmodule Soroban.RPC.GetEventsTest do
     EventsPayload,
     GetEvents,
     GetEventsResponse,
-    TopicFilter
+    Server,
+    TopicFilter,
   }
 
   alias Soroban.Types.Symbol
@@ -70,10 +71,10 @@ defmodule Soroban.RPC.GetEventsTest do
         limit: limit
       )
 
-    %{event: event}
+    %{event: event, server: Server.testnet()}
   end
 
-  test "request/1", %{event: event} do
+  test "request/1", %{event: event, server: server} do
     {:ok,
      %GetEventsResponse{
        latest_ledger: 45_075_181,
@@ -95,6 +96,6 @@ defmodule Soroban.RPC.GetEventsTest do
            value: "AAAACgAAAAAF9eEAAAAAAAAAAAA="
          }
        ]
-     }} = GetEvents.request(event)
+     }} = GetEvents.request(server, event)
   end
 end
