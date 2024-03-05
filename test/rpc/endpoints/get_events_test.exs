@@ -42,7 +42,7 @@ defmodule Soroban.RPC.GetEventsTest do
     GetEvents,
     GetEventsResponse,
     Server,
-    TopicFilter,
+    TopicFilter
   }
 
   alias Soroban.Types.Symbol

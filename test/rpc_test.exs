@@ -1,3 +1,27 @@
+defmodule Soroban.RPC.CannedRPCGetLedgerEntriesForAccountClientImpl do
+  @moduledoc false
+
+  @behaviour Soroban.RPC.Client.Spec
+
+  @impl true
+  def request(_endpoint, _url, _headers, _body, _opts) do
+    send(self(), {:request, "RESPONSE"})
+
+    {:ok,
+     %{
+       entries: [
+         %{
+           key: "AAAAAAAAAAB8VFyuIrnqhGA3aSvFShpwVwYZGwD3Yx5guKZGcn1ofQ==",
+           last_modified_ledger_seq: 462_965,
+           xdr:
+             "AAAAAAAAAAB8VFyuIrnqhGA3aSvFShpwVwYZGwD3Yx5guKZGcn1ofQAAABdIdugAAAcQdQAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAA"
+         }
+       ],
+       latest_ledger: 462_966
+     }}
+  end
+end
+
 defmodule Soroban.RPC.CannedRPCSendTransactionClientImpl do
   @moduledoc false
 
@@ -190,6 +214,7 @@ defmodule Soroban.RPCTest do
     CannedRPCGetHealthClientImpl,
     CannedRPCGetLatestLedgerClientImpl,
     CannedRPCGetLedgerEntriesClientImpl,
+    CannedRPCGetLedgerEntriesForAccountClientImpl,
     CannedRPCGetNetworkClientImpl,
     CannedRPCGetTransactionClientImpl,
     CannedRPCSendTransactionClientImpl,
@@ -203,9 +228,9 @@ defmodule Soroban.RPCTest do
     GetNetworkResponse,
     GetTransactionResponse,
     SendTransactionResponse,
+    Server,
     SimulateTransactionResponse,
-    TopicFilter,
-    Server
+    TopicFilter
   }
 
   alias Soroban.Types.Symbol
@@ -214,6 +239,28 @@ defmodule Soroban.RPCTest do
     %{
       server: Server.testnet()
     }
+  end
+
+  describe "fetch_next_sequence_number/2" do
+    setup do
+      Application.put_env(
+        :soroban,
+        :http_client_impl,
+        CannedRPCGetLedgerEntriesForAccountClientImpl
+      )
+
+      on_exit(fn ->
+        Application.delete_env(:soroban, :http_client_impl)
+      end)
+
+      account_id = "GB6FIXFOEK46VBDAG5USXRKKDJYFOBQZDMAPOYY6MC4KMRTSPVUH3X2A"
+
+      %{account_id: account_id}
+    end
+
+    test "request/2", %{server: server, account_id: account_id} do
+      {:ok, 1_988_419_534_192_641} = RPC.fetch_next_sequence_number(server, account_id)
+    end
   end
 
   describe "simulate_transaction/2" do

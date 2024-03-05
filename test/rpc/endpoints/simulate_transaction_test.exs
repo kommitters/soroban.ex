@@ -32,7 +32,7 @@ defmodule Soroban.RPC.SimulateTransactionTest do
     Server,
     SimulateTransaction,
     SimulateTransactionCannedClientImpl,
-    SimulateTransactionResponse,
+    SimulateTransactionResponse
   }
 
   setup do
