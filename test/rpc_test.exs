@@ -204,12 +204,19 @@ defmodule Soroban.RPCTest do
     GetTransactionResponse,
     SendTransactionResponse,
     SimulateTransactionResponse,
-    TopicFilter
+    TopicFilter,
+    Server
   }
 
   alias Soroban.Types.Symbol
 
-  describe "simulate_transaction/1" do
+  setup do
+    %{
+      server: Server.testnet()
+    }
+  end
+
+  describe "simulate_transaction/2" do
     setup do
       Application.put_env(:soroban, :http_client_impl, CannedRPCSimulateTransactionClientImpl)
 
@@ -223,7 +230,7 @@ defmodule Soroban.RPCTest do
       %{base64_envelope: base64_envelope}
     end
 
-    test "returns the respective response", %{base64_envelope: base64_envelope} do
+    test "request/2", %{server: server, base64_envelope: base64_envelope} do
       {:ok,
        %SimulateTransactionResponse{
          results: [
@@ -238,11 +245,11 @@ defmodule Soroban.RPCTest do
          cost: %{cpu_insns: "1048713", mem_bytes: "1201148"},
          latest_ledger: 45_075_181,
          error: nil
-       }} = RPC.simulate_transaction(base64_envelope)
+       }} = RPC.simulate_transaction(server, base64_envelope)
     end
   end
 
-  describe "send_transaction/1" do
+  describe "send_transaction/2" do
     setup do
       Application.put_env(:soroban, :http_client_impl, CannedRPCSendTransactionClientImpl)
 
@@ -256,7 +263,7 @@ defmodule Soroban.RPCTest do
       %{base64_envelope: base64_envelope}
     end
 
-    test "returns the respective response", %{base64_envelope: base64_envelope} do
+    test "request/2", %{server: server, base64_envelope: base64_envelope} do
       {:ok,
        %SendTransactionResponse{
          status: "PENDING",
@@ -265,11 +272,11 @@ defmodule Soroban.RPCTest do
          latest_ledger_close_time: "1683150612",
          error_result_xdr: nil,
          diagnostic_events_xdr: nil
-       }} = RPC.send_transaction(base64_envelope)
+       }} = RPC.send_transaction(server, base64_envelope)
     end
   end
 
-  describe "get_transaction/1" do
+  describe "get_transaction/2" do
     setup do
       Application.put_env(:soroban, :http_client_impl, CannedRPCGetTransactionClientImpl)
 
@@ -282,7 +289,7 @@ defmodule Soroban.RPCTest do
       %{hash: hash}
     end
 
-    test "request/1", %{hash: hash} do
+    test "request/2", %{server: server, hash: hash} do
       {:ok,
        %GetTransactionResponse{
          status: "SUCCESS",
@@ -298,11 +305,11 @@ defmodule Soroban.RPCTest do
          result_meta_xdr:
            "AAAAAwAAAAIAAAADAAdFBQAAAAAAAAAAwT6e0zIpycpZ5/unUFyQAjXNeSxfmidj8tQWkeD9dCQAAAAXDNwRHAAAUF8AAAAgAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAwAAAAAAB0J+AAAAAGRSydYAAAAAAAAAAQAHRQUAAAAAAAAAAME+ntMyKcnKWef7p1BckAI1zXksX5onY/LUFpHg/XQkAAAAFwzcERwAAFBfAAAAIQAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAMAAAAAAAdFBQAAAABkUtcZAAAAAAAAAAEAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAGQAAAAAAAAAAQAAAAAAAAAYAAAAAAAAABAAAAABAAAAAgAAAA8AAAAFSGVsbG8AAAAAAAAPAAAABXdvcmxkAAAAAAAAAKQ1a84I/mDKy5j2B/YFeyfTCsTBoKJtON5QDfqS06qwy7xIdQ3ruFNQk7Per4isf0z/h0JVdqWN4rrHVKzbRhYD6NIFNZRcltVrmGLx9Y+ku182sxlHjDdsZ28pYul9HwAAAAA=",
          ledger: "476421"
-       }} = RPC.get_transaction(hash)
+       }} = RPC.get_transaction(server, hash)
     end
   end
 
-  describe "get_health/0" do
+  describe "get_health/1" do
     setup do
       Application.put_env(:soroban, :http_client_impl, CannedRPCGetHealthClientImpl)
 
@@ -311,12 +318,12 @@ defmodule Soroban.RPCTest do
       end)
     end
 
-    test "request/0" do
-      {:ok, %GetHealthResponse{status: "healthy"}} = RPC.get_health()
+    test "request/1", %{server: server} do
+      {:ok, %GetHealthResponse{status: "healthy"}} = RPC.get_health(server)
     end
   end
 
-  describe "get_latest_ledger/0" do
+  describe "get_latest_ledger/1" do
     setup do
       Application.put_env(:soroban, :http_client_impl, CannedRPCGetLatestLedgerClientImpl)
 
@@ -325,17 +332,17 @@ defmodule Soroban.RPCTest do
       end)
     end
 
-    test "request/0" do
+    test "request/1", %{server: server} do
       {:ok,
        %GetLatestLedgerResponse{
          id: "2a00000000000000000000000000000000000000000000000000000000000000",
          protocol_version: 20,
          sequence: 666
-       }} = RPC.get_latest_ledger()
+       }} = RPC.get_latest_ledger(server)
     end
   end
 
-  describe "get_network/0" do
+  describe "get_network/1" do
     setup do
       Application.put_env(:soroban, :http_client_impl, CannedRPCGetNetworkClientImpl)
 
@@ -344,17 +351,17 @@ defmodule Soroban.RPCTest do
       end)
     end
 
-    test "request/0" do
+    test "request/1", %{server: server} do
       {:ok,
        %GetNetworkResponse{
          friendbot_url: "https://friendbot-futurenet.stellar.org/",
          passphrase: "Test SDF Future Network ; October 2022",
          protocol_version: "20"
-       }} = RPC.get_network()
+       }} = RPC.get_network(server)
     end
   end
 
-  describe "get_ledger_entries/1" do
+  describe "get_ledger_entries/2" do
     setup do
       Application.put_env(:soroban, :http_client_impl, CannedRPCGetLedgerEntriesClientImpl)
 
@@ -365,7 +372,7 @@ defmodule Soroban.RPCTest do
       %{keys: ["AAAABhv6ziOnWcVRdGMZjtFKSWnLSndMp9JPVLLXxQqAvKqJAAAABQAAAAdDT1VOVEVSAA"]}
     end
 
-    test "request/1", %{keys: keys} do
+    test "request/2", %{server: server, keys: keys} do
       {:ok,
        %GetLedgerEntriesResponse{
          entries: [
@@ -376,11 +383,11 @@ defmodule Soroban.RPCTest do
            }
          ],
          latest_ledger: 45_075_181
-       }} = RPC.get_ledger_entries(keys)
+       }} = RPC.get_ledger_entries(server, keys)
     end
   end
 
-  describe "get_events/1" do
+  describe "get_events/2" do
     setup do
       Application.put_env(:soroban, :http_client_impl, CannedRPCGetEventsClientImpl)
 
@@ -408,7 +415,7 @@ defmodule Soroban.RPCTest do
       %{event: event}
     end
 
-    test "request/1", %{event: event} do
+    test "request/2", %{server: server, event: event} do
       {:ok,
        %GetEventsResponse{
          latest_ledger: 45_075_181,
@@ -430,7 +437,7 @@ defmodule Soroban.RPCTest do
              value: "AAAACgAAAAAF9eEAAAAAAAAAAAA="
            }
          ]
-       }} = RPC.get_events(event)
+       }} = RPC.get_events(server, event)
     end
   end
 end

@@ -9,11 +9,11 @@ defmodule Soroban.RPC.SimulateTransaction do
   @endpoint "simulateTransaction"
 
   @impl true
-  def request(transaction, addl_resources \\ []) do
+  def request(server, transaction, addl_resources \\ []) do
     params = get_params(transaction, addl_resources)
 
-    @endpoint
-    |> Request.new()
+    server
+    |> Request.new(@endpoint)
     |> Request.add_headers([{"Content-Type", "application/json"}])
     |> Request.add_params(params)
     |> Request.perform()

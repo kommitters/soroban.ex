@@ -9,9 +9,9 @@ defmodule Soroban.RPC.GetLedgerEntries do
   @endpoint "getLedgerEntries"
 
   @impl true
-  def request(keys) do
-    @endpoint
-    |> Request.new()
+  def request(server, keys) do
+    server
+    |> Request.new(@endpoint)
     |> Request.add_headers([{"Content-Type", "application/json"}])
     |> Request.add_params(%{keys: keys})
     |> Request.perform()
