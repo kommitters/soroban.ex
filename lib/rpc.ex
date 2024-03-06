@@ -31,7 +31,7 @@ defmodule Soroban.RPC do
 
   defdelegate send_transaction(server, base64_envelope), to: SendTransaction, as: :request
 
-  defdelegate simulate_transaction(server, base64_envelope, addl_resources \\ []),
+  defdelegate simulate_transaction(server, args),
     to: SimulateTransaction,
     as: :request
 

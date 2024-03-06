@@ -76,7 +76,7 @@ defmodule Soroban.Contract.RPCCalls do
       |> TxBuild.add_operation(operation)
       |> TxBuild.envelope()
 
-    RPC.simulate_transaction(server, envelope_xdr, addl_resources)
+    RPC.simulate_transaction(server, transaction: envelope_xdr, addl_resources: addl_resources)
   end
 
   def simulate(
@@ -99,7 +99,7 @@ defmodule Soroban.Contract.RPCCalls do
       |> TxBuild.set_soroban_data(soroban_data)
       |> TxBuild.envelope()
 
-    RPC.simulate_transaction(server, envelope_xdr, addl_resources)
+    RPC.simulate_transaction(server, transaction: envelope_xdr, addl_resources: addl_resources)
   end
 
   @spec send_transaction(

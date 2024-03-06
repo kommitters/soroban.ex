@@ -9,8 +9,8 @@ defmodule Soroban.RPC.SimulateTransaction do
   @endpoint "simulateTransaction"
 
   @impl true
-  def request(server, transaction, addl_resources \\ []) do
-    params = get_params(transaction, addl_resources)
+  def request(server, args) do
+    params = get_params(args[:transaction], args[:addl_resources])
 
     server
     |> Request.new(@endpoint)
@@ -20,6 +20,7 @@ defmodule Soroban.RPC.SimulateTransaction do
     |> Request.results(as: SimulateTransactionResponse)
   end
 
+  defp get_params(transaction, nil), do: %{transaction: transaction}
   defp get_params(transaction, []), do: %{transaction: transaction}
 
   defp get_params(transaction, cpu_instructions: cpu_instructions),

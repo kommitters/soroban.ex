@@ -64,7 +64,7 @@ defmodule Soroban.RPC.SimulateTransactionTest do
        cost: %{cpu_insns: "1048713", mem_bytes: "1201148"},
        latest_ledger: 45_075_181,
        error: nil
-     }} = SimulateTransaction.request(server, transaction_xdr)
+     }} = SimulateTransaction.request(server, transaction: transaction_xdr)
   end
 
   test "request/2", %{transaction_xdr: transaction_xdr, server: server} do
@@ -83,6 +83,10 @@ defmodule Soroban.RPC.SimulateTransactionTest do
        cost: %{cpu_insns: "1048713", mem_bytes: "1201148"},
        latest_ledger: 45_075_181,
        error: nil
-     }} = SimulateTransaction.request(server, transaction_xdr, cpu_instructions: 100)
+     }} =
+      SimulateTransaction.request(server,
+        transaction: transaction_xdr,
+        addl_resources: [cpu_instructions: 100]
+      )
   end
 end

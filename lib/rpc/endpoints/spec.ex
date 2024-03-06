@@ -6,7 +6,7 @@ defmodule Soroban.RPC.Endpoint.Spec do
   alias Soroban.RPC.{Error, EventsPayload, HTTPError, Server}
 
   @type response :: {:ok, struct()} | {:error, Error.t() | HTTPError.t()}
-  @type params :: String.t() | EventsPayload.t() | nil
+  @type params :: String.t() | EventsPayload.t() | keyword() | nil
 
   @callback request(server :: Server.t(), params :: params()) :: response()
 end

@@ -324,7 +324,7 @@ defmodule Soroban.RPCTest do
          cost: %{cpu_insns: "1048713", mem_bytes: "1201148"},
          latest_ledger: 45_075_181,
          error: nil
-       }} = RPC.simulate_transaction(server, base64_envelope)
+       }} = RPC.simulate_transaction(server, transaction: base64_envelope)
     end
   end
 
