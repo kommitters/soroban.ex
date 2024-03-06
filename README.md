@@ -199,10 +199,19 @@ Struct.new([field1, field2])
 
 Interaction with the Soroban-RPC server is done through the `Soroban.RPC` module.
 
-Currently, `Soroban.ex` can run on `Futurenet`, `Testnet`, and `Local`, the former being the default network. To use the `Testnet` network change the :stellar_sdk setting, which will also change to the RPC endpoint that works with that network. e.g.
+#### Server
+
+To interact with the Soroban-RPC server, it is required to create a Soroban-RPC server struct.
 
 ```elixir
-config :stellar_sdk, network: :test
+# with a custom URL
+Soroban.RPC.Server.new("https://soroban-testnet.stellar.org")
+
+Soroban.RPC.Server.testnet() # https://soroban-testnet.stellar.org
+
+Soroban.RPC.Server.futurenet() # https://rpc-futurenet.stellar.org
+
+Soroban.RPC.Server.local() # http://localhost:8000
 ```
 
 #### Simulate Transaction
@@ -210,20 +219,22 @@ config :stellar_sdk, network: :test
 Submit a trial contract invocation to get back return values, expected ledger footprint, and expected costs.
 
 **Parameters**
-
-- `base64_envelope`: `<xdr.TransactionEnvelope>` - The transaction to be simulated (serialized in base64).
-- `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
-  - `cpu_instructions`: Number of additional CPU instructions to reserve.
+- `server`: `Soroban.RPC.Server` struct - The Soroban-RPC server to interact with.
+- `params`: Parameters to simulate the transaction:
+  - `transaction`: `<xdr.TransactionEnvelope>` - The transaction to be simulated (serialized in base64).
+  - `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
+    - `cpu_instructions`: Number of additional CPU instructions to reserve.
 
 **Example**
 
 ```elixir
+server = Soroban.RPC.Server.testnet()
 base64_envelope =
   "AAAAAgAAAADWKIRtrzg/aTCtUHeZnpyYu0iNxJxcn4tr0jXG2hOIlwAAAGQABzbWAAAAAwAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAGAAAAAAAAAAEAAAADQAAACC8xDySpTRgcsckFZY9QBvIP3LL70Jp0xG3cmpCvp0d/QAAAA8AAAAJaW5jcmVtZW50AAAAAAAAEwAAAAAAAAAA1iiEba84P2kwrVB3mZ6cmLtIjcScXJ+La9I1xtoTiJcAAAADAAAACgAAAAAAAAAAAAAAAQAAAAC8xDySpTRgcsckFZY9QBvIP3LL70Jp0xG3cmpCvp0d/QAAAAlpbmNyZW1lbnQAAAAAAAACAAAAEwAAAAAAAAAA1iiEba84P2kwrVB3mZ6cmLtIjcScXJ+La9I1xtoTiJcAAAADAAAACgAAAAAAAAAAAAAAAAAAAAA="
 
 addl_resources = [cpu_instructions: 100]
 
-Soroban.RPC.simulate_transaction(base64_envelope, addl_resources)
+Soroban.RPC.simulate_transaction(server, transaction: base64_envelope, addl_resources: addl_resources)
 
 {:ok,
  %Soroban.RPC.SimulateTransactionResponse{
@@ -253,16 +264,17 @@ Unlike Horizon, this does not wait for transaction completion. It simply validat
 This supports all transactions, not only smart contract-related transactions.
 
 **Parameters**
-
+- `server`: `Soroban.RPC.Server` struct - The Soroban-RPC server to interact with.
 - `base64_envelope`: `<xdr.TransactionEnvelope>` - The signed transaction to broadcast (serialized in base64).
 
 **Example**
 
 ```elixir
+server = Soroban.RPC.Server.testnet()
 base64_envelope =
   "AAAAAgAAAADBPp7TMinJylnn+6dQXJACNc15LF+aJ2Py1BaR4P10JAAAAGQAAFBfAAAAIQAAAAEAAAAAAAAAAAAAAABkUtg3AAAAAAAAAAEAAAABAAAAAME+ntMyKcnKWef7p1BckAI1zXksX5onY/LUFpHg/XQkAAAAGAAAAAAAAAADAAAADQAAACAU0EuZrCKggMgcYHtwMuiHqnrYwhksO17kfjwJ8h2l3QAAAA8AAAAFaGVsbG8AAAAAAAAPAAAABXdvcmxkAAAAAAAAAgAAAAYU0EuZrCKggMgcYHtwMuiHqnrYwhksO17kfjwJ8h2l3QAAABQAAAAHCoKrtqgxTcxBJ+F9JX+3Gvlw3NtYGwCu8hzxUsbupwIAAAAAAAAAAAAAAAAAAAAB4P10JAAAAEDS4+hvSG1JqhOIPaGSqUerNsjhIcS+AwWhH/K8IOafcmMlZJoyZvMftV1QcdWA/LQhr2QJRTWNT6I52/eTP3IH"
 
-Soroban.RPC.send_transaction(base64_envelope)
+Soroban.RPC.send_transaction(server, base64_envelope)
 
 {:ok,
  %Soroban.RPC.SendTransactionResponse{
@@ -281,15 +293,16 @@ Clients will poll this to tell when the transaction has been completed.
 
 **Parameters**
 
+- `server`: `Soroban.RPC.Server` struct - The Soroban-RPC server to interact with.
 - `hash`: Transaction hash to query, as a hex-encoded string.
 
 **Example**
 
 ```elixir
-
+server = Soroban.RPC.Server.testnet()
 hash = "a4721e2a61e9a6b3f54030396e41c3e352101e6cd649b4453e89fb3e827744f4"
 
-Soroban.RPC.get_transaction(hash)
+Soroban.RPC.get_transaction(server, hash)
 
 {:ok,
  %Soroban.RPC.GetTransactionResponse{
@@ -314,10 +327,15 @@ Soroban.RPC.get_transaction(hash)
 
 General node health check.
 
+**Parameters**
+
+- `server`: `Soroban.RPC.Server` struct - The Soroban-RPC server to interact with.
+
 **Example**
 
 ```elixir
-Soroban.RPC.get_health()
+server = Soroban.RPC.Server.testnet()
+Soroban.RPC.get_health(server)
 
 {:ok, %Soroban.RPC.GetHealthResponse{status: "healthy"}}
 
@@ -327,10 +345,15 @@ Soroban.RPC.get_health()
 
 For finding out the current latest known ledger of this node. This is a subset of the ledger info from Horizon.
 
+**Parameters**
+
+- `server`: `Soroban.RPC.Server` struct - The Soroban-RPC server to interact with.
+
 **Example**
 
 ```elixir
-Soroban.RPC.get_latest_ledger()
+server = Soroban.RPC.Server.testnet()
+Soroban.RPC.get_latest_ledger(server)
 
 {:ok,
  %Soroban.RPC.GetLatestLedgerResponse{
@@ -345,10 +368,15 @@ Soroban.RPC.get_latest_ledger()
 
 General info about the currently configured network.
 
+**Parameters**
+
+- `server`: `Soroban.RPC.Server` struct - The Soroban-RPC server to interact with.
+
 **Example**
 
 ```elixir
-Soroban.RPC.get_network()
+server = Soroban.RPC.Server.testnet()
+Soroban.RPC.get_network(server)
 
 {:ok,
  %Soroban.RPC.GetNetworkResponse{
@@ -367,14 +395,16 @@ Allows you to directly inspect the current state of a contract, a contract's cod
 
 **Parameters**
 
+- `server`: `Soroban.RPC.Server` struct - The Soroban-RPC server to interact with.
 - `keys`: `<xdr.LedgerKey[]>` - Array containing the keys of the ledger entries you wish to retrieve (an array of serialized base64 strings).
 
 **Example**
 
 ```elixir
+server = Soroban.RPC.Server.testnet()
 keys = ["AAAABvrOGFv9hxq4ke1yjqrbfSQPrggCrdo12YvueQldm8h8AAAADwAAAAdDT1VOVEVSAA=="]
 
-Soroban.RPC.get_ledger_entries(keys)
+Soroban.RPC.get_ledger_entries(server, keys)
 
 {:ok,
  %GetLedgerEntriesResponse{
@@ -405,24 +435,24 @@ If making multiple requests, clients should deduplicate any events received, bas
 By default soroban-rpc retains the most recent 24 hours of events.
 
 **Parameters**
+- `server`: `Soroban.RPC.Server` struct - The Soroban-RPC server to interact with.
+- `EventsPayload`:
 
-`EventsPayload`:
+  - `start_ledger`: Stringified ledger sequence number to fetch events after (inclusive). This method will return an error if start_ledger is less than the oldest ledger stored in this node, or greater than the latest ledger seen by this node. If a cursor is included in the request, start_ledger must be omitted.
 
-- `start_ledger`: Stringified ledger sequence number to fetch events after (inclusive). This method will return an error if start_ledger is less than the oldest ledger stored in this node, or greater than the latest ledger seen by this node. If a cursor is included in the request, start_ledger must be omitted.
+  - `cursor`: (optional) A string ID that points to a specific location in a collection of responses and is pulled from the paging_token value of a record. When a cursor is provided Soroban-RPC will not include the element whose id matches the cursor in the response. Only elements which appear after the cursor are included.
+  - `limit`: (optional) The maximum number of records returned. The limit for getEvents can range from 1 to 10000 - an upper limit that is hardcoded in Soroban-RPC for performance reasons. If this argument isn't designated, it defaults to 100.
 
-- `cursor`: (optional) A string ID that points to a specific location in a collection of responses and is pulled from the paging_token value of a record. When a cursor is provided Soroban-RPC will not include the element whose id matches the cursor in the response. Only elements which appear after the cursor are included.
-- `limit`: (optional) The maximum number of records returned. The limit for getEvents can range from 1 to 10000 - an upper limit that is hardcoded in Soroban-RPC for performance reasons. If this argument isn't designated, it defaults to 100.
+  - `filters`: List of `EventFilter` for the returned events. Events matching any of the filters are included. To match a filter, an event must match both a contractId and a topic. Maximum 5 filters are allowed per request.
 
-- `filters`: List of `EventFilter` for the returned events. Events matching any of the filters are included. To match a filter, an event must match both a contractId and a topic. Maximum 5 filters are allowed per request.
-
-  - `type`: (optional) A list of event types (`:system`, `:contract`, or `:diagnostic`) used to filter events. If omitted, all event types are included.
-  - `contract_ids`: (optional) List of contract ids to query for events. If omitted, return events for all contracts. Maximum 5 contract IDs are allowed per request.
-  - `topics`: (optional) List of `TopicFilter`. If omitted, query for all events. If multiple filters are specified, events will be included if they match any of the filters. Maximum 5 filters are allowed per request.
-    - `TopicFilter`: is a SegmentMatcher[]. The list can be 1-4 SegmentMatchers long.
-    - `SegmentMatcher`:
-      - For an exact segment match, use Soroban.ex Types that will be converted into string base64-encoded ScVal values.
-      - For a wildcard single-segment match, the string "\*", matches exactly one segment.
-    - E.g: `[Symbol.new("transfer"), "*", "*", "*"]`
+    - `type`: (optional) A list of event types (`:system`, `:contract`, or `:diagnostic`) used to filter events. If omitted, all event types are included.
+    - `contract_ids`: (optional) List of contract ids to query for events. If omitted, return events for all contracts. Maximum 5 contract IDs are allowed per request.
+    - `topics`: (optional) List of `TopicFilter`. If omitted, query for all events. If multiple filters are specified, events will be included if they match any of the filters. Maximum 5 filters are allowed per request.
+      - `TopicFilter`: is a SegmentMatcher[]. The list can be 1-4 SegmentMatchers long.
+      - `SegmentMatcher`:
+        - For an exact segment match, use Soroban.ex Types that will be converted into string base64-encoded ScVal values.
+        - For a wildcard single-segment match, the string "\*", matches exactly one segment.
+      - E.g: `[Symbol.new("transfer"), "*", "*", "*"]`
 
 **Example**
 
@@ -434,6 +464,8 @@ alias Soroban.RPC.{
 }
 
 alias Soroban.Types.Symbol
+
+server = Soroban.RPC.Server.testnet()
 
 limit = 1
 start_ledger = "674736"
@@ -452,7 +484,7 @@ events_payload =
     limit: limit
   )
 
-Soroban.RPC.get_events(events_payload)
+Soroban.RPC.get_events(server, events_payload)
 
 {:ok,
  %Soroban.RPC.GetEventsResponse{
@@ -485,7 +517,8 @@ The deployment and invocation of Soroban smart contracts is done through the `So
 #### Invoke contract function
 
 **Parameters**
-
+- `server`: `Soroban.RPC.Server` struct - The Soroban-RPC server to interact with.
+- `network_passphrase`: String - The network passphrase.
 - `contract_address`: Identifier of the contract to be invoked, encoded as `StrKey`.
 - `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
 - `function_name`: String indicating the name of the function to be invoked.
@@ -500,6 +533,8 @@ The deployment and invocation of Soroban smart contracts is done through the `So
 alias Soroban.Contract
 alias Soroban.Types.String
 
+server = Soroban.RPC.Server.testnet()
+network_passphrase = Stellar.Network.testnet_passphrase()
 contract_address = "CAEYZ6JI5YV2CBI3NRRUNA2DMERJ4KLJTI76WDZBTWZ7VMPGY6JDIZD5"
 source_secret_key = "SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK"
 function_name = "hello"
@@ -508,7 +543,7 @@ function_args = [String.new("world")]
 
 addl_resources = [cpu_instructions: 100]
 
-Contract.invoke(contract_address, source_secret_key, function_name, function_args, [], addl_resources)
+Contract.invoke(server, network_passphrase, contract_address, source_secret_key, function_name, function_args, [], addl_resources)
 
 {:ok,
   %Soroban.RPC.SendTransactionResponse{
@@ -529,6 +564,8 @@ Contract.invoke(contract_address, source_secret_key, function_name, function_arg
   alias Soroban.Contract
   alias Soroban.Types.{Address, UInt128}
 
+  server = Soroban.RPC.Server.testnet()
+  network_passphrase = Stellar.Network.testnet_passphrase()
   contract_address = "CAEYZ6JI5YV2CBI3NRRUNA2DMERJ4KLJTI76WDZBTWZ7VMPGY6JDIZD5"
   source_secret_key = "SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK"
   function_name = "inc"
@@ -540,7 +577,16 @@ Contract.invoke(contract_address, source_secret_key, function_name, function_arg
 
   addl_resources = [cpu_instructions: 100]
 
-  Contract.invoke(contract_address, source_secret_key, function_name, function_args, [], addl_resources)
+  Contract.invoke(
+    server,
+    network_passphrase,
+    contract_address,
+    source_secret_key,
+    function_name,
+    function_args,
+    [],
+    addl_resources
+  )
 
   {:ok,
     %Soroban.RPC.SendTransactionResponse{
@@ -562,6 +608,8 @@ Contract.invoke(contract_address, source_secret_key, function_name, function_arg
   alias Soroban.Contract
   alias Soroban.Types.{Address, Int128}
 
+  server = Soroban.RPC.Server.testnet()
+  network_passphrase = Stellar.Network.testnet_passphrase()
   contract_address = "CAEYZ6JI5YV2CBI3NRRUNA2DMERJ4KLJTI76WDZBTWZ7VMPGY6JDIZD5"
   source_secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
   function_name = "swap"
@@ -581,6 +629,8 @@ Contract.invoke(contract_address, source_secret_key, function_name, function_arg
   addl_resources = [cpu_instructions: 100]
 
   Contract.invoke(
+    server,
+    network_passphrase,
     contract_address,
     source_secret_key,
     function_name,
@@ -606,6 +656,8 @@ Contract.invoke(contract_address, source_secret_key, function_name, function_arg
 
 **Parameters**
 
+- `server`: `Soroban.RPC.Server` struct - The Soroban-RPC server to interact with.
+- `network_passphrase`: String - The network passphrase.
 - `wasm`: Binary of the web assembly (WASM) file resulting from building the contract.
 - `secret_key`: Secret key of the function invoker responsible for signing the transaction.
 - `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
@@ -617,11 +669,19 @@ alias Soroban.Contract.UploadContractCode
 alias Soroban.RPC
 alias Soroban.RPC.SendTransactionResponse
 
+server = Soroban.RPC.Server.testnet()
+network_passphrase = Stellar.Network.testnet_passphrase()
 wasm = File.read!("../your_wasm_path/hello.wasm")
 secret_key = "SCA..."
 addl_resources = [cpu_instructions: 100]
 
-{:ok, %SendTransactionResponse{hash: hash}} = Contract.upload(wasm, secret_key, addl_resources)
+{:ok, %SendTransactionResponse{hash: hash}} = Contract.upload(
+  server,
+  network_passphrase,
+  wasm,
+  secret_key,
+  addl_resources
+)
 
 {:ok,
   %Soroban.RPC.SendTransactionResponse{
@@ -639,6 +699,8 @@ addl_resources = [cpu_instructions: 100]
 
 **Parameters**
 
+- `server`: `Soroban.RPC.Server` struct - The Soroban-RPC server to interact with.
+- `network_passphrase`: String - The network passphrase.
 - `wasm_id`: Binary identification of the uploaded contract to deploy.
 - `secret_key`: Secret key of the function invoker responsible for signing the transaction.
 - `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
@@ -649,11 +711,19 @@ alias Soroban.Contract
 alias Soroban.RPC.SendTransactionResponse
 alias Soroban.Contract.DeployContract
 
+server = Soroban.RPC.Server.testnet()
+network_passphrase = Stellar.Network.testnet_passphrase()
 wasm_id = <<187, 187, 69, ...>>
 secret_key = "SCA..."
 addl_resources = [cpu_instructions: 100]
 
-{:ok, %SendTransactionResponse{hash: hash}} = Contract.deploy(wasm_id, secret_key, addl_resources)
+{:ok, %SendTransactionResponse{hash: hash}} = Contract.deploy(
+  server,
+  network_passphrase,
+  wasm_id,
+  secret_key,
+  addl_resources
+)
 
 {:ok,
   %Soroban.RPC.SendTransactionResponse{
@@ -671,6 +741,8 @@ addl_resources = [cpu_instructions: 100]
 
 **Parameters**
 
+- `server`: `Soroban.RPC.Server` struct - The Soroban-RPC server to interact with.
+- `network_passphrase`: String - The network passphrase.
 - `asset_code`: String from 1 to 12 characters indicating the asset symbol.
 - `asset_issuer`: Public key of the asset issuer.
 - `secret_key`: Secret key of the function invoker responsible for signing the transaction.
@@ -682,12 +754,21 @@ alias Soroban.Contract
 alias Soroban.RPC.SendTransactionResponse
 alias Soroban.Contract.DeployAssetContract
 
+server = Soroban.RPC.Server.testnet()
+network_passphrase = Stellar.Network.testnet_passphrase()
 asset_code = "DBZ"
 asset_issuer = "GBL..."
 secret_key = "SCA..."
 addl_resources = [cpu_instructions: 100]
 
-{:ok, %SendTransactionResponse{hash: hash}} = Contract.deploy_asset(asset_code, asset_issuer, secret_key, addl_resources)
+{:ok, %SendTransactionResponse{hash: hash}} = Contract.deploy_asset(
+  server,
+  network_passphrase,
+  asset_code,
+  asset_issuer,
+  secret_key,
+  addl_resources
+)
 
 {:ok,
 %Soroban.RPC.SendTransactionResponse{
@@ -709,6 +790,8 @@ Extends a contract instance lifetime.
 
 **Parameters**
 
+- `server`: `Soroban.RPC.Server` struct - The Soroban-RPC server to interact with.
+- `network_passphrase`: String - The network passphrase.
 - `contract_address`: Identifier of the contract to be extended, encoded as `StrKey`.
 - `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
 - `ledgers_to_extend`: The number of ledgers wanted to extend the contract lifetime.
@@ -719,13 +802,22 @@ Extends a contract instance lifetime.
 alias Soroban.Contract
 alias Soroban.RPC.SendTransactionResponse
 
+server = Soroban.RPC.Server.testnet()
+network_passphrase = Stellar.Network.testnet_passphrase()
 contract_address = "CAEYZ6JI5YV2CBI3NRRUNA2DMERJ4KLJTI76WDZBTWZ7VMPGY6JDIZD5"
 secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
 ledgers_to_extend = 100_000
 addl_resources = [cpu_instructions: 100]
 
 {:ok, %SendTransactionResponse{hash: hash}} =
-  Contract.extend_contract(contract_address, secret_key, ledgers_to_extend, addl_resources)
+  Contract.extend_contract(
+    server,
+    network_passphrase,
+    contract_address,
+    secret_key,
+    ledgers_to_extend,
+    addl_resources
+  )
 
 {:ok,
  %Soroban.RPC.SendTransactionResponse{
@@ -745,6 +837,8 @@ Extends the lifetime of a contract's uploaded wasm code.
 
 **Parameters**
 
+- `server`: `Soroban.RPC.Server` struct - The Soroban-RPC server to interact with.
+- `network_passphrase`: String - The network passphrase.
 - `wasm_id`: Binary identification of an uploaded contract.
 - `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
 - `ledgers_to_extend`: The number of ledgers wanted to extend the wasm lifetime.
@@ -755,13 +849,22 @@ Extends the lifetime of a contract's uploaded wasm code.
 alias Soroban.Contract
 alias Soroban.RPC.SendTransactionResponse
 
+server = Soroban.RPC.Server.testnet()
+network_passphrase = Stellar.Network.testnet_passphrase()
 wasm_id = "067eb7ba419edd3e946e08eb17a81fbe1e850e690ed7692160875c2b65b45f21"
 secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
 ledgers_to_extend = 100_000
 addl_resources = [cpu_instructions: 100]
 
 {:ok, %SendTransactionResponse{hash: hash}} =
-  Contract.extend_contract_wasm(wasm_id, secret_key, ledgers_to_extend, addl_resources)
+  Contract.extend_contract_wasm(
+    server,
+    network_passphrase,
+    wasm_id,
+    secret_key,
+    ledgers_to_extend,
+    addl_resources
+  )
 
 {:ok,
  %Soroban.RPC.SendTransactionResponse{
@@ -781,6 +884,8 @@ Extends the lifetime of a contract's data entry keys.
 
 **Parameters**
 
+- `server`: `Soroban.RPC.Server` struct - The Soroban-RPC server to interact with.
+- `network_passphrase`: String - The network passphrase.
 - `contract_address`: Identifier of the contract to be extended, encoded as `StrKey`.
 - `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
 - `ledgers_to_extend`: The number of ledgers wanted to extend the contract lifetime.
@@ -794,6 +899,8 @@ Extends the lifetime of a contract's data entry keys.
 alias Soroban.Contract
 alias Soroban.RPC.SendTransactionResponse
 
+server = Soroban.RPC.Server.testnet()
+network_passphrase = Stellar.Network.testnet_passphrase()
 contract_address = "CAEYZ6JI5YV2CBI3NRRUNA2DMERJ4KLJTI76WDZBTWZ7VMPGY6JDIZD5"
 secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
 ledgers_to_extend = 100_000
@@ -801,7 +908,15 @@ keys =  [{:persistent, "Prst"}, {:temporary, "Tmp"}]
 addl_resources = [cpu_instructions: 100]
 
 {:ok, %SendTransactionResponse{hash: hash}} =
-  Contract.extend_contract_keys(contract_address, secret_key, ledgers_to_extend, keys, addl_resources)
+  Contract.extend_contract_keys(
+    server,
+    network_passphrase,
+    contract_address,
+    secret_key,
+    ledgers_to_extend,
+    keys,
+    addl_resources
+  )
 
 {:ok,
  %Soroban.RPC.SendTransactionResponse{
@@ -823,6 +938,8 @@ Restores a contract instance.
 
 **Parameters**
 
+- `server`: `Soroban.RPC.Server` struct - The Soroban-RPC server to interact with.
+- `network_passphrase`: String - The network passphrase.
 - `contract_address`: Identifier of the contract to be restored, encoded as `StrKey`.
 - `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
 - `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
@@ -832,12 +949,20 @@ Restores a contract instance.
 alias Soroban.Contract
 alias Soroban.RPC.SendTransactionResponse
 
+server = Soroban.RPC.Server.testnet()
+network_passphrase = Stellar.Network.testnet_passphrase()
 contract_address = "CAEYZ6JI5YV2CBI3NRRUNA2DMERJ4KLJTI76WDZBTWZ7VMPGY6JDIZD5"
 secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
 addl_resources = [cpu_instructions: 100]
 
 {:ok, %SendTransactionResponse{hash: hash}} =
-  Contract.restore_contract(contract_address, secret_key, addl_resources)
+  Contract.restore_contract(
+    server,
+    network_passphrase,
+    contract_address,
+    secret_key,
+    addl_resources
+  )
 
 {:ok,
  %Soroban.RPC.SendTransactionResponse{
@@ -859,6 +984,8 @@ Restores a contract uploaded wasm code.
 
 **Parameters**
 
+- `server`: `Soroban.RPC.Server` struct - The Soroban-RPC server to interact with.
+- `network_passphrase`: String - The network passphrase.
 - `wasm_id`: Binary identification of an uploaded contract.
 - `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
 - `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
@@ -868,11 +995,19 @@ Restores a contract uploaded wasm code.
 alias Soroban.Contract
 alias Soroban.RPC.SendTransactionResponse
 
+server = Soroban.RPC.Server.testnet()
+network_passphrase = Stellar.Network.testnet_passphrase()
 wasm_id = "067eb7ba419edd3e946e08eb17a81fbe1e850e690ed7692160875c2b65b45f21"
 secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
 addl_resources = [cpu_instructions: 100]
 
-{:ok, %SendTransactionResponse{hash: hash}} = Contract.restore_contract_wasm(wasm_id, secret_key, addl_resources)
+{:ok, %SendTransactionResponse{hash: hash}} = Contract.restore_contract_wasm(
+  server,
+  network_passphrase,
+  wasm_id,
+  secret_key,
+  addl_resources
+)
 
 {:ok,
  %Soroban.RPC.SendTransactionResponse{
@@ -894,6 +1029,8 @@ Restore contract's data entry keys.
 
 **Parameters**
 
+- `server`: `Soroban.RPC.Server` struct - The Soroban-RPC server to interact with.
+- `network_passphrase`: String - The network passphrase.
 - `contract_address`: Identifier of the contract to be restored, encoded as `StrKey`.
 - `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
 - `keys`: A keyword list indicating the durability and the name of the data entry, to restore.
@@ -906,13 +1043,22 @@ Restore contract's data entry keys.
 alias Soroban.Contract
 alias Soroban.RPC.SendTransactionResponse
 
+server = Soroban.RPC.Server.testnet()
+network_passphrase = Stellar.Network.testnet_passphrase()
 contract_address = "CAEYZ6JI5YV2CBI3NRRUNA2DMERJ4KLJTI76WDZBTWZ7VMPGY6JDIZD5"
 secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
 keys =  [persistent: ["Prst"]]
 addl_resources = [cpu_instructions: 100]
 
 {:ok, %SendTransactionResponse{hash: hash}} =
-  Contract.restore_contract_keys(contract_address, secret_key, keys, addl_resources)
+  Contract.restore_contract_keys(
+    server,
+    network_passphrase,
+    contract_address,
+    secret_key,
+    keys,
+    addl_resources
+  )
 
 {:ok,
  %Soroban.RPC.SendTransactionResponse{
@@ -936,6 +1082,8 @@ This XDR is required by wallets to sign transactions before they can be submitte
 
 **Parameters**
 
+- `server`: `Soroban.RPC.Server` struct - The Soroban-RPC server to interact with.
+- `network_passphrase`: String - The network passphrase.
 - `contract_address`: Identifier of the contract to be invoked, encoded as `StrKey`.
 - `source_public_key`: Public key of the function invoker responsible for signing the transaction.
 - `function_name`: String value indicating the name of the function to be invoked.
@@ -947,6 +1095,8 @@ This XDR is required by wallets to sign transactions before they can be submitte
 alias Soroban.Contract
 alias Soroban.Types.String
 
+server = Soroban.RPC.Server.testnet()
+network_passphrase = Stellar.Network.testnet_passphrase()
 contract_address = "CAEYZ6JI5YV2CBI3NRRUNA2DMERJ4KLJTI76WDZBTWZ7VMPGY6JDIZD5"
 source_public_key = "GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"
 function_name = "hello"
@@ -956,6 +1106,8 @@ function_args = [String.new("world")]
 addl_resources = [cpu_instructions: 100]
 
 Contract.retrieve_unsigned_xdr_to_invoke(
+  server,
+  network_passphrase,
   contract_address,
   source_public_key,
   function_name,
@@ -971,6 +1123,8 @@ Contract.retrieve_unsigned_xdr_to_invoke(
 
 **Parameters**
 
+- `server`: `Soroban.RPC.Server` struct - The Soroban-RPC server to interact with.
+- `network_passphrase`: String - The network passphrase.
 - `wasm`: Binary of the web assembly (WASM) file resulting from building the contract.
 - `source_public_key`: Public key of the function invoker responsible for signing the transaction.
 - `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
@@ -979,11 +1133,19 @@ Contract.retrieve_unsigned_xdr_to_invoke(
 ```elixir
 alias Soroban.Contract
 
+server = Soroban.RPC.Server.testnet()
+network_passphrase = Stellar.Network.testnet_passphrase()
 wasm = File.read!("../your_wasm_path/hello.wasm")
 source_public_key = "GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"
 addl_resources = [cpu_instructions: 100]
 
-Contract.retrieve_unsigned_xdr_to_upload(wasm, source_public_key, addl_resources)
+Contract.retrieve_unsigned_xdr_to_upload(
+  server,
+  network_passphrase,
+  wasm,
+  source_public_key,
+  addl_resources
+)
 
 "AAAAAgAAAABaOyGfG/GU6itO0ElcKHcFqVS+fbN5bGtw0yDCwWKx2gAAAGQAADg8AAAAOgAAAAAAAAAAAAAAAQAAAAAAAAAYAA..."
 
@@ -993,6 +1155,8 @@ Contract.retrieve_unsigned_xdr_to_upload(wasm, source_public_key, addl_resources
 
 **Parameters**
 
+- `server`: `Soroban.RPC.Server` struct - The Soroban-RPC server to interact with.
+- `network_passphrase`: String - The network passphrase.
 - `wasm_id`: Binary identification of the uploaded contract to deploy.
 - `source_public_key`: Public key of the function invoker responsible for signing the transaction.
 - `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
@@ -1001,12 +1165,20 @@ Contract.retrieve_unsigned_xdr_to_upload(wasm, source_public_key, addl_resources
 ```elixir
 alias Soroban.Contract
 
+server = Soroban.RPC.Server.testnet()
+network_passphrase = Stellar.Network.testnet_passphrase()
 wasm_id = <<43, 175, 217, 68, 182, 222, 246, 123, 230, 77, 134, 236, 60, 179, 45, 137, 54,
   44, 8, 19, 0, 134, 104, 112, 90, 233, 87, 199, 60, 136, 151, 169>>
 source_public_key = "GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"
 addl_resources = [cpu_instructions: 100]
 
-Contract.retrieve_unsigned_xdr_to_deploy(wasm_id, source_public_key, addl_resources)
+Contract.retrieve_unsigned_xdr_to_deploy(
+  server,
+  network_passphrase,
+  wasm_id,
+  source_public_key,
+  addl_resources
+)
 
 "AAAAAgAAAAD...ZAAAAFAAAAAAAAAAAAAAAAA=="
 
@@ -1016,6 +1188,8 @@ Contract.retrieve_unsigned_xdr_to_deploy(wasm_id, source_public_key, addl_resour
 
 **Parameters**
 
+- `server`: `Soroban.RPC.Server` struct - The Soroban-RPC server to interact with.
+- `network_passphrase`: String - The network passphrase.
 - `asset_code`: String from 1 to 12 characters indicating the asset symbol.
 - `source_public_key`: Public key of the function invoker responsible for signing the transaction.
 - `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
@@ -1024,11 +1198,19 @@ Contract.retrieve_unsigned_xdr_to_deploy(wasm_id, source_public_key, addl_resour
 ```elixir
 alias Soroban.Contract
 
+server = Soroban.RPC.Server.testnet()
+network_passphrase = Stellar.Network.testnet_passphrase()
 asset_code = "DBZ"
 source_public_key = "GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"
 addl_resources = [cpu_instructions: 100]
 
-Contract.retrieve_unsigned_xdr_to_deploy_asset(asset_code, source_public_key, addl_resources)
+Contract.retrieve_unsigned_xdr_to_deploy_asset(
+  server,
+  network_passphrase,
+  asset_code,
+  source_public_key,
+  addl_resources
+)
 
 "AAAAAgAAAADJ...d4kfn7AAAAFAAAAAAAAAAAAAAAAA=="
 
