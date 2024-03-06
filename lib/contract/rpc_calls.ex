@@ -37,13 +37,17 @@ defmodule Soroban.Contract.RPCCalls do
   @type send_response :: {:ok, SendTransactionResponse.t()}
   @type signature :: Signature.t()
   @type sequence_number :: SequenceNumber.t()
+  @type addl_resources :: keyword()
+  @type soroban_data :: TxSorobanTransactionData.t() | nil
 
   @spec simulate(
           operation :: operation(),
           server :: server(),
           network_passphrase :: network_passphrase(),
           source_account :: account(),
-          sequence_number :: sequence_number()
+          sequence_number :: sequence_number(),
+          addl_resources :: addl_resources(),
+          soroban_data :: soroban_data()
         ) :: simulate_response()
   def simulate(
         _operation,
@@ -51,7 +55,7 @@ defmodule Soroban.Contract.RPCCalls do
         _network_passphrase,
         _source_account,
         _sequence_number,
-        addl_resources \\ [],
+        _addl_resources,
         soroban_data \\ nil
       )
 

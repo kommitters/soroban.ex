@@ -363,6 +363,36 @@ defmodule Soroban.ContractTest do
       )
   end
 
+  test "simulate_invoke/6", %{
+    server: server,
+    network_passphrase: network_passphrase,
+    contract_address: contract_address,
+    source_public: source_public,
+    function_name: function_name
+  } do
+    {:ok,
+     %SimulateTransactionResponse{
+       transaction_data:
+         "AAAAAAAAAAIAAAAGAAAAAQmM+SjuK6EFG2xjRoNDYSKeKWmaP+sPIZ2z+rHmx5I0AAAAFAAAAAEAAAAHjDfZjX1lF+yHF4743DgE1KQTRmGJtwRYh3hJXOzQ9k8AAAAAAE74MAAAGPAAAAAAAAAAAAAAAA0=",
+       events: nil,
+       min_resource_fee: 79_488,
+       results: [
+         %{auth: nil, xdr: "AAAAEAAAAAEAAAACAAAADwAAAAVIZWxsbwAAAAAAAA8AAAAFd29ybGQAAAA="}
+       ],
+       cost: %{cpu_insns: "1048713", mem_bytes: "1201148"},
+       latest_ledger: 45_075_181,
+       error: nil
+     }} =
+      Contract.simulate_invoke(
+        server,
+        network_passphrase,
+        contract_address,
+        source_public,
+        function_name,
+        []
+      )
+  end
+
   test "upload/4", %{
     server: server,
     network_passphrase: network_passphrase,

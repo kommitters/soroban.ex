@@ -4,7 +4,13 @@ defmodule Soroban.RPC.CannedRPCGetLedgerEntriesForAccountClientImpl do
   @behaviour Soroban.RPC.Client.Spec
 
   @impl true
-  def request(_endpoint, _url, _headers, _body, _opts) do
+  def request(
+        _endpoint,
+        _url,
+        _headers,
+        %{keys: ["AAAAAAAAAAB8VFyuIrnqhGA3aSvFShpwVwYZGwD3Yx5guKZGcn1ofQ=="]},
+        _opts
+      ) do
     send(self(), {:request, "RESPONSE"})
 
     {:ok,
@@ -17,6 +23,22 @@ defmodule Soroban.RPC.CannedRPCGetLedgerEntriesForAccountClientImpl do
              "AAAAAAAAAAB8VFyuIrnqhGA3aSvFShpwVwYZGwD3Yx5guKZGcn1ofQAAABdIdugAAAcQdQAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAA"
          }
        ],
+       latest_ledger: 462_966
+     }}
+  end
+
+  def request(
+        _endpoint,
+        _url,
+        _headers,
+        %{keys: ["AAAAAAAAAAAYYUsvRMhs1s1WEN2Z70tE9hLQgkubSt0Fq5z53jo8nw=="]},
+        _opts
+      ) do
+    send(self(), {:request, "RESPONSE"})
+
+    {:ok,
+     %{
+       entries: [],
        latest_ledger: 462_966
      }}
   end
@@ -258,8 +280,18 @@ defmodule Soroban.RPCTest do
       %{account_id: account_id}
     end
 
-    test "request/2", %{server: server, account_id: account_id} do
+    test "sucessful response", %{server: server, account_id: account_id} do
       {:ok, 1_988_419_534_192_641} = RPC.fetch_next_sequence_number(server, account_id)
+    end
+
+    test "invalid account", %{server: server} do
+      account_id = "INVALID_ACCOUNT_ID"
+      {:error, :invalid_account} = RPC.fetch_next_sequence_number(server, account_id)
+    end
+
+    test "account not found in the network", %{server: server} do
+      account_id = "GAMGCSZPITEGZVWNKYIN3GPPJNCPMEWQQJFZWSW5AWVZZ6O6HI6J7S6Y"
+      {:error, :account_not_found} = RPC.fetch_next_sequence_number(server, account_id)
     end
   end
 
