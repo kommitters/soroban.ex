@@ -207,18 +207,18 @@ defmodule Soroban.Contract.RPCCalls do
       do: response
 
   @spec retrieve_unsigned_xdr(
-    simulate_response :: simulate_response(),
-    server :: server(),
-    network_passphrase :: network_passphrase(),
+          simulate_response :: simulate_response(),
+          server :: server(),
+          network_passphrase :: network_passphrase(),
           source_account :: account(),
           sequence_number :: sequence_number(),
           invoke_host_function_op :: operation(),
           extra_fee_rate :: float()
         ) :: envelope_xdr() | simulate_response()
   def retrieve_unsigned_xdr(
-    _simulate_response,
-    _server,
-    _network_passphrase,
+        _simulate_response,
+        _server,
+        _network_passphrase,
         _source_account,
         _sequence_number,
         _invoke_host_function_op,
@@ -232,14 +232,15 @@ defmodule Soroban.Contract.RPCCalls do
            min_resource_fee: min_resource_fee,
            results: [%{auth: auth}]
          }},
-         server,
+        server,
         network_passphrase,
         source_account,
         sequence_number,
         invoke_host_function_op,
         extra_fee_rate
       ) do
-    invoke_host_function_op = set_host_function_auth(server, network_passphrase, invoke_host_function_op, auth, [])
+    invoke_host_function_op =
+      set_host_function_auth(server, network_passphrase, invoke_host_function_op, auth, [])
 
     %BaseFee{fee: base_fee} = BaseFee.new()
     fee = BaseFee.new(base_fee + min_resource_fee + round(min_resource_fee * extra_fee_rate))

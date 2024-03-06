@@ -1,23 +1,32 @@
-defmodule Stellar.Horizon.Client.CannedDeployAssetAccountRequests do
-  @moduledoc false
-
-  @base_url "https://horizon-testnet.stellar.org"
-
-  def request(
-        :get,
-        @base_url <> "/accounts/GBNDWIM7DPYZJ2RLJ3IESXBIO4C2SVF6PWZXS3DLODJSBQWBMKY5U4M3",
-        _headers,
-        _body,
-        _opts
-      ) do
-    {:ok, 200, [], "{\"sequence\":\"1390916568875069\"}"}
-  end
-end
-
 defmodule Soroban.RPC.CannedDeployAssetInvokeHostFunctionClientImpl do
   @moduledoc false
 
   @behaviour Soroban.RPC.Client.Spec
+
+  @impl true
+  def request(
+        "getLedgerEntries",
+        _url,
+        _headers,
+        _body,
+        _opts
+      ) do
+    send(self(), {:request, "RESPONSE"})
+
+    {:ok,
+     %{
+       entries: [
+         %{
+           key: "AAAAAAAAAAB8VFyuIrnqhGA3aSvFShpwVwYZGwD3Yx5guKZGcn1ofQ==",
+           last_modified_ledger_seq: 462_965,
+           #  this xdr is a LedgerEntryData of type account with sequence number 1_390_916_568_875_069
+           xdr:
+             "AAAAAAAAAAB8VFyuIrnqhGA3aSvFShpwVwYZGwD3Yx5guKZGcn1ofQAAABdIdugAAATxCAAAAD0AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAA"
+         }
+       ],
+       latest_ledger: 462_966
+     }}
+  end
 
   @impl true
   def request(
@@ -67,14 +76,13 @@ defmodule Soroban.Contract.DeployAssetContractTest do
 
   alias Soroban.RPC.{
     CannedDeployAssetInvokeHostFunctionClientImpl,
-    SendTransactionResponse
+    SendTransactionResponse,
+    Server
   }
 
-  alias Stellar.Horizon.Client.CannedDeployAssetAccountRequests
+  alias Stellar.Network
 
   setup do
-    Application.put_env(:stellar_sdk, :http_client, CannedDeployAssetAccountRequests)
-
     Application.put_env(
       :soroban,
       :http_client_impl,
@@ -82,11 +90,12 @@ defmodule Soroban.Contract.DeployAssetContractTest do
     )
 
     on_exit(fn ->
-      Application.delete_env(:stellar_sdk, :http_client)
       Application.delete_env(:soroban, :http_client_impl)
     end)
 
     %{
+      server: Server.testnet(),
+      network_passphrase: Network.testnet_passphrase(),
       source_public: "GBNDWIM7DPYZJ2RLJ3IESXBIO4C2SVF6PWZXS3DLODJSBQWBMKY5U4M3",
       source_secret: "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24",
       asset_issuer: "GB2LNFAIQWPJPMLQRDRD7FFY5VIJUBCZIQBWRR2L3RSOVWGH3T5Z56SN",
@@ -96,7 +105,9 @@ defmodule Soroban.Contract.DeployAssetContractTest do
     }
   end
 
-  test "deploy/2", %{
+  test "deploy/4", %{
+    server: server,
+    network_passphrase: network_passphrase,
     asset_code: asset_code,
     source_public: source_public,
     source_secret: source_secret
@@ -109,10 +120,19 @@ defmodule Soroban.Contract.DeployAssetContractTest do
        latest_ledger_close_time: "1683814245",
        error_result_xdr: nil,
        diagnostic_events_xdr: nil
-     }} = DeployAssetContract.deploy(asset_code, source_public, source_secret)
+     }} =
+      DeployAssetContract.deploy(
+        server,
+        network_passphrase,
+        asset_code,
+        source_public,
+        source_secret
+      )
   end
 
-  test "deploy/2 with a different invoker than the issuer of the asset", %{
+  test "deploy/4 with a different invoker than the issuer of the asset", %{
+    server: server,
+    network_passphrase: network_passphrase,
     asset_code: asset_code,
     asset_issuer: asset_issuer,
     source_secret: source_secret
@@ -125,15 +145,29 @@ defmodule Soroban.Contract.DeployAssetContractTest do
        latest_ledger_close_time: "1683814245",
        error_result_xdr: nil,
        diagnostic_events_xdr: nil
-     }} = DeployAssetContract.deploy(asset_code, asset_issuer, source_secret)
+     }} =
+      DeployAssetContract.deploy(
+        server,
+        network_passphrase,
+        asset_code,
+        asset_issuer,
+        source_secret
+      )
   end
 
-  test "retrieve_unsigned_xdr_to_deploy_asset/2", %{
+  test "retrieve_unsigned_xdr_to_deploy_asset/4", %{
+    server: server,
+    network_passphrase: network_passphrase,
     asset_code: asset_code,
     source_public: source_public,
     envelope_xdr: envelope_xdr
   } do
     ^envelope_xdr =
-      DeployAssetContract.retrieve_unsigned_xdr_to_deploy_asset(asset_code, source_public)
+      DeployAssetContract.retrieve_unsigned_xdr_to_deploy_asset(
+        server,
+        network_passphrase,
+        asset_code,
+        source_public
+      )
   end
 end

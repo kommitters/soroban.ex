@@ -4,8 +4,8 @@ defmodule Soroban.Contract.ExtendFootprintTTL do
   """
 
   alias Soroban.Contract.RPCCalls
-  alias Soroban.RPC.SendTransactionResponse
-  alias Stellar.Horizon.Accounts
+  alias Soroban.RPC
+  alias Soroban.RPC.{SendTransactionResponse, Server}
 
   alias Stellar.TxBuild.{
     Account,
@@ -20,6 +20,8 @@ defmodule Soroban.Contract.ExtendFootprintTTL do
     SorobanTransactionData
   }
 
+  @type server :: Server.t()
+  @type network_passphrase :: String.t()
   @type durability :: :persistent | :temporary
   @type data_key :: String.t()
   @type keys :: list({durability(), data_key()})
@@ -34,22 +36,40 @@ defmodule Soroban.Contract.ExtendFootprintTTL do
   @type addl_resources :: keyword()
 
   @spec extend_contract(
+          server :: server(),
+          network_passphrase :: network_passphrase(),
           contract_address :: contract_address(),
           secret_key :: secret_key(),
           ledgers_to_extend :: ledgers_to_extend(),
           addl_resources :: addl_resources()
         ) :: send_response()
-  def extend_contract(contract_address, secret_key, ledgers_to_extend, addl_resources \\ []) do
+  def extend_contract(
+        %Server{} = server,
+        network_passphrase,
+        contract_address,
+        secret_key,
+        ledgers_to_extend,
+        addl_resources \\ []
+      ) do
     with {public_key, _secret} = keypair <- Stellar.KeyPair.from_secret_seed(secret_key),
-         {:ok, seq_num} <- Accounts.fetch_next_sequence_number(public_key),
+         {:ok, seq_num} <- RPC.fetch_next_sequence_number(server, public_key),
          {:ok, extend_footprint_ttl_op} <- create_extend_footprint_ttl_op(ledgers_to_extend),
          %SequenceNumber{} = sequence_number <- SequenceNumber.new(seq_num),
          %SorobanTransactionData{} = soroban_data <- create_soroban_data(contract_address),
          %Account{} = source_account <- Account.new(public_key),
          %Signature{} = signature <- Signature.new(keypair) do
       extend_footprint_ttl_op
-      |> RPCCalls.simulate(source_account, sequence_number, addl_resources, soroban_data)
+      |> RPCCalls.simulate(
+        server,
+        network_passphrase,
+        source_account,
+        sequence_number,
+        addl_resources,
+        soroban_data
+      )
       |> RPCCalls.send_transaction(
+        server,
+        network_passphrase,
         source_account,
         sequence_number,
         signature,
@@ -59,22 +79,40 @@ defmodule Soroban.Contract.ExtendFootprintTTL do
   end
 
   @spec extend_contract_wasm(
+          server :: server(),
+          network_passphrase :: network_passphrase(),
           wasm_id :: wasm_id(),
           secret_key :: secret_key(),
           ledgers_to_extend :: ledgers_to_extend(),
           addl_resources :: addl_resources()
         ) :: send_response()
-  def extend_contract_wasm(wasm_id, secret_key, ledgers_to_extend, addl_resources \\ []) do
+  def extend_contract_wasm(
+        %Server{} = server,
+        network_passphrase,
+        wasm_id,
+        secret_key,
+        ledgers_to_extend,
+        addl_resources \\ []
+      ) do
     with {public_key, _secret} = keypair <- Stellar.KeyPair.from_secret_seed(secret_key),
-         {:ok, seq_num} <- Accounts.fetch_next_sequence_number(public_key),
+         {:ok, seq_num} <- RPC.fetch_next_sequence_number(server, public_key),
          {:ok, extend_footprint_ttl_op} <- create_extend_footprint_ttl_op(ledgers_to_extend),
          %SequenceNumber{} = sequence_number <- SequenceNumber.new(seq_num),
          %SorobanTransactionData{} = soroban_data <- create_wasm_soroban_data(wasm_id),
          %Account{} = source_account <- Account.new(public_key),
          %Signature{} = signature <- Signature.new(keypair) do
       extend_footprint_ttl_op
-      |> RPCCalls.simulate(source_account, sequence_number, addl_resources, soroban_data)
+      |> RPCCalls.simulate(
+        server,
+        network_passphrase,
+        source_account,
+        sequence_number,
+        addl_resources,
+        soroban_data
+      )
       |> RPCCalls.send_transaction(
+        server,
+        network_passphrase,
         source_account,
         sequence_number,
         signature,
@@ -84,6 +122,8 @@ defmodule Soroban.Contract.ExtendFootprintTTL do
   end
 
   @spec extend_contract_keys(
+          server :: server(),
+          network_passphrase :: network_passphrase(),
           contract_address :: contract_address(),
           secret_key :: secret_key(),
           ledgers_to_extend :: ledgers_to_extend(),
@@ -91,6 +131,8 @@ defmodule Soroban.Contract.ExtendFootprintTTL do
           addl_resources :: addl_resources()
         ) :: send_response()
   def extend_contract_keys(
+        %Server{} = server,
+        network_passphrase,
         contract_address,
         secret_key,
         ledgers_to_extend,
@@ -98,15 +140,24 @@ defmodule Soroban.Contract.ExtendFootprintTTL do
         addl_resources \\ []
       ) do
     with {public_key, _secret} = keypair <- Stellar.KeyPair.from_secret_seed(secret_key),
-         {:ok, seq_num} <- Accounts.fetch_next_sequence_number(public_key),
+         {:ok, seq_num} <- RPC.fetch_next_sequence_number(server, public_key),
          {:ok, extend_footprint_ttl_op} <- create_extend_footprint_ttl_op(ledgers_to_extend),
          %SequenceNumber{} = sequence_number <- SequenceNumber.new(seq_num),
          %SorobanTransactionData{} = soroban_data <- create_soroban_data(contract_address, keys),
          %Account{} = source_account <- Account.new(public_key),
          %Signature{} = signature <- Signature.new(keypair) do
       extend_footprint_ttl_op
-      |> RPCCalls.simulate(source_account, sequence_number, addl_resources, soroban_data)
+      |> RPCCalls.simulate(
+        server,
+        network_passphrase,
+        source_account,
+        sequence_number,
+        addl_resources,
+        soroban_data
+      )
       |> RPCCalls.send_transaction(
+        server,
+        network_passphrase,
         source_account,
         sequence_number,
         signature,

@@ -2,8 +2,9 @@ defmodule Soroban.Contract.DeployAssetContract do
   @moduledoc """
   `DeployAssetContract` implementation to deploy contract from an Asset.
   """
-  alias Soroban.RPC.SendTransactionResponse
-  alias Stellar.Horizon.Accounts
+
+  alias Soroban.RPC
+  alias Soroban.RPC.{SendTransactionResponse, Server}
 
   alias Stellar.TxBuild.{
     Account,
@@ -19,6 +20,8 @@ defmodule Soroban.Contract.DeployAssetContract do
 
   alias Soroban.Contract.RPCCalls
 
+  @type server :: Server.t()
+  @type network_passphrase :: String.t()
   @type asset :: Asset.t()
   @type asset_code :: binary()
   @type envelope_xdr :: String.t()
@@ -29,22 +32,39 @@ defmodule Soroban.Contract.DeployAssetContract do
   @type addl_resources :: keyword()
 
   @spec deploy(
+          server :: server(),
+          network_passphrase :: network_passphrase(),
           asset_code :: asset_code(),
           asset_issuer :: asset_issuer(),
           secret_key :: secret_key(),
           addl_resources :: addl_resources()
         ) :: send_response()
-  def deploy(asset_code, asset_issuer, secret_key, addl_resources \\ []) do
+  def deploy(
+        %Server{} = server,
+        network_passphrase,
+        asset_code,
+        asset_issuer,
+        secret_key,
+        addl_resources \\ []
+      ) do
     with {public_key, _secret} = keypair <- Stellar.KeyPair.from_secret_seed(secret_key),
-         {:ok, seq_num} <- Accounts.fetch_next_sequence_number(public_key),
+         {:ok, seq_num} <- RPC.fetch_next_sequence_number(server, public_key),
          %Account{} = source_account <- Account.new(public_key),
          %SequenceNumber{} = sequence_number <- SequenceNumber.new(seq_num),
          %Signature{} = signature <- Signature.new(keypair),
          %Asset{} = asset <- Asset.new(code: asset_code, issuer: asset_issuer),
          %InvokeHostFunction{} = invoke_host_function_op <- create_host_function_deploy_op(asset) do
       invoke_host_function_op
-      |> RPCCalls.simulate(source_account, sequence_number, addl_resources)
+      |> RPCCalls.simulate(
+        server,
+        network_passphrase,
+        source_account,
+        sequence_number,
+        addl_resources
+      )
       |> RPCCalls.send_transaction(
+        server,
+        network_passphrase,
         source_account,
         sequence_number,
         signature,
@@ -54,20 +74,40 @@ defmodule Soroban.Contract.DeployAssetContract do
   end
 
   @spec retrieve_unsigned_xdr_to_deploy_asset(
+          server :: server(),
+          network_passphrase :: network_passphrase(),
           asset_code :: asset_code(),
           source_public_key :: binary(),
           addl_resources :: addl_resources()
         ) :: envelope_xdr()
-  def retrieve_unsigned_xdr_to_deploy_asset(asset_code, source_public_key, addl_resources \\ []) do
-    with {:ok, seq_num} <- Accounts.fetch_next_sequence_number(source_public_key),
+  def retrieve_unsigned_xdr_to_deploy_asset(
+        %Server{} = server,
+        network_passphrase,
+        asset_code,
+        source_public_key,
+        addl_resources \\ []
+      ) do
+    with {:ok, seq_num} <- RPC.fetch_next_sequence_number(server, source_public_key),
          %Account{} = source_account <- Account.new(source_public_key),
          %SequenceNumber{} = sequence_number <- SequenceNumber.new(seq_num),
          %Asset{} = asset <- Asset.new(code: asset_code, issuer: source_public_key),
          %InvokeHostFunction{} = invoke_host_function_op <-
            create_host_function_deploy_op(asset) do
       invoke_host_function_op
-      |> RPCCalls.simulate(source_account, sequence_number, addl_resources)
-      |> RPCCalls.retrieve_unsigned_xdr(source_account, sequence_number, invoke_host_function_op)
+      |> RPCCalls.simulate(
+        server,
+        network_passphrase,
+        source_account,
+        sequence_number,
+        addl_resources
+      )
+      |> RPCCalls.retrieve_unsigned_xdr(
+        server,
+        network_passphrase,
+        source_account,
+        sequence_number,
+        invoke_host_function_op
+      )
     end
   end
 

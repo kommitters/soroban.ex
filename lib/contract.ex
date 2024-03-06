@@ -39,6 +39,8 @@ defmodule Soroban.Contract do
               as: :simulate_invoke
 
   defdelegate upload(
+                server,
+                network_passphrase,
                 wasm,
                 source_secret_key,
                 addl_resources \\ []
@@ -47,6 +49,8 @@ defmodule Soroban.Contract do
               as: :upload
 
   defdelegate deploy(
+                server,
+                network_passphrase,
                 wasm_id,
                 source_secret_key,
                 addl_resources \\ []
@@ -55,6 +59,8 @@ defmodule Soroban.Contract do
               as: :deploy
 
   defdelegate deploy_asset(
+                server,
+                network_passphrase,
                 asset_code,
                 asset_issuer,
                 source_secret_key,
@@ -64,6 +70,8 @@ defmodule Soroban.Contract do
               as: :deploy
 
   defdelegate extend_contract(
+                server,
+                network_passphrase,
                 contract_address,
                 secret_key,
                 ledgers_to_extend,
@@ -72,11 +80,20 @@ defmodule Soroban.Contract do
               to: ExtendFootprintTTL,
               as: :extend_contract
 
-  defdelegate extend_contract_wasm(wasm_id, secret_key, ledgers_to_extend, addl_resources \\ []),
-    to: ExtendFootprintTTL,
-    as: :extend_contract_wasm
+  defdelegate extend_contract_wasm(
+                server,
+                network_passphrase,
+                wasm_id,
+                secret_key,
+                ledgers_to_extend,
+                addl_resources \\ []
+              ),
+              to: ExtendFootprintTTL,
+              as: :extend_contract_wasm
 
   defdelegate extend_contract_keys(
+                server,
+                network_passphrase,
                 contract_address,
                 secret_key,
                 ledgers_to_extend,
@@ -86,17 +103,36 @@ defmodule Soroban.Contract do
               to: ExtendFootprintTTL,
               as: :extend_contract_keys
 
-  defdelegate restore_contract(contract_address, secret_key, addl_resources \\ []),
-    to: RestoreFootprint,
-    as: :restore_contract
+  defdelegate restore_contract(
+                server,
+                network_passphrase,
+                contract_address,
+                secret_key,
+                addl_resources \\ []
+              ),
+              to: RestoreFootprint,
+              as: :restore_contract
 
-  defdelegate restore_contract_wasm(wasm_id, secret_key, addl_resources \\ []),
-    to: RestoreFootprint,
-    as: :restore_contract_wasm
+  defdelegate restore_contract_wasm(
+                server,
+                network_passphrase,
+                wasm_id,
+                secret_key,
+                addl_resources \\ []
+              ),
+              to: RestoreFootprint,
+              as: :restore_contract_wasm
 
-  defdelegate restore_contract_keys(contract_address, secret_key, keys, addl_resources \\ []),
-    to: RestoreFootprint,
-    as: :restore_contract_keys
+  defdelegate restore_contract_keys(
+                server,
+                network_passphrase,
+                contract_address,
+                secret_key,
+                keys,
+                addl_resources \\ []
+              ),
+              to: RestoreFootprint,
+              as: :restore_contract_keys
 
   defdelegate retrieve_unsigned_xdr_to_invoke(
                 server,
@@ -112,6 +148,8 @@ defmodule Soroban.Contract do
               as: :retrieve_unsigned_xdr_to_invoke
 
   defdelegate retrieve_unsigned_xdr_to_upload(
+                server,
+                network_passphrase,
                 wasm,
                 source_public_key,
                 addl_resources \\ []
@@ -120,6 +158,8 @@ defmodule Soroban.Contract do
               as: :retrieve_unsigned_xdr_to_upload
 
   defdelegate retrieve_unsigned_xdr_to_deploy(
+                server,
+                network_passphrase,
                 wasm_id,
                 source_public_key,
                 addl_resources \\ []
@@ -128,6 +168,8 @@ defmodule Soroban.Contract do
               as: :retrieve_unsigned_xdr_to_deploy
 
   defdelegate retrieve_unsigned_xdr_to_deploy_asset(
+                server,
+                network_passphrase,
                 asset_code,
                 source_public_key,
                 addl_resources \\ []
