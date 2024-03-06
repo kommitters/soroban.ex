@@ -54,7 +54,7 @@ defmodule Soroban.RPC.RequestTest do
     } = Request.new(server, endpoint)
   end
 
-  test "add_params/2", %{server: server,endpoint: endpoint, params: params} do
+  test "add_params/2", %{server: server, endpoint: endpoint, params: params} do
     %Request{endpoint: ^endpoint, params: ^params} =
       server
       |> Request.new(endpoint)

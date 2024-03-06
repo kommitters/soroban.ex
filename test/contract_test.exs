@@ -196,7 +196,6 @@ defmodule Soroban.ContractTest do
     %{
       server: Server.testnet(),
       network_passphrase: Network.testnet_passphrase(),
-      extra_fee_rate: 0.05,
       contract_address: "CD3HNKU3ERTEYLBBBVTSOYE4ZL2ZWV7NHLQIZRRKC4CBNMZXC7ISBXHV",
       source_public: "GBNDWIM7DPYZJ2RLJ3IESXBIO4C2SVF6PWZXS3DLODJSBQWBMKY5U4M3",
       source_secret: "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24",
@@ -285,8 +284,7 @@ defmodule Soroban.ContractTest do
     contract_address: contract_address,
     source_secret: source_secret,
     function_name: function_name,
-    function_args: function_args,
-    extra_fee_rate: extra_fee_rate
+    function_args: function_args
   } do
     {:ok,
      %SendTransactionResponse{
@@ -303,8 +301,7 @@ defmodule Soroban.ContractTest do
         contract_address,
         source_secret,
         function_name,
-        function_args,
-        extra_fee_rate
+        function_args
       )
   end
 
@@ -315,8 +312,7 @@ defmodule Soroban.ContractTest do
     contract_address: contract_address,
     source_secret: source_secret,
     function_name: function_name,
-    function_args: function_args,
-    extra_fee_rate: extra_fee_rate
+    function_args: function_args
   } do
     {:ok,
      %SendTransactionResponse{
@@ -334,7 +330,6 @@ defmodule Soroban.ContractTest do
         source_secret,
         function_name,
         function_args,
-        extra_fee_rate,
         auth_secret_keys
       )
   end

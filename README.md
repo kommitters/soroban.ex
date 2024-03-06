@@ -490,7 +490,6 @@ The deployment and invocation of Soroban smart contracts is done through the `So
 - `source_secret_key`: Secret key of the function invoker responsible for signing the transaction.
 - `function_name`: String indicating the name of the function to be invoked.
 - `function_args`: List of `Soroban.Types` representing the arguments required by the indicated function (`function_name`). They should be provided in the specific order expected by the function.
-- `extra_fee_rate`: Float number to increment the transaction fee to pay, useful when the operation returns an insufficient fee error.
 - `auth_secret_key`: (optional) Secret key used to authorize the function invocation when the function invoker is not the same function authorizer.
 - `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
   - `cpu_instructions`: Number of additional CPU instructions to reserve.
@@ -503,14 +502,13 @@ alias Soroban.Types.String
 
 contract_address = "CAEYZ6JI5YV2CBI3NRRUNA2DMERJ4KLJTI76WDZBTWZ7VMPGY6JDIZD5"
 source_secret_key = "SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK"
-extra_fee_rate = 0.08
 function_name = "hello"
 
 function_args = [String.new("world")]
 
 addl_resources = [cpu_instructions: 100]
 
-Contract.invoke(contract_address, source_secret_key, function_name, function_args, extra_fee_rate, [], addl_resources)
+Contract.invoke(contract_address, source_secret_key, function_name, function_args, [], addl_resources)
 
 {:ok,
   %Soroban.RPC.SendTransactionResponse{
@@ -533,7 +531,6 @@ Contract.invoke(contract_address, source_secret_key, function_name, function_arg
 
   contract_address = "CAEYZ6JI5YV2CBI3NRRUNA2DMERJ4KLJTI76WDZBTWZ7VMPGY6JDIZD5"
   source_secret_key = "SCAVFA3PI3MJLTQNMXOUNBSEUOSY66YMG3T2KCQKLQBENNVLVKNPV3EK"
-  extra_fee_rate = 0.08
   function_name = "inc"
 
   function_args = [
@@ -543,7 +540,7 @@ Contract.invoke(contract_address, source_secret_key, function_name, function_arg
 
   addl_resources = [cpu_instructions: 100]
 
-  Contract.invoke(contract_address, source_secret_key, function_name, function_args, extra_fee_rate, [], addl_resources)
+  Contract.invoke(contract_address, source_secret_key, function_name, function_args, [], addl_resources)
 
   {:ok,
     %Soroban.RPC.SendTransactionResponse{
@@ -567,7 +564,6 @@ Contract.invoke(contract_address, source_secret_key, function_name, function_arg
 
   contract_address = "CAEYZ6JI5YV2CBI3NRRUNA2DMERJ4KLJTI76WDZBTWZ7VMPGY6JDIZD5"
   source_secret_key = "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24"
-  extra_fee_rate = 0.1
   function_name = "swap"
 
   function_args = [
@@ -589,7 +585,6 @@ Contract.invoke(contract_address, source_secret_key, function_name, function_arg
     source_secret_key,
     function_name,
     function_args,
-    extra_fee_rate,
     auth_secret_keys,
     addl_resources
   )
@@ -945,7 +940,6 @@ This XDR is required by wallets to sign transactions before they can be submitte
 - `source_public_key`: Public key of the function invoker responsible for signing the transaction.
 - `function_name`: String value indicating the name of the function to be invoked.
 - `function_args`: List of `Soroban.Types` representing the arguments required by the indicated function (`function_name`). They should be provided in the specific order expected by the function.
-- `extra_fee_rate`: Float number to increment the transaction fee to pay, useful when the operation returns an insufficient fee error.
 - `addl_resources`: (optional) Keyword list to specify additional resources to include in the transaction simulation.
   - `cpu_instructions`: Number of additional CPU instructions to reserve.
 
@@ -955,7 +949,6 @@ alias Soroban.Types.String
 
 contract_address = "CAEYZ6JI5YV2CBI3NRRUNA2DMERJ4KLJTI76WDZBTWZ7VMPGY6JDIZD5"
 source_public_key = "GDEU46HFMHBHCSFA3K336I3MJSBZCWVI3LUGSNL6AF2BW2Q2XR7NNAPM"
-extra_fee_rate = 0.08
 function_name = "hello"
 
 function_args = [String.new("world")]
@@ -967,7 +960,6 @@ Contract.retrieve_unsigned_xdr_to_invoke(
   source_public_key,
   function_name,
   function_args,
-  extra_fee_rate,
   addl_resources
 )
 

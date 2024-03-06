@@ -19,7 +19,6 @@ defmodule Soroban.Contract do
                 source_secret_key,
                 function_name,
                 function_args \\ [],
-                extra_fee_rate \\ 0.0,
                 auth_secret_keys \\ [],
                 addl_resources \\ []
               ),
@@ -141,7 +140,6 @@ defmodule Soroban.Contract do
                 source_public_key,
                 function_name,
                 function_args \\ [],
-                extra_fee_rate \\ 0.0,
                 addl_resources \\ []
               ),
               to: InvokeContractFunction,

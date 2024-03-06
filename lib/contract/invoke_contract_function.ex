@@ -43,7 +43,6 @@ defmodule Soroban.Contract.InvokeContractFunction do
           source_secret_key :: source_secret_key(),
           function_name :: function_name(),
           function_args :: function_args(),
-          extra_fee_rate :: float(),
           auth_secret_keys :: auth_secret_keys(),
           addl_resources :: addl_resources()
         ) :: send_response()
@@ -54,7 +53,6 @@ defmodule Soroban.Contract.InvokeContractFunction do
         source_secret_key,
         function_name,
         function_args,
-        extra_fee_rate \\ 0.0,
         auth_secret_keys \\ [],
         addl_resources \\ []
       ) do
@@ -81,8 +79,7 @@ defmodule Soroban.Contract.InvokeContractFunction do
         sequence_number,
         signature,
         invoke_host_function_op,
-        auth_secret_keys,
-        extra_fee_rate
+        auth_secret_keys
       )
     end
   end
@@ -94,7 +91,6 @@ defmodule Soroban.Contract.InvokeContractFunction do
           source_public_key :: source_public_key(),
           function_name :: function_name(),
           function_args :: function_args(),
-          extra_fee_rate :: float(),
           addl_resources :: addl_resources()
         ) :: envelope_xdr()
   def retrieve_unsigned_xdr_to_invoke(
@@ -104,7 +100,6 @@ defmodule Soroban.Contract.InvokeContractFunction do
         source_public_key,
         function_name,
         function_args,
-        extra_fee_rate \\ 0.0,
         addl_resources \\ []
       ) do
     with {:ok, seq_num} <- RPC.fetch_next_sequence_number(server, source_public_key),
@@ -131,8 +126,7 @@ defmodule Soroban.Contract.InvokeContractFunction do
         network_passphrase,
         source_account,
         sequence_number,
-        invoke_host_function_op,
-        extra_fee_rate
+        invoke_host_function_op
       )
     end
   end
