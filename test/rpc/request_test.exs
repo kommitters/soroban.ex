@@ -19,7 +19,7 @@ end
 defmodule Soroban.RPC.RequestTest do
   use ExUnit.Case
 
-  alias Soroban.RPC.{Client.CannedRequestImpl, GetTransactionResponse, HTTPError, Request}
+  alias Soroban.RPC.{Client.CannedRequestImpl, GetTransactionResponse, HTTPError, Request, Server}
   alias Soroban.Test.Fixtures.RPC
 
   setup do
@@ -29,7 +29,7 @@ defmodule Soroban.RPC.RequestTest do
       Application.delete_env(:soroban, :http_client_impl)
     end)
 
-    url = "https://rpc-futurenet.stellar.org"
+    server = Server.testnet()
     headers = [{"Content-Type", "application/json"}]
     endpoint = "getTransaction"
 
@@ -38,43 +38,44 @@ defmodule Soroban.RPC.RequestTest do
     }
 
     %{
-      url: url,
+      server: server,
       endpoint: endpoint,
       headers: headers,
       params: params
     }
   end
 
-  test "new/1", %{url: url, endpoint: endpoint} do
+  test "new/1", %{server: %Server{url: url} = server, endpoint: endpoint} do
     %Request{
       endpoint: ^endpoint,
       url: ^url,
       params: nil,
       headers: []
-    } = Request.new(endpoint)
+    } = Request.new(server, endpoint)
   end
 
-  test "add_params/2", %{endpoint: endpoint, params: params} do
+  test "add_params/2", %{server: server,endpoint: endpoint, params: params} do
     %Request{endpoint: ^endpoint, params: ^params} =
-      endpoint
-      |> Request.new()
+      server
+      |> Request.new(endpoint)
       |> Request.add_params(params)
   end
 
-  test "add_headers/2", %{endpoint: endpoint, headers: headers} do
+  test "add_headers/2", %{server: server, endpoint: endpoint, headers: headers} do
     %Request{endpoint: ^endpoint, headers: ^headers} =
-      endpoint
-      |> Request.new()
+      server
+      |> Request.new(endpoint)
       |> Request.add_headers(headers)
   end
 
   test "perform/2", %{
+    server: server,
     endpoint: endpoint,
     params: params,
     headers: headers
   } do
-    endpoint
-    |> Request.new()
+    server
+    |> Request.new(endpoint)
     |> Request.add_params(params)
     |> Request.add_headers(headers)
     |> Request.perform()

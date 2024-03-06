@@ -26,7 +26,7 @@ defmodule Soroban.RPC.ClientTest do
   test "request/6" do
     Client.request(
       "getHealth",
-      "https://rpc-futurenet.stellar.org:443/"
+      "https://soroban-testnet.stellar.org"
     )
 
     assert_receive({:request, "RESPONSE"})
