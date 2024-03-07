@@ -29,6 +29,7 @@ defmodule Soroban.RPC.SimulateTransactionTest do
   use ExUnit.Case
 
   alias Soroban.RPC.{
+    Server,
     SimulateTransaction,
     SimulateTransactionCannedClientImpl,
     SimulateTransactionResponse
@@ -44,10 +45,10 @@ defmodule Soroban.RPC.SimulateTransactionTest do
     transaction_xdr =
       "AAAAAgAAAADWKIRtrzg/aTCtUHeZnpyYu0iNxJxcn4tr0jXG2hOIlwAAAGQABzbWAAAAAwAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAGAAAAAAAAAAEAAAADQAAACC8xDySpTRgcsckFZY9QBvIP3LL70Jp0xG3cmpCvp0d/QAAAA8AAAAJaW5jcmVtZW50AAAAAAAAEwAAAAAAAAAA1iiEba84P2kwrVB3mZ6cmLtIjcScXJ+La9I1xtoTiJcAAAADAAAACgAAAAAAAAAAAAAAAQAAAAC8xDySpTRgcsckFZY9QBvIP3LL70Jp0xG3cmpCvp0d/QAAAAlpbmNyZW1lbnQAAAAAAAACAAAAEwAAAAAAAAAA1iiEba84P2kwrVB3mZ6cmLtIjcScXJ+La9I1xtoTiJcAAAADAAAACgAAAAAAAAAAAAAAAAAAAAA="
 
-    %{transaction_xdr: transaction_xdr}
+    %{transaction_xdr: transaction_xdr, server: Server.testnet()}
   end
 
-  test "request/1", %{transaction_xdr: transaction_xdr} do
+  test "request/1", %{transaction_xdr: transaction_xdr, server: server} do
     {:ok,
      %SimulateTransactionResponse{
        transaction_data:
@@ -63,10 +64,10 @@ defmodule Soroban.RPC.SimulateTransactionTest do
        cost: %{cpu_insns: "1048713", mem_bytes: "1201148"},
        latest_ledger: 45_075_181,
        error: nil
-     }} = SimulateTransaction.request(transaction_xdr)
+     }} = SimulateTransaction.request(server, transaction: transaction_xdr)
   end
 
-  test "request/2", %{transaction_xdr: transaction_xdr} do
+  test "request/2", %{transaction_xdr: transaction_xdr, server: server} do
     {:ok,
      %SimulateTransactionResponse{
        transaction_data:
@@ -82,6 +83,10 @@ defmodule Soroban.RPC.SimulateTransactionTest do
        cost: %{cpu_insns: "1048713", mem_bytes: "1201148"},
        latest_ledger: 45_075_181,
        error: nil
-     }} = SimulateTransaction.request(transaction_xdr, cpu_instructions: 100)
+     }} =
+      SimulateTransaction.request(server,
+        transaction: transaction_xdr,
+        addl_resources: [cpu_instructions: 100]
+      )
   end
 end

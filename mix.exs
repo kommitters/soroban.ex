@@ -1,7 +1,7 @@
 defmodule Soroban.MixProject do
   use Mix.Project
 
-  @version "0.19.0"
+  @version "0.20.0"
   @github_url "https://github.com/kommitters/soroban.ex"
 
   def project do
@@ -42,9 +42,9 @@ defmodule Soroban.MixProject do
     [
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
-      {:ex_doc, "~> 0.30", only: :dev, runtime: false},
-      {:excoveralls, "~> 0.17", only: :test},
-      {:stellar_sdk, "~> 0.20"},
+      {:ex_doc, "~> 0.31", only: :dev, runtime: false},
+      {:excoveralls, "~> 0.18", only: :test},
+      {:stellar_sdk, "~> 0.21"},
       {:hackney, "~> 1.18"}
     ]
   end
@@ -58,7 +58,7 @@ defmodule Soroban.MixProject do
   defp package do
     [
       description: description(),
-      files: ["lib", "config", "mix.exs", "README*", "LICENSE"],
+      files: ["lib", "mix.exs", "README*", "LICENSE"],
       licenses: ["MIT"],
       links: %{
         "Changelog" => "#{@github_url}/blob/main/CHANGELOG.md",
@@ -94,6 +94,7 @@ defmodule Soroban.MixProject do
       ],
       RPC: [
         Soroban.RPC,
+        Soroban.RPC.Server,
         Soroban.RPC.Request,
         Soroban.RPC.GetTransaction,
         Soroban.RPC.GetTransactionResponse,

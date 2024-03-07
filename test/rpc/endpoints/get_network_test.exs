@@ -22,7 +22,8 @@ defmodule Soroban.RPC.GetNetworkTest do
   alias Soroban.RPC.{
     CannedGetNetworkClientImpl,
     GetNetwork,
-    GetNetworkResponse
+    GetNetworkResponse,
+    Server
   }
 
   setup do
@@ -31,14 +32,16 @@ defmodule Soroban.RPC.GetNetworkTest do
     on_exit(fn ->
       Application.delete_env(:soroban, :http_client_impl)
     end)
+
+    %{server: Server.testnet()}
   end
 
-  test "request/0" do
+  test "request/1", %{server: server} do
     {:ok,
      %GetNetworkResponse{
        friendbot_url: "https://friendbot-futurenet.stellar.org/",
        passphrase: "Test SDF Future Network ; October 2022",
        protocol_version: 20
-     }} = GetNetwork.request()
+     }} = GetNetwork.request(server)
   end
 end

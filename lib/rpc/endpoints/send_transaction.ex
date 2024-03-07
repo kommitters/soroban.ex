@@ -9,9 +9,9 @@ defmodule Soroban.RPC.SendTransaction do
   @endpoint "sendTransaction"
 
   @impl true
-  def request(transaction) do
-    @endpoint
-    |> Request.new()
+  def request(server, transaction) do
+    server
+    |> Request.new(@endpoint)
     |> Request.add_headers([{"Content-Type", "application/json"}])
     |> Request.add_params(%{transaction: transaction})
     |> Request.perform()

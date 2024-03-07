@@ -42,7 +42,7 @@ defmodule Soroban.RPC.DefaultClientTest do
     end)
 
     %{
-      url: "https://rpc-futurenet.stellar.org:443/",
+      url: "https://soroban-testnet.stellar.org",
       headers: [{"Content-Type", "application/json"}],
       endpoint: "getHealth"
     }
