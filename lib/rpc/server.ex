@@ -8,9 +8,7 @@ defmodule Soroban.RPC.Server do
   @type t :: %__MODULE__{url: String.t()}
 
   @spec new(url :: String.t()) :: t()
-  def new(url) when is_binary(url) do
-    %__MODULE__{url: url}
-  end
+  def new(url) when is_binary(url), do: %__MODULE__{url: url}
 
   @spec testnet() :: t()
   def testnet, do: new("https://soroban-testnet.stellar.org")
