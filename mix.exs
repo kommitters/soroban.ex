@@ -1,7 +1,7 @@
 defmodule Soroban.MixProject do
   use Mix.Project
 
-  @version "0.19.0"
+  @version "0.20.0"
   @github_url "https://github.com/kommitters/soroban.ex"
 
   def project do
@@ -94,6 +94,7 @@ defmodule Soroban.MixProject do
       ],
       RPC: [
         Soroban.RPC,
+        Soroban.RPC.Server,
         Soroban.RPC.Request,
         Soroban.RPC.GetTransaction,
         Soroban.RPC.GetTransactionResponse,
