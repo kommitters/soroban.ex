@@ -1,33 +1,32 @@
-defmodule Stellar.Horizon.Client.CannedDeployAccountRequests do
-  @moduledoc false
-
-  @base_url "https://horizon-testnet.stellar.org"
-
-  def request(
-        :get,
-        @base_url <> "/accounts/GBNDWIM7DPYZJ2RLJ3IESXBIO4C2SVF6PWZXS3DLODJSBQWBMKY5U4M3",
-        _headers,
-        _body,
-        _opts
-      ) do
-    {:ok, 200, [], "{\"sequence\":\"1390916568875069\"}"}
-  end
-
-  def request(
-        :get,
-        @base_url <> "/accounts/GASY52GNGVKEMXSGH7VSCZQKRWQMIQD77J53KHXEBAV2BODWH6FDDZ3F",
-        _headers,
-        _body,
-        _opts
-      ) do
-    {:ok, 200, [], "{\"sequence\":\"1390916568875069\"}"}
-  end
-end
-
 defmodule Soroban.RPC.CannedDeployInvokeHostFunctionClientImpl do
   @moduledoc false
 
   @behaviour Soroban.RPC.Client.Spec
+
+  @impl true
+  def request(
+        "getLedgerEntries",
+        _url,
+        _headers,
+        _body,
+        _opts
+      ) do
+    send(self(), {:request, "RESPONSE"})
+
+    {:ok,
+     %{
+       entries: [
+         %{
+           key: "AAAAAAAAAAB8VFyuIrnqhGA3aSvFShpwVwYZGwD3Yx5guKZGcn1ofQ==",
+           last_modified_ledger_seq: 462_965,
+           #  this xdr is a LedgerEntryData of type account with sequence number 1_390_916_568_875_069
+           xdr:
+             "AAAAAAAAAAB8VFyuIrnqhGA3aSvFShpwVwYZGwD3Yx5guKZGcn1ofQAAABdIdugAAATxCAAAAD0AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAA"
+         }
+       ],
+       latest_ledger: 462_966
+     }}
+  end
 
   @impl true
   def request(
@@ -79,21 +78,22 @@ defmodule Soroban.Contract.DeployContractTest do
 
   alias Soroban.RPC.{
     CannedDeployInvokeHostFunctionClientImpl,
-    SendTransactionResponse
+    SendTransactionResponse,
+    Server
   }
 
-  alias Stellar.Horizon.Client.CannedDeployAccountRequests
+  alias Stellar.Network
 
   setup do
-    Application.put_env(:stellar_sdk, :http_client, CannedDeployAccountRequests)
     Application.put_env(:soroban, :http_client_impl, CannedDeployInvokeHostFunctionClientImpl)
 
     on_exit(fn ->
-      Application.delete_env(:stellar_sdk, :http_client)
       Application.delete_env(:soroban, :http_client_impl)
     end)
 
     %{
+      server: Server.testnet(),
+      network_passphrase: Network.testnet_passphrase(),
       source_public: "GBNDWIM7DPYZJ2RLJ3IESXBIO4C2SVF6PWZXS3DLODJSBQWBMKY5U4M3",
       source_secret: "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24",
       source_public_with_error: "GASY52GNGVKEMXSGH7VSCZQKRWQMIQD77J53KHXEBAV2BODWH6FDDZ3F",
@@ -104,7 +104,9 @@ defmodule Soroban.Contract.DeployContractTest do
     }
   end
 
-  test "deploy/2", %{
+  test "deploy/4", %{
+    server: server,
+    network_passphrase: network_passphrase,
     wasm_id: wasm_id,
     source_secret: source_secret
   } do
@@ -116,15 +118,19 @@ defmodule Soroban.Contract.DeployContractTest do
        latest_ledger_close_time: "1683814245",
        error_result_xdr: nil,
        diagnostic_events_xdr: nil
-     }} = DeployContract.deploy(wasm_id, source_secret)
+     }} = DeployContract.deploy(server, network_passphrase, wasm_id, source_secret)
   end
 
-  test "retrieve_unsigned_xdr_to_deploy/2", %{
+  test "retrieve_unsigned_xdr_to_deploy/4", %{
+    server: server,
+    network_passphrase: network_passphrase,
     wasm_id: wasm_id,
     source_public_with_error: source_public
   } do
     assert String.contains?(
              DeployContract.retrieve_unsigned_xdr_to_deploy(
+               server,
+               network_passphrase,
                wasm_id,
                source_public
              ),

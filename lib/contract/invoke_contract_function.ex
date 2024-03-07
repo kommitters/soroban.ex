@@ -4,9 +4,8 @@ defmodule Soroban.Contract.InvokeContractFunction do
   """
 
   alias Soroban.Contract.RPCCalls
-  alias Soroban.RPC.{SendTransactionResponse, SimulateTransactionResponse}
-
-  alias Stellar.Horizon.Accounts
+  alias Soroban.RPC
+  alias Soroban.RPC.{SendTransactionResponse, Server, SimulateTransactionResponse}
 
   alias Stellar.TxBuild.{
     Account,
@@ -19,6 +18,8 @@ defmodule Soroban.Contract.InvokeContractFunction do
     Signature
   }
 
+  @type server :: Server.t()
+  @type network_passphrase :: String.t()
   @type account :: Account.t()
   @type function_args :: list(struct())
   @type auth_secret_keys :: list(String.t())
@@ -36,25 +37,27 @@ defmodule Soroban.Contract.InvokeContractFunction do
   @type addl_resources :: keyword()
 
   @spec invoke(
+          server :: server(),
+          network_passphrase :: network_passphrase(),
           contract_address :: contract_address(),
           source_secret_key :: source_secret_key(),
           function_name :: function_name(),
           function_args :: function_args(),
-          extra_fee_rate :: float(),
           auth_secret_keys :: auth_secret_keys(),
           addl_resources :: addl_resources()
         ) :: send_response()
   def invoke(
+        %Server{} = server,
+        network_passphrase,
         contract_address,
         source_secret_key,
         function_name,
         function_args,
-        extra_fee_rate \\ 0.0,
         auth_secret_keys \\ [],
         addl_resources \\ []
       ) do
     with {public_key, _secret} = keypair <- Stellar.KeyPair.from_secret_seed(source_secret_key),
-         {:ok, seq_num} <- Accounts.fetch_next_sequence_number(public_key),
+         {:ok, seq_num} <- RPC.fetch_next_sequence_number(server, public_key),
          {:ok, function_args} <- convert_to_sc_val(function_args),
          %Signature{} = signature <- Signature.new(keypair),
          %Account{} = source_account <- Account.new(public_key),
@@ -62,35 +65,44 @@ defmodule Soroban.Contract.InvokeContractFunction do
          %InvokeHostFunction{} = invoke_host_function_op <-
            create_host_function_op(contract_address, function_name, function_args, public_key) do
       invoke_host_function_op
-      |> RPCCalls.simulate(source_account, sequence_number, addl_resources)
+      |> RPCCalls.simulate(
+        server,
+        network_passphrase,
+        source_account,
+        sequence_number,
+        addl_resources
+      )
       |> RPCCalls.send_transaction(
+        server,
+        network_passphrase,
         source_account,
         sequence_number,
         signature,
         invoke_host_function_op,
-        auth_secret_keys,
-        extra_fee_rate
+        auth_secret_keys
       )
     end
   end
 
   @spec retrieve_unsigned_xdr_to_invoke(
+          server :: server(),
+          network_passphrase :: network_passphrase(),
           contract_address :: contract_address(),
           source_public_key :: source_public_key(),
           function_name :: function_name(),
           function_args :: function_args(),
-          extra_fee_rate :: float(),
           addl_resources :: addl_resources()
         ) :: envelope_xdr()
   def retrieve_unsigned_xdr_to_invoke(
+        %Server{} = server,
+        network_passphrase,
         contract_address,
         source_public_key,
         function_name,
         function_args,
-        extra_fee_rate \\ 0.0,
         addl_resources \\ []
       ) do
-    with {:ok, seq_num} <- Accounts.fetch_next_sequence_number(source_public_key),
+    with {:ok, seq_num} <- RPC.fetch_next_sequence_number(server, source_public_key),
          {:ok, function_args} <- convert_to_sc_val(function_args),
          %Account{} = source_account <- Account.new(source_public_key),
          %SequenceNumber{} = sequence_number <- SequenceNumber.new(seq_num),
@@ -102,17 +114,26 @@ defmodule Soroban.Contract.InvokeContractFunction do
              source_public_key
            ) do
       invoke_host_function_op
-      |> RPCCalls.simulate(source_account, sequence_number, addl_resources)
-      |> RPCCalls.retrieve_unsigned_xdr(
+      |> RPCCalls.simulate(
+        server,
+        network_passphrase,
         source_account,
         sequence_number,
-        invoke_host_function_op,
-        extra_fee_rate
+        addl_resources
+      )
+      |> RPCCalls.retrieve_unsigned_xdr(
+        server,
+        network_passphrase,
+        source_account,
+        sequence_number,
+        invoke_host_function_op
       )
     end
   end
 
   @spec simulate_invoke(
+          server :: server(),
+          network_passphrase :: network_passphrase(),
           contract_address :: contract_address(),
           source_public_key :: source_public_key(),
           function_name :: function_name(),
@@ -120,13 +141,15 @@ defmodule Soroban.Contract.InvokeContractFunction do
           addl_resources :: addl_resources()
         ) :: simulate_response()
   def simulate_invoke(
+        %Server{} = server,
+        network_passphrase,
         contract_address,
         source_public_key,
         function_name,
         function_args,
         addl_resources \\ []
       ) do
-    with {:ok, seq_num} <- Accounts.fetch_next_sequence_number(source_public_key),
+    with {:ok, seq_num} <- RPC.fetch_next_sequence_number(server, source_public_key),
          {:ok, function_args} <- convert_to_sc_val(function_args),
          %Account{} = source_account <- Account.new(source_public_key),
          %SequenceNumber{} = sequence_number <- SequenceNumber.new(seq_num),
@@ -137,7 +160,14 @@ defmodule Soroban.Contract.InvokeContractFunction do
              function_args,
              source_public_key
            ) do
-      RPCCalls.simulate(invoke_host_function_op, source_account, sequence_number, addl_resources)
+      RPCCalls.simulate(
+        invoke_host_function_op,
+        server,
+        network_passphrase,
+        source_account,
+        sequence_number,
+        addl_resources
+      )
     end
   end
 

@@ -1,33 +1,32 @@
-defmodule Stellar.Horizon.Client.CannedUploadAccountRequests do
-  @moduledoc false
-
-  @base_url "https://horizon-testnet.stellar.org"
-
-  def request(
-        :get,
-        @base_url <> "/accounts/GBNDWIM7DPYZJ2RLJ3IESXBIO4C2SVF6PWZXS3DLODJSBQWBMKY5U4M3",
-        _headers,
-        _body,
-        _opts
-      ) do
-    {:ok, 200, [], "{\"sequence\":\"1390916568875069\"}"}
-  end
-
-  def request(
-        :get,
-        @base_url <> "/accounts/GASY52GNGVKEMXSGH7VSCZQKRWQMIQD77J53KHXEBAV2BODWH6FDDZ3F",
-        _headers,
-        _body,
-        _opts
-      ) do
-    {:ok, 200, [], "{\"sequence\":\"1390916568875069\"}"}
-  end
-end
-
 defmodule Soroban.RPC.CannedUploadInvokeHostFunctionClientImpl do
   @moduledoc false
 
   @behaviour Soroban.RPC.Client.Spec
+
+  @impl true
+  def request(
+        "getLedgerEntries",
+        _url,
+        _headers,
+        _body,
+        _opts
+      ) do
+    send(self(), {:request, "RESPONSE"})
+
+    {:ok,
+     %{
+       entries: [
+         %{
+           key: "AAAAAAAAAAB8VFyuIrnqhGA3aSvFShpwVwYZGwD3Yx5guKZGcn1ofQ==",
+           last_modified_ledger_seq: 462_965,
+           #  this xdr is a LedgerEntryData of type account with sequence number 1_390_916_568_875_069
+           xdr:
+             "AAAAAAAAAAB8VFyuIrnqhGA3aSvFShpwVwYZGwD3Yx5guKZGcn1ofQAAABdIdugAAATxCAAAAD0AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAA"
+         }
+       ],
+       latest_ledger: 462_966
+     }}
+  end
 
   @impl true
   def request(
@@ -102,21 +101,22 @@ defmodule Soroban.Contract.UploadContractCodeTest do
   alias Soroban.RPC.{
     CannedUploadInvokeHostFunctionClientImpl,
     SendTransactionResponse,
+    Server,
     SimulateTransactionResponse
   }
 
-  alias Stellar.Horizon.Client.CannedUploadAccountRequests
+  alias Stellar.Network
 
   setup do
-    Application.put_env(:stellar_sdk, :http_client, CannedUploadAccountRequests)
     Application.put_env(:soroban, :http_client_impl, CannedUploadInvokeHostFunctionClientImpl)
 
     on_exit(fn ->
-      Application.delete_env(:stellar_sdk, :http_client)
       Application.delete_env(:soroban, :http_client_impl)
     end)
 
     %{
+      server: Server.testnet(),
+      network_passphrase: Network.testnet_passphrase(),
       source_public: "GBNDWIM7DPYZJ2RLJ3IESXBIO4C2SVF6PWZXS3DLODJSBQWBMKY5U4M3",
       source_secret: "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24",
       source_public_with_error: "GASY52GNGVKEMXSGH7VSCZQKRWQMIQD77J53KHXEBAV2BODWH6FDDZ3F",
@@ -130,7 +130,9 @@ defmodule Soroban.Contract.UploadContractCodeTest do
     }
   end
 
-  test "upload/2", %{
+  test "upload/4", %{
+    server: server,
+    network_passphrase: network_passphrase,
     wasm: wasm,
     source_secret: source_secret
   } do
@@ -142,10 +144,12 @@ defmodule Soroban.Contract.UploadContractCodeTest do
        latest_ledger_close_time: "1683814245",
        error_result_xdr: nil,
        diagnostic_events_xdr: nil
-     }} = UploadContractCode.upload(wasm, source_secret)
+     }} = UploadContractCode.upload(server, network_passphrase, wasm, source_secret)
   end
 
   test "upload contract with simulate error", %{
+    server: server,
+    network_passphrase: network_passphrase,
     wasm: wasm,
     source_secret_with_error: source_secret_with_error
   } do
@@ -154,20 +158,32 @@ defmodule Soroban.Contract.UploadContractCodeTest do
        error: "error"
      }} =
       UploadContractCode.upload(
+        server,
+        network_passphrase,
         wasm,
         source_secret_with_error
       )
   end
 
-  test "retrieve_unsigned_xdr_to_upload/2", %{
+  test "retrieve_unsigned_xdr_to_upload/4", %{
+    server: server,
+    network_passphrase: network_passphrase,
     wasm: wasm,
     source_public: source_public,
     envelope_xdr: envelope_xdr
   } do
-    ^envelope_xdr = UploadContractCode.retrieve_unsigned_xdr_to_upload(wasm, source_public)
+    ^envelope_xdr =
+      UploadContractCode.retrieve_unsigned_xdr_to_upload(
+        server,
+        network_passphrase,
+        wasm,
+        source_public
+      )
   end
 
   test "retrieve_unsigned_xdr_to_upload contract with simulate error", %{
+    server: server,
+    network_passphrase: network_passphrase,
     wasm: wasm,
     source_public_with_error: source_public_with_error
   } do
@@ -176,6 +192,8 @@ defmodule Soroban.Contract.UploadContractCodeTest do
        error: "error"
      }} =
       UploadContractCode.retrieve_unsigned_xdr_to_upload(
+        server,
+        network_passphrase,
         wasm,
         source_public_with_error
       )

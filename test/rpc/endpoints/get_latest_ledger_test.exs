@@ -22,7 +22,8 @@ defmodule Soroban.RPC.GetLatestLedgerTest do
   alias Soroban.RPC.{
     CannedGetLatestLedgerClientImpl,
     GetLatestLedger,
-    GetLatestLedgerResponse
+    GetLatestLedgerResponse,
+    Server
   }
 
   setup do
@@ -31,14 +32,16 @@ defmodule Soroban.RPC.GetLatestLedgerTest do
     on_exit(fn ->
       Application.delete_env(:soroban, :http_client_impl)
     end)
+
+    %{server: Server.testnet()}
   end
 
-  test "request/0" do
+  test "request/1", %{server: server} do
     {:ok,
      %GetLatestLedgerResponse{
        id: "2a00000000000000000000000000000000000000000000000000000000000000",
        protocol_version: 20,
        sequence: 666
-     }} = GetLatestLedger.request()
+     }} = GetLatestLedger.request(server)
   end
 end

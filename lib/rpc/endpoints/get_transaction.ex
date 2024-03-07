@@ -9,9 +9,9 @@ defmodule Soroban.RPC.GetTransaction do
   @endpoint "getTransaction"
 
   @impl true
-  def request(hash) do
-    @endpoint
-    |> Request.new()
+  def request(server, hash) do
+    server
+    |> Request.new(@endpoint)
     |> Request.add_headers([{"Content-Type", "application/json"}])
     |> Request.add_params(%{hash: hash})
     |> Request.perform()

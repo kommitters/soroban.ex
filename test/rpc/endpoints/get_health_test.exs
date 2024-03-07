@@ -20,7 +20,8 @@ defmodule Soroban.RPC.GetHealthTest do
   alias Soroban.RPC.{
     CannedGetHealthClientImpl,
     GetHealth,
-    GetHealthResponse
+    GetHealthResponse,
+    Server
   }
 
   setup do
@@ -29,12 +30,14 @@ defmodule Soroban.RPC.GetHealthTest do
     on_exit(fn ->
       Application.delete_env(:soroban, :http_client_impl)
     end)
+
+    %{server: Server.testnet()}
   end
 
-  test "request/0" do
+  test "request/1", %{server: server} do
     {:ok,
      %GetHealthResponse{
        status: "healthy"
-     }} = GetHealth.request()
+     }} = GetHealth.request(server)
   end
 end

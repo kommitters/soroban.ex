@@ -10,11 +10,11 @@ defmodule Soroban.RPC.GetEvents do
   @endpoint "getEvents"
 
   @impl true
-  def request(%EventsPayload{} = payload) do
+  def request(server, %EventsPayload{} = payload) do
     payload = EventsPayload.to_request_args(payload)
 
-    @endpoint
-    |> Request.new()
+    server
+    |> Request.new(@endpoint)
     |> Request.add_headers([{"Content-Type", "application/json"}])
     |> Request.add_params(payload)
     |> Request.perform()

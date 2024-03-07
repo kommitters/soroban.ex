@@ -5,14 +5,9 @@ defmodule Soroban.RPC.Request do
   The request does not happen until it is configured and passed to `perform/1`.
   """
 
-  alias Soroban.RPC.{Client, Error, HTTPError}
+  alias Soroban.RPC.{Client, Error, HTTPError, Server}
 
-  @base_urls [
-    test: "https://soroban-testnet.stellar.org",
-    future: "https://rpc-futurenet.stellar.org",
-    local: "http://localhost:8000"
-  ]
-
+  @type server :: Server.t()
   @type endpoint :: String.t()
   @type headers :: [{binary(), binary()}]
   @type params :: map() | nil
@@ -35,11 +30,8 @@ defmodule Soroban.RPC.Request do
     :headers
   ]
 
-  @spec new(endpoint :: endpoint(), opts :: opts()) :: t()
-  def new(endpoint, opts \\ []) do
-    default = @base_urls[:future]
-    url = Keyword.get(opts, :url) || Keyword.get(@base_urls, current_network(), default)
-
+  @spec new(server :: server(), endpoint :: endpoint()) :: t()
+  def new(%Server{url: url}, endpoint) do
     %__MODULE__{
       endpoint: endpoint,
       url: url,
@@ -62,7 +54,4 @@ defmodule Soroban.RPC.Request do
   @spec results(response :: response(), opts :: opts()) :: parsed_response()
   def results({:ok, results}, as: resource), do: {:ok, resource.new(results)}
   def results({:error, error}, _resource), do: {:error, error}
-
-  @spec current_network() :: atom()
-  defp current_network, do: Application.get_env(:stellar_sdk, :network, :future)
 end

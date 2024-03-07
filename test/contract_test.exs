@@ -1,23 +1,32 @@
-defmodule Stellar.Horizon.Client.CannedContractAccountRequests do
-  @moduledoc false
-
-  @base_url "https://horizon-testnet.stellar.org"
-
-  def request(
-        :get,
-        @base_url <> "/accounts/GBNDWIM7DPYZJ2RLJ3IESXBIO4C2SVF6PWZXS3DLODJSBQWBMKY5U4M3",
-        _headers,
-        _body,
-        _opts
-      ) do
-    {:ok, 200, [], "{\"sequence\":\"1390916568875069\"}"}
-  end
-end
-
 defmodule Soroban.RPC.CannedContractClientImpl do
   @moduledoc false
 
   @behaviour Soroban.RPC.Client.Spec
+
+  @impl true
+  def request(
+        "getLedgerEntries",
+        _url,
+        _headers,
+        _body,
+        _opts
+      ) do
+    send(self(), {:request, "RESPONSE"})
+
+    {:ok,
+     %{
+       entries: [
+         %{
+           key: "AAAAAAAAAAB8VFyuIrnqhGA3aSvFShpwVwYZGwD3Yx5guKZGcn1ofQ==",
+           last_modified_ledger_seq: 462_965,
+           #  this xdr is a LedgerEntryData of type account with sequence number 1_390_916_568_875_069
+           xdr:
+             "AAAAAAAAAAB8VFyuIrnqhGA3aSvFShpwVwYZGwD3Yx5guKZGcn1ofQAAABdIdugAAATxCAAAAD0AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAA"
+         }
+       ],
+       latest_ledger: 462_966
+     }}
+  end
 
   @impl true
   def request(
@@ -171,22 +180,22 @@ defmodule Soroban.ContractTest do
   alias Soroban.RPC.{
     CannedContractClientImpl,
     SendTransactionResponse,
+    Server,
     SimulateTransactionResponse
   }
 
-  alias Stellar.Horizon.Client.CannedContractAccountRequests
+  alias Stellar.Network
 
   setup do
-    Application.put_env(:stellar_sdk, :http_client, CannedContractAccountRequests)
     Application.put_env(:soroban, :http_client_impl, CannedContractClientImpl)
 
     on_exit(fn ->
-      Application.delete_env(:stellar_sdk, :http_client)
       Application.delete_env(:soroban, :http_client_impl)
     end)
 
     %{
-      extra_fee_rate: 0.05,
+      server: Server.testnet(),
+      network_passphrase: Network.testnet_passphrase(),
       contract_address: "CD3HNKU3ERTEYLBBBVTSOYE4ZL2ZWV7NHLQIZRRKC4CBNMZXC7ISBXHV",
       source_public: "GBNDWIM7DPYZJ2RLJ3IESXBIO4C2SVF6PWZXS3DLODJSBQWBMKY5U4M3",
       source_secret: "SDRD4CSRGPWUIPRDS5O3CJBNJME5XVGWNI677MZDD4OD2ZL2R6K5IQ24",
@@ -218,6 +227,8 @@ defmodule Soroban.ContractTest do
   end
 
   test "invoke/5", %{
+    server: server,
+    network_passphrase: network_passphrase,
     contract_address: contract_address,
     source_secret: source_secret,
     function_name: function_name
@@ -232,13 +243,17 @@ defmodule Soroban.ContractTest do
        diagnostic_events_xdr: nil
      }} =
       Contract.invoke(
+        server,
+        network_passphrase,
         contract_address,
         source_secret,
         function_name
       )
   end
 
-  test "invoke/5 with args", %{
+  test "invoke/6 with args", %{
+    server: server,
+    network_passphrase: network_passphrase,
     contract_address: contract_address,
     source_secret: source_secret,
     function_name: function_name,
@@ -254,6 +269,8 @@ defmodule Soroban.ContractTest do
        diagnostic_events_xdr: nil
      }} =
       Contract.invoke(
+        server,
+        network_passphrase,
         contract_address,
         source_secret,
         function_name,
@@ -261,12 +278,13 @@ defmodule Soroban.ContractTest do
       )
   end
 
-  test "invoke/5 with args and fix fee", %{
+  test "invoke/7 with args and fix fee", %{
+    server: server,
+    network_passphrase: network_passphrase,
     contract_address: contract_address,
     source_secret: source_secret,
     function_name: function_name,
-    function_args: function_args,
-    extra_fee_rate: extra_fee_rate
+    function_args: function_args
   } do
     {:ok,
      %SendTransactionResponse{
@@ -278,21 +296,23 @@ defmodule Soroban.ContractTest do
        diagnostic_events_xdr: nil
      }} =
       Contract.invoke(
+        server,
+        network_passphrase,
         contract_address,
         source_secret,
         function_name,
-        function_args,
-        extra_fee_rate
+        function_args
       )
   end
 
-  test "invoke/5 with args and auth_secret_keys", %{
+  test "invoke/8 with args and auth_secret_keys", %{
+    server: server,
+    network_passphrase: network_passphrase,
     auth_secret_keys: auth_secret_keys,
     contract_address: contract_address,
     source_secret: source_secret,
     function_name: function_name,
-    function_args: function_args,
-    extra_fee_rate: extra_fee_rate
+    function_args: function_args
   } do
     {:ok,
      %SendTransactionResponse{
@@ -304,16 +324,19 @@ defmodule Soroban.ContractTest do
        diagnostic_events_xdr: nil
      }} =
       Contract.invoke(
+        server,
+        network_passphrase,
         contract_address,
         source_secret,
         function_name,
         function_args,
-        extra_fee_rate,
         auth_secret_keys
       )
   end
 
   test "simulate_invoke/5", %{
+    server: server,
+    network_passphrase: network_passphrase,
     contract_address: contract_address,
     source_public: source_public,
     function_name: function_name
@@ -332,13 +355,47 @@ defmodule Soroban.ContractTest do
        error: nil
      }} =
       Contract.simulate_invoke(
+        server,
+        network_passphrase,
         contract_address,
         source_public,
         function_name
       )
   end
 
-  test "upload/2", %{
+  test "simulate_invoke/6", %{
+    server: server,
+    network_passphrase: network_passphrase,
+    contract_address: contract_address,
+    source_public: source_public,
+    function_name: function_name
+  } do
+    {:ok,
+     %SimulateTransactionResponse{
+       transaction_data:
+         "AAAAAAAAAAIAAAAGAAAAAQmM+SjuK6EFG2xjRoNDYSKeKWmaP+sPIZ2z+rHmx5I0AAAAFAAAAAEAAAAHjDfZjX1lF+yHF4743DgE1KQTRmGJtwRYh3hJXOzQ9k8AAAAAAE74MAAAGPAAAAAAAAAAAAAAAA0=",
+       events: nil,
+       min_resource_fee: 79_488,
+       results: [
+         %{auth: nil, xdr: "AAAAEAAAAAEAAAACAAAADwAAAAVIZWxsbwAAAAAAAA8AAAAFd29ybGQAAAA="}
+       ],
+       cost: %{cpu_insns: "1048713", mem_bytes: "1201148"},
+       latest_ledger: 45_075_181,
+       error: nil
+     }} =
+      Contract.simulate_invoke(
+        server,
+        network_passphrase,
+        contract_address,
+        source_public,
+        function_name,
+        []
+      )
+  end
+
+  test "upload/4", %{
+    server: server,
+    network_passphrase: network_passphrase,
     wasm: wasm,
     source_secret: source_secret
   } do
@@ -352,12 +409,16 @@ defmodule Soroban.ContractTest do
        diagnostic_events_xdr: nil
      }} =
       Contract.upload(
+        server,
+        network_passphrase,
         wasm,
         source_secret
       )
   end
 
-  test "deploy/2", %{
+  test "deploy/4", %{
+    server: server,
+    network_passphrase: network_passphrase,
     wasm_id: wasm_id,
     source_secret: source_secret
   } do
@@ -371,12 +432,16 @@ defmodule Soroban.ContractTest do
        diagnostic_events_xdr: nil
      }} =
       Contract.deploy(
+        server,
+        network_passphrase,
         wasm_id,
         source_secret
       )
   end
 
-  test "deploy_asset/2", %{
+  test "deploy_asset/5", %{
+    server: server,
+    network_passphrase: network_passphrase,
     asset_code: asset_code,
     source_secret: source_secret,
     source_public: source_public
@@ -391,13 +456,17 @@ defmodule Soroban.ContractTest do
        diagnostic_events_xdr: nil
      }} =
       Contract.deploy_asset(
+        server,
+        network_passphrase,
         asset_code,
         source_public,
         source_secret
       )
   end
 
-  test "extend_contract/3", %{
+  test "extend_contract/5", %{
+    server: server,
+    network_passphrase: network_passphrase,
     contract_address: contract_address,
     source_secret: source_secret,
     ledgers_to_extend: ledgers_to_extend
@@ -412,13 +481,17 @@ defmodule Soroban.ContractTest do
        diagnostic_events_xdr: nil
      }} =
       Contract.extend_contract(
+        server,
+        network_passphrase,
         contract_address,
         source_secret,
         ledgers_to_extend
       )
   end
 
-  test "extend_contract_wasm/3", %{
+  test "extend_contract_wasm/5", %{
+    server: server,
+    network_passphrase: network_passphrase,
     extend_wasm_id: extend_wasm_id,
     source_secret: source_secret,
     ledgers_to_extend: ledgers_to_extend
@@ -433,13 +506,17 @@ defmodule Soroban.ContractTest do
        diagnostic_events_xdr: nil
      }} =
       Contract.extend_contract_wasm(
+        server,
+        network_passphrase,
         extend_wasm_id,
         source_secret,
         ledgers_to_extend
       )
   end
 
-  test "extend_contract_keys/4", %{
+  test "extend_contract_keys/6", %{
+    server: server,
+    network_passphrase: network_passphrase,
     contract_address: contract_address,
     source_secret: source_secret,
     ledgers_to_extend: ledgers_to_extend,
@@ -455,6 +532,8 @@ defmodule Soroban.ContractTest do
        diagnostic_events_xdr: nil
      }} =
       Contract.extend_contract_keys(
+        server,
+        network_passphrase,
         contract_address,
         source_secret,
         ledgers_to_extend,
@@ -462,7 +541,9 @@ defmodule Soroban.ContractTest do
       )
   end
 
-  test "restore_contract/2", %{
+  test "restore_contract/4", %{
+    server: server,
+    network_passphrase: network_passphrase,
     contract_address: contract_address,
     source_secret: source_secret
   } do
@@ -476,12 +557,16 @@ defmodule Soroban.ContractTest do
        diagnostic_events_xdr: nil
      }} =
       Contract.restore_contract(
+        server,
+        network_passphrase,
         contract_address,
         source_secret
       )
   end
 
-  test "restore_contract_wasm/2", %{
+  test "restore_contract_wasm/4", %{
+    server: server,
+    network_passphrase: network_passphrase,
     extend_wasm_id: extend_wasm_id,
     source_secret: source_secret
   } do
@@ -495,12 +580,16 @@ defmodule Soroban.ContractTest do
        diagnostic_events_xdr: nil
      }} =
       Contract.restore_contract_wasm(
+        server,
+        network_passphrase,
         extend_wasm_id,
         source_secret
       )
   end
 
-  test "restore_contract_keys/3", %{
+  test "restore_contract_keys/5", %{
+    server: server,
+    network_passphrase: network_passphrase,
     contract_address: contract_address,
     source_secret: source_secret
   } do
@@ -514,13 +603,17 @@ defmodule Soroban.ContractTest do
        diagnostic_events_xdr: nil
      }} =
       Contract.restore_contract_keys(
+        server,
+        network_passphrase,
         contract_address,
         source_secret,
         persistent: ["Persistent"]
       )
   end
 
-  test "retrieve_unsigned_xdr_to_invoke/4", %{
+  test "retrieve_unsigned_xdr_to_invoke/6", %{
+    server: server,
+    network_passphrase: network_passphrase,
     contract_address: contract_address,
     source_public: source_public,
     function_name: function_name,
@@ -529,6 +622,8 @@ defmodule Soroban.ContractTest do
   } do
     ^xdr_envelope =
       Contract.retrieve_unsigned_xdr_to_invoke(
+        server,
+        network_passphrase,
         contract_address,
         source_public,
         function_name,
@@ -536,7 +631,9 @@ defmodule Soroban.ContractTest do
       )
   end
 
-  test "retrieve_unsigned_xdr_to_invoke/4 without args", %{
+  test "retrieve_unsigned_xdr_to_invoke/5 without args", %{
+    server: server,
+    network_passphrase: network_passphrase,
     contract_address: contract_address,
     source_public: source_public,
     function_name: function_name,
@@ -544,30 +641,40 @@ defmodule Soroban.ContractTest do
   } do
     ^no_args_xdr_envelope =
       Contract.retrieve_unsigned_xdr_to_invoke(
+        server,
+        network_passphrase,
         contract_address,
         source_public,
         function_name
       )
   end
 
-  test "retrieve_unsigned_xdr_to_upload/2", %{
+  test "retrieve_unsigned_xdr_to_upload/4", %{
+    server: server,
+    network_passphrase: network_passphrase,
     wasm: wasm,
     source_public: source_public,
     upload_xdr_envelope: upload_xdr_envelope
   } do
     ^upload_xdr_envelope =
       Contract.retrieve_unsigned_xdr_to_upload(
+        server,
+        network_passphrase,
         wasm,
         source_public
       )
   end
 
-  test "retrieve_unsigned_xdr_to_deploy/2", %{
+  test "retrieve_unsigned_xdr_to_deploy/4", %{
+    server: server,
+    network_passphrase: network_passphrase,
     wasm_id: wasm_id,
     source_public: source_public
   } do
     assert String.contains?(
              Contract.retrieve_unsigned_xdr_to_deploy(
+               server,
+               network_passphrase,
                wasm_id,
                source_public
              ),
@@ -575,13 +682,17 @@ defmodule Soroban.ContractTest do
            )
   end
 
-  test "retrieve_unsigned_xdr_to_deploy_asset/2", %{
+  test "retrieve_unsigned_xdr_to_deploy_asset/4", %{
+    server: server,
+    network_passphrase: network_passphrase,
     asset_code: asset_code,
     source_public: source_public,
     asset_deploy_xdr_envelope: asset_deploy_xdr_envelope
   } do
     ^asset_deploy_xdr_envelope =
       Contract.retrieve_unsigned_xdr_to_deploy_asset(
+        server,
+        network_passphrase,
         asset_code,
         source_public
       )

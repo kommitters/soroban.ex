@@ -9,9 +9,9 @@ defmodule Soroban.RPC.GetNetwork do
   @endpoint "getNetwork"
 
   @impl true
-  def request(_params \\ nil) do
-    @endpoint
-    |> Request.new()
+  def request(server, _params \\ nil) do
+    server
+    |> Request.new(@endpoint)
     |> Request.add_headers([{"Content-Type", "application/json"}])
     |> Request.perform()
     |> Request.results(as: GetNetworkResponse)

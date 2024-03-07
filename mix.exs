@@ -44,7 +44,7 @@ defmodule Soroban.MixProject do
       {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.30", only: :dev, runtime: false},
       {:excoveralls, "~> 0.17", only: :test},
-      {:stellar_sdk, "~> 0.20"},
+      {:stellar_sdk, "~> 0.21"},
       {:hackney, "~> 1.18"}
     ]
   end
@@ -58,7 +58,7 @@ defmodule Soroban.MixProject do
   defp package do
     [
       description: description(),
-      files: ["lib", "config", "mix.exs", "README*", "LICENSE"],
+      files: ["lib", "mix.exs", "README*", "LICENSE"],
       licenses: ["MIT"],
       links: %{
         "Changelog" => "#{@github_url}/blob/main/CHANGELOG.md",
