@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.20.1 (25.04.2024)
+
+- Add stale issues policy. See [PR #154](https://github.com/kommitters/soroban.ex/pull/154)
+
 ## 0.20.0 (07.03.2024)
 
 - Add Soroban.RPC.Server and network_passphrase configuration. Apply changes from `stellar_sdk` v0.21.0. See [Issue #149](https://github.com/kommitters/soroban.ex/issues/149).
