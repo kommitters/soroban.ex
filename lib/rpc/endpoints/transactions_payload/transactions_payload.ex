@@ -40,4 +40,6 @@ defmodule Soroban.RPC.TransactionsPayload do
       }) do
     %{startLedger: start_ledger, filters: nil, pagination: pagination}
   end
+
+  def to_request_args(_struct), do: :error
 end
