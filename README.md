@@ -421,6 +421,31 @@ Soroban.RPC.get_ledger_entries(server, keys)
 
 ```
 
+#### Get Version Info
+
+Version information about the RPC and Captive core.
+
+**Parameters**
+
+- `server`: `Soroban.RPC.Server` struct - The Soroban-RPC server to interact with.
+
+**Example**
+
+```elixir
+server = Soroban.RPC.Server.testnet()
+Soroban.RPC.get_version_info(server)
+
+{:ok,
+ %Soroban.RPC.GetVersionInfoResponse{
+   version: "21.4.0-dbb390c6bb99024122fccb12c8219af67d50db04",
+   commit_hash: "dbb390c6bb99024122fccb12c8219af67d50db04",
+   build_time_stamp: "2024-07-10T14:50:09",
+   captive_core_version: "stellar-core 21.1.1 (b3aeb14cc798f6d11deb2be913041be916f3b0cc)",
+   protocol_version: 21
+ }}
+
+```
+
 #### Get Events
 
 Clients can request a filtered list of events emitted by a given ledger range.
