@@ -514,6 +514,63 @@ Soroban.RPC.get_version_info(server)
 
 ```
 
+#### Get Fee Stats
+
+Statistics for charged inclusion fees. The inclusion fee statistics are calculated from the inclusion fees that were paid for the transactions to be included onto the ledger.
+
+**Parameters**
+
+- `server`: `Soroban.RPC.Server` struct - The Soroban-RPC server to interact with.
+
+**Example**
+
+```elixir
+server = Soroban.RPC.Server.testnet()
+Soroban.RPC.get_fee_stats(server)
+
+{:ok,
+ %Soroban.RPC.GetFeeStatsResponse{
+   soroban_inclusion_fee: %{
+     max: "100",
+     min: "100",
+     mode: "100",
+     p10: "100",
+     p20: "100",
+     p30: "100",
+     p40: "100",
+     p50: "100",
+     p60: "100",
+     p70: "100",
+     p80: "100",
+     p90: "100",
+     p95: "100",
+     p99: "100",
+     transaction_count: "6",
+     ledger_count: 50
+   },
+   inclusion_fee: %{
+     max: "200",
+     min: "100",
+     mode: "100",
+     p10: "100",
+     p20: "100",
+     p30: "100",
+     p40: "100",
+     p50: "100",
+     p60: "114",
+     p70: "150",
+     p80: "150",
+     p90: "200",
+     p95: "200",
+     p99: "200",
+     transaction_count: "36",
+     ledger_count: 10
+   },
+   latest_ledger: 620373
+ }}
+
+```
+
 #### Get Events
 
 Clients can request a filtered list of events emitted by a given ledger range.

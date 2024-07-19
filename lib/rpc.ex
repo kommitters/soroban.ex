@@ -5,6 +5,7 @@ defmodule Soroban.RPC do
 
   alias Soroban.RPC.{
     GetEvents,
+    GetFeeStats,
     GetHealth,
     GetLatestLedger,
     GetLedgerEntries,
@@ -44,6 +45,7 @@ defmodule Soroban.RPC do
   defdelegate get_health(server), to: GetHealth, as: :request
   defdelegate get_latest_ledger(server), to: GetLatestLedger, as: :request
   defdelegate get_network(server), to: GetNetwork, as: :request
+  defdelegate get_fee_stats(server), to: GetFeeStats, as: :request
   defdelegate get_version_info(server), to: GetVersionInfo, as: :request
 
   defp encode_xdr(%LedgerKey{} = ledger_key) do
