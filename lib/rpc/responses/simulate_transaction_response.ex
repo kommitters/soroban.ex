@@ -12,7 +12,7 @@ defmodule Soroban.RPC.SimulateTransactionResponse do
   @type restore_preamble :: map() | nil
   @type latest_ledger :: non_neg_integer()
   @type error :: String.t() | nil
-  @type state_changes :: list(map())
+  @type state_changes :: list(map()) | nil
 
   @type t :: %__MODULE__{
           min_resource_fee: min_resource_fee(),
