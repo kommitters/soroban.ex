@@ -219,6 +219,7 @@ Soroban.RPC.Server.local() # http://localhost:8000
 Submit a trial contract invocation to get back return values, expected ledger footprint, and expected costs.
 
 **Parameters**
+
 - `server`: `Soroban.RPC.Server` struct - The Soroban-RPC server to interact with.
 - `params`: Parameters to simulate the transaction:
   - `transaction`: `<xdr.TransactionEnvelope>` - The transaction to be simulated (serialized in base64).
@@ -250,6 +251,7 @@ Soroban.RPC.simulate_transaction(server, transaction: base64_envelope, addl_reso
    cost: %{cpu_insns: "1048713", mem_bytes: "1201148"},
    latest_ledger: 45075181,
    restore_preamble: nil,
+   state_changes: nil,
    error: nil
  }}
 
