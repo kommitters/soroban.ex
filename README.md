@@ -219,6 +219,7 @@ Soroban.RPC.Server.local() # http://localhost:8000
 Submit a trial contract invocation to get back return values, expected ledger footprint, and expected costs.
 
 **Parameters**
+
 - `server`: `Soroban.RPC.Server` struct - The Soroban-RPC server to interact with.
 - `params`: Parameters to simulate the transaction:
   - `transaction`: `<xdr.TransactionEnvelope>` - The transaction to be simulated (serialized in base64).
@@ -250,6 +251,7 @@ Soroban.RPC.simulate_transaction(server, transaction: base64_envelope, addl_reso
    cost: %{cpu_insns: "1048713", mem_bytes: "1201148"},
    latest_ledger: 45075181,
    restore_preamble: nil,
+   state_changes: nil,
    error: nil
  }}
 
@@ -417,6 +419,31 @@ Soroban.RPC.get_ledger_entries(server, keys)
      }
    ],
    latest_ledger: 45075181
+ }}
+
+```
+
+#### Get Version Info
+
+Version information about the RPC and Captive core.
+
+**Parameters**
+
+- `server`: `Soroban.RPC.Server` struct - The Soroban-RPC server to interact with.
+
+**Example**
+
+```elixir
+server = Soroban.RPC.Server.testnet()
+Soroban.RPC.get_version_info(server)
+
+{:ok,
+ %Soroban.RPC.GetVersionInfoResponse{
+   version: "21.4.0-dbb390c6bb99024122fccb12c8219af67d50db04",
+   commit_hash: "dbb390c6bb99024122fccb12c8219af67d50db04",
+   build_time_stamp: "2024-07-10T14:50:09",
+   captive_core_version: "stellar-core 21.1.1 (b3aeb14cc798f6d11deb2be913041be916f3b0cc)",
+   protocol_version: 21
  }}
 
 ```
