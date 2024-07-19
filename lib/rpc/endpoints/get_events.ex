@@ -4,8 +4,7 @@ defmodule Soroban.RPC.GetEvents do
   """
   @behaviour Soroban.RPC.Endpoint.Spec
 
-  alias Soroban.RPC.EventsPayload
-  alias Soroban.RPC.{GetEventsResponse, Request}
+  alias Soroban.RPC.{EventsPayload, GetEventsResponse, Request}
 
   @endpoint "getEvents"
 
