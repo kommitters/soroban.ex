@@ -39,7 +39,7 @@ defmodule Soroban.RPC do
     as: :request
 
   defdelegate get_transaction(server, hash), to: GetTransaction, as: :request
-  defdelegate get_transactions(server, hash), to: GetTransactions, as: :request
+  defdelegate get_transactions(server, payload), to: GetTransactions, as: :request
   defdelegate get_ledger_entries(server, keys), to: GetLedgerEntries, as: :request
   defdelegate get_events(server, payload), to: GetEvents, as: :request
   defdelegate get_health(server), to: GetHealth, as: :request
