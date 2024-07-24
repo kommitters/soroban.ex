@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.21.0 (23.07.2024)
+## 0.21.0 (24.07.2024)
 
 - [Stellar Protocol 21 support](https://github.com/kommitters/soroban.ex/issues/158).
   - Create the getVersionInfo endpoint
