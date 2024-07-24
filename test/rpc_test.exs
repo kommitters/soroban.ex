@@ -100,7 +100,10 @@ defmodule Soroban.RPC.CannedRPCGetHealthClientImpl do
 
     {:ok,
      %{
-       status: "healthy"
+       status: "healthy",
+       latest_ledger: 706_073,
+       oldest_ledger: 688_794,
+       ledger_retention_window: 17_280
      }}
   end
 end
