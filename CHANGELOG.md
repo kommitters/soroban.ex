@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.21.0 (24.07.2024)
+
+- [Stellar Protocol 21 support](https://github.com/kommitters/soroban.ex/issues/158).
+  - Create the getVersionInfo endpoint
+  - Create the getTransactions endpoint
+  - Create the getFeeStats endpoint
+  - Update the simulateTransaction response
+
 ## 0.20.1 (25.04.2024)
 
 - Add stale issues policy. See [PR #154](https://github.com/kommitters/soroban.ex/pull/154)

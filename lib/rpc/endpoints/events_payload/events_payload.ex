@@ -2,20 +2,15 @@ defmodule Soroban.RPC.EventsPayload do
   @moduledoc """
   `EventsPayload` struct definition.
   """
+  import Soroban.RPC.Helper
   alias Soroban.RPC.EventFilter
 
   @type args :: Keyword.t()
-  @type cursor :: binary() | nil
-  @type cursor_validation :: {:ok, cursor()}
-  @type limit :: number() | nil
-  @type limit_validation :: {:ok, limit()}
   @type error :: {:error, atom()}
   @type start_ledger :: non_neg_integer() | nil
-  @type start_ledger_validation :: {:ok, start_ledger()} | error()
   @type filters :: list(EventFilter.t()) | nil
   @type filters_validation :: {:ok, filters()} | error()
   @type pagination :: map() | nil
-  @type pagination_validation :: {:ok, pagination()} | error()
   @type request_args :: map() | :error
   @type t :: %__MODULE__{
           start_ledger: start_ledger(),
@@ -65,23 +60,6 @@ defmodule Soroban.RPC.EventsPayload do
   end
 
   def to_request_args(_struct), do: :error
-
-  @spec validate_start_ledger(start_ledger :: start_ledger()) :: start_ledger_validation()
-  defp validate_start_ledger(start_ledger) when is_number(start_ledger) and start_ledger >= 0,
-    do: {:ok, start_ledger}
-
-  defp validate_start_ledger(nil), do: {:ok, nil}
-  defp validate_start_ledger(_start_ledger), do: {:error, :invalid_start_ledger}
-
-  @spec validate_cursor(cursor :: cursor()) :: cursor_validation()
-  defp validate_cursor(cursor) when is_binary(cursor), do: {:ok, cursor}
-  defp validate_cursor(nil), do: {:ok, nil}
-  defp validate_cursor(_cursor), do: {:error, :invalid_cursor}
-
-  @spec validate_limit(limit :: limit()) :: limit_validation()
-  defp validate_limit(limit) when is_number(limit), do: {:ok, limit}
-  defp validate_limit(nil), do: {:ok, nil}
-  defp validate_limit(_limit), do: {:error, :invalid_limit}
 
   @spec validate_filters(filters :: filters()) :: filters_validation()
   defp validate_filters([%EventFilter{} = filter | _] = filters) when length(filters) in 1..5 do

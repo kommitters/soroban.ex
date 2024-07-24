@@ -19,7 +19,7 @@
 ```elixir
 def deps do
   [
-    {:soroban, "~> 0.20.1"}
+    {:soroban, "~> 0.21.0"}
   ]
 end
 ```
@@ -219,6 +219,7 @@ Soroban.RPC.Server.local() # http://localhost:8000
 Submit a trial contract invocation to get back return values, expected ledger footprint, and expected costs.
 
 **Parameters**
+
 - `server`: `Soroban.RPC.Server` struct - The Soroban-RPC server to interact with.
 - `params`: Parameters to simulate the transaction:
   - `transaction`: `<xdr.TransactionEnvelope>` - The transaction to be simulated (serialized in base64).
@@ -250,6 +251,7 @@ Soroban.RPC.simulate_transaction(server, transaction: base64_envelope, addl_reso
    cost: %{cpu_insns: "1048713", mem_bytes: "1201148"},
    latest_ledger: 45075181,
    restore_preamble: nil,
+   state_changes: nil,
    error: nil
  }}
 
@@ -319,6 +321,72 @@ Soroban.RPC.get_transaction(server, hash)
    result_meta_xdr:
      "AAAAAwAAAAIAAAADAAdFBQAAAAAAAAAAwT6e0zIpycpZ5/unUFyQAjXNeSxfmidj8tQWkeD9dCQAAAAXDNwRHAAAUF8AAAAgAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAwAAAAAAB0J+AAAAAGRSydYAAAAAAAAAAQAHRQUAAAAAAAAAAME+ntMyKcnKWef7p1BckAI1zXksX5onY/LUFpHg/XQkAAAAFwzcERwAAFBfAAAAIQAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAMAAAAAAAdFBQAAAABkUtcZAAAAAAAAAAEAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAGQAAAAAAAAAAQAAAAAAAAAYAAAAAAAAABAAAAABAAAAAgAAAA8AAAAFSGVsbG8AAAAAAAAPAAAABXdvcmxkAAAAAAAAAKQ1a84I/mDKy5j2B/YFeyfTCsTBoKJtON5QDfqS06qwy7xIdQ3ruFNQk7Per4isf0z/h0JVdqWN4rrHVKzbRhYD6NIFNZRcltVrmGLx9Y+ku182sxlHjDdsZ28pYul9HwAAAAA=",
    ledger: 476421
+ }}
+
+```
+
+#### Get Transactions
+
+The getTransactions method return a detailed list of transactions starting from the user specified starting point.
+
+**Parameters**
+
+- `server`: `Soroban.RPC.Server` struct - The Soroban-RPC server to interact with.
+- `TransactionsPayload`:
+
+  - `start_ledger`: Stringified ledger sequence number to fetch events after (inclusive). This method will return an error if start_ledger is less than the oldest ledger stored in this node, or greater than the latest ledger seen by this node. If a cursor is included in the request, start_ledger must be omitted.
+
+  - `cursor`: A string ID that points to a specific location in a collection of responses and is pulled from the paging_token value of a record. When a cursor is provided Soroban-RPC will not include the element whose id matches the cursor in the response. Only elements which appear after the cursor are included.
+
+  - `limit`: The maximum number of records returned. For getTransactions, this ranges from 1 to 200 and defaults to 50.
+
+**Example**
+
+```elixir
+alias Soroban.RPC.TransactionsPayload
+
+server = Soroban.RPC.Server.testnet()
+
+start_ledger = 600000
+limit = 2
+
+transactions_payload = TransactionsPayload.new(start_ledger: start_ledger, limit: limit)
+
+Soroban.RPC.get_transactions(server, transactions_payload)
+
+{:ok,
+ %Soroban.RPC.GetTransactionsResponse{
+    transactions: [
+      %{
+        status: "FAILED",
+        applicationOrder: 1,
+        feeBump: false,
+        envelopeXdr:
+          "AAAAAgAAAACDz21Q3CTITlGqRus3/96/05EDivbtfJncNQKt64BTbAAAASwAAKkyAAXlMwAAAAEAAAAAAAAAAAAAAABmWeASAAAAAQAAABR3YWxsZXQ6MTcxMjkwNjMzNjUxMAAAAAEAAAABAAAAAIPPbVDcJMhOUapG6zf/3r/TkQOK9u18mdw1Aq3rgFNsAAAAAQAAAABwOSvou8mtwTtCkysVioO35TSgyRir2+WGqO8FShG/GAAAAAFVQUgAAAAAAO371tlrHUfK+AvmQvHje1jSUrvJb3y3wrJ7EplQeqTkAAAAAAX14QAAAAAAAAAAAeuAU2wAAABAn+6A+xXvMasptAm9BEJwf5Y9CLLQtV44TsNqS8ocPmn4n8Rtyb09SBiFoMv8isYgeQU5nAHsIwBNbEKCerusAQ==",
+        resultXdr: "AAAAAAAAAGT/////AAAAAQAAAAAAAAAB////+gAAAAA=",
+        resultMetaXdr:
+          "AAAAAwAAAAAAAAACAAAAAwAc0RsAAAAAAAAAAIPPbVDcJMhOUapG6zf/3r/TkQOK9u18mdw1Aq3rgFNsAAAAF0YpYBQAAKkyAAXlMgAAAAsAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAMAAAAAABzRGgAAAABmWd/VAAAAAAAAAAEAHNEbAAAAAAAAAACDz21Q3CTITlGqRus3/96/05EDivbtfJncNQKt64BTbAAAABdGKWAUAACpMgAF5TMAAAALAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAADAAAAAAAc0RsAAAAAZlnf2gAAAAAAAAAAAAAAAAAAAAA=",
+        ledger: 1_888_539,
+        createdAt: 1_717_166_042
+      },
+      %{
+        status: "SUCCESS",
+        applicationOrder: 2,
+        feeBump: false,
+        envelopeXdr:
+          "AAAAAgAAAAC4EZup+ewCs/doS3hKbeAa4EviBHqAFYM09oHuLtqrGAAPQkAAGgQZAAAANgAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAABAAAAABB90WssODNIgi6BHveqzxTRmIpvAFRyVNM+Hm2GVuCcAAAAAAAAAAAq6aHAHZ2sd9aPbRsskrlXMLWIwqs4Sv2Bk+VwuIR+9wAAABdIdugAAAAAAAAAAAIu2qsYAAAAQERzKOqYYiPXNwsiL8ADAG/f45RBssmf3umGzw4qKkLGlObuPdX0buWmTGrhI13SG38F2V8Mp9DI+eDkcCjMSAOGVuCcAAAAQHnm0o/r+Gsl+6oqBgSbqoSY37gflvQB3zZRghuir0N75UVerd0Q50yG5Zfu08i2crhx6uk+5HYTl8/Sa7uZ+Qc=",
+        resultXdr: "AAAAAAAAAGQAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAA=",
+        resultMetaXdr:
+          "AAAAAwAAAAAAAAACAAAAAwAc0RsAAAAAAAAAALgRm6n57AKz92hLeEpt4BrgS+IEeoAVgzT2ge4u2qsYAAAAADwzS2gAGgQZAAAANQAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAMAAAAAABzPVAAAAABmWdZ2AAAAAAAAAAEAHNEbAAAAAAAAAAC4EZup+ewCs/doS3hKbeAa4EviBHqAFYM09oHuLtqrGAAAAAA8M0toABoEGQAAADYAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAADAAAAAAAc0RsAAAAAZlnf2gAAAAAAAAABAAAAAwAAAAMAHNEaAAAAAAAAAAAQfdFrLDgzSIIugR73qs8U0ZiKbwBUclTTPh5thlbgnABZJUSd0V2hAAAAawAAAlEAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAADAAAAAAAaBGEAAAAAZkspCwAAAAAAAAABABzRGwAAAAAAAAAAEH3Rayw4M0iCLoEe96rPFNGYim8AVHJU0z4ebYZW4JwAWSUtVVp1oQAAAGsAAAJRAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAwAAAAAAGgRhAAAAAGZLKQsAAAAAAAAAAAAc0RsAAAAAAAAAACrpocAdnax31o9tGyySuVcwtYjCqzhK/YGT5XC4hH73AAAAF0h26AAAHNEbAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+        ledger: 1_888_539,
+        createdAt: 1_717_166_042
+      }
+    ],
+    latest_ledger: 1_888_542,
+    latest_ledger_close_timestamp: 1_717_166_057,
+    oldest_ledger: 1_871_263,
+    oldest_ledger_close_timestamp: 1_717_075_350,
+    cursor: "8111217537191937"
  }}
 
 ```
@@ -417,6 +485,88 @@ Soroban.RPC.get_ledger_entries(server, keys)
      }
    ],
    latest_ledger: 45075181
+ }}
+
+```
+
+#### Get Version Info
+
+Version information about the RPC and Captive core.
+
+**Parameters**
+
+- `server`: `Soroban.RPC.Server` struct - The Soroban-RPC server to interact with.
+
+**Example**
+
+```elixir
+server = Soroban.RPC.Server.testnet()
+Soroban.RPC.get_version_info(server)
+
+{:ok,
+ %Soroban.RPC.GetVersionInfoResponse{
+   version: "21.4.0-dbb390c6bb99024122fccb12c8219af67d50db04",
+   commit_hash: "dbb390c6bb99024122fccb12c8219af67d50db04",
+   build_time_stamp: "2024-07-10T14:50:09",
+   captive_core_version: "stellar-core 21.1.1 (b3aeb14cc798f6d11deb2be913041be916f3b0cc)",
+   protocol_version: 21
+ }}
+
+```
+
+#### Get Fee Stats
+
+Statistics for charged inclusion fees. The inclusion fee statistics are calculated from the inclusion fees that were paid for the transactions to be included onto the ledger.
+
+**Parameters**
+
+- `server`: `Soroban.RPC.Server` struct - The Soroban-RPC server to interact with.
+
+**Example**
+
+```elixir
+server = Soroban.RPC.Server.testnet()
+Soroban.RPC.get_fee_stats(server)
+
+{:ok,
+ %Soroban.RPC.GetFeeStatsResponse{
+   soroban_inclusion_fee: %{
+     max: "100",
+     min: "100",
+     mode: "100",
+     p10: "100",
+     p20: "100",
+     p30: "100",
+     p40: "100",
+     p50: "100",
+     p60: "100",
+     p70: "100",
+     p80: "100",
+     p90: "100",
+     p95: "100",
+     p99: "100",
+     transaction_count: "6",
+     ledger_count: 50
+   },
+   inclusion_fee: %{
+     max: "200",
+     min: "100",
+     mode: "100",
+     p10: "100",
+     p20: "100",
+     p30: "100",
+     p40: "100",
+     p50: "100",
+     p60: "114",
+     p70: "150",
+     p80: "150",
+     p90: "200",
+     p95: "200",
+     p99: "200",
+     transaction_count: "36",
+     ledger_count: 10
+   },
+   latest_ledger: 620373
  }}
 
 ```

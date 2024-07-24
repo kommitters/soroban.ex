@@ -226,6 +226,122 @@ defmodule Soroban.RPC.CannedRPCGetTransactionClientImpl do
   end
 end
 
+defmodule Soroban.RPC.CannedRPCGetVersionInfoClientImpl do
+  @moduledoc false
+  @behaviour Soroban.RPC.Client.Spec
+
+  @impl true
+  def request(_endpoint, _url, _headers, _body, _opts) do
+    send(self(), {:request, "RESPONSE"})
+
+    {:ok,
+     %{
+       version: "21.1.0",
+       commit_hash: "fcd2f0523f04279bae4502f3e3fa00ca627e6f6a",
+       build_time_stamp: "2024-05-10T11:18:38",
+       captive_core_version: "stellar-core 21.0.0.rc2 (c6f474133738ae5f6d11b07963ca841909210273)",
+       protocol_version: 21
+     }}
+  end
+end
+
+defmodule Soroban.RPC.CannedRPCGetTransactionsClientImpl do
+  @moduledoc false
+
+  @behaviour Soroban.RPC.Client.Spec
+
+  @impl true
+  def request(_endpoint, _url, _headers, _body, _opts) do
+    send(self(), {:request, "RESPONSE"})
+
+    {:ok,
+     %{
+       transactions: [
+         %{
+           status: "FAILED",
+           applicationOrder: 1,
+           feeBump: false,
+           envelopeXdr:
+             "AAAAAgAAAACDz21Q3CTITlGqRus3/96/05EDivbtfJncNQKt64BTbAAAASwAAKkyAAXlMwAAAAEAAAAAAAAAAAAAAABmWeASAAAAAQAAABR3YWxsZXQ6MTcxMjkwNjMzNjUxMAAAAAEAAAABAAAAAIPPbVDcJMhOUapG6zf/3r/TkQOK9u18mdw1Aq3rgFNsAAAAAQAAAABwOSvou8mtwTtCkysVioO35TSgyRir2+WGqO8FShG/GAAAAAFVQUgAAAAAAO371tlrHUfK+AvmQvHje1jSUrvJb3y3wrJ7EplQeqTkAAAAAAX14QAAAAAAAAAAAeuAU2wAAABAn+6A+xXvMasptAm9BEJwf5Y9CLLQtV44TsNqS8ocPmn4n8Rtyb09SBiFoMv8isYgeQU5nAHsIwBNbEKCerusAQ==",
+           resultXdr: "AAAAAAAAAGT/////AAAAAQAAAAAAAAAB////+gAAAAA=",
+           resultMetaXdr:
+             "AAAAAwAAAAAAAAACAAAAAwAc0RsAAAAAAAAAAIPPbVDcJMhOUapG6zf/3r/TkQOK9u18mdw1Aq3rgFNsAAAAF0YpYBQAAKkyAAXlMgAAAAsAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAMAAAAAABzRGgAAAABmWd/VAAAAAAAAAAEAHNEbAAAAAAAAAACDz21Q3CTITlGqRus3/96/05EDivbtfJncNQKt64BTbAAAABdGKWAUAACpMgAF5TMAAAALAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAADAAAAAAAc0RsAAAAAZlnf2gAAAAAAAAAAAAAAAAAAAAA=",
+           ledger: 1_888_539,
+           createdAt: 1_717_166_042
+         },
+         %{
+           status: "SUCCESS",
+           applicationOrder: 2,
+           feeBump: false,
+           envelopeXdr:
+             "AAAAAgAAAAC4EZup+ewCs/doS3hKbeAa4EviBHqAFYM09oHuLtqrGAAPQkAAGgQZAAAANgAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAABAAAAABB90WssODNIgi6BHveqzxTRmIpvAFRyVNM+Hm2GVuCcAAAAAAAAAAAq6aHAHZ2sd9aPbRsskrlXMLWIwqs4Sv2Bk+VwuIR+9wAAABdIdugAAAAAAAAAAAIu2qsYAAAAQERzKOqYYiPXNwsiL8ADAG/f45RBssmf3umGzw4qKkLGlObuPdX0buWmTGrhI13SG38F2V8Mp9DI+eDkcCjMSAOGVuCcAAAAQHnm0o/r+Gsl+6oqBgSbqoSY37gflvQB3zZRghuir0N75UVerd0Q50yG5Zfu08i2crhx6uk+5HYTl8/Sa7uZ+Qc=",
+           resultXdr: "AAAAAAAAAGQAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAA=",
+           resultMetaXdr:
+             "AAAAAwAAAAAAAAACAAAAAwAc0RsAAAAAAAAAALgRm6n57AKz92hLeEpt4BrgS+IEeoAVgzT2ge4u2qsYAAAAADwzS2gAGgQZAAAANQAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAMAAAAAABzPVAAAAABmWdZ2AAAAAAAAAAEAHNEbAAAAAAAAAAC4EZup+ewCs/doS3hKbeAa4EviBHqAFYM09oHuLtqrGAAAAAA8M0toABoEGQAAADYAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAADAAAAAAAc0RsAAAAAZlnf2gAAAAAAAAABAAAAAwAAAAMAHNEaAAAAAAAAAAAQfdFrLDgzSIIugR73qs8U0ZiKbwBUclTTPh5thlbgnABZJUSd0V2hAAAAawAAAlEAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAADAAAAAAAaBGEAAAAAZkspCwAAAAAAAAABABzRGwAAAAAAAAAAEH3Rayw4M0iCLoEe96rPFNGYim8AVHJU0z4ebYZW4JwAWSUtVVp1oQAAAGsAAAJRAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAwAAAAAAGgRhAAAAAGZLKQsAAAAAAAAAAAAc0RsAAAAAAAAAACrpocAdnax31o9tGyySuVcwtYjCqzhK/YGT5XC4hH73AAAAF0h26AAAHNEbAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+           ledger: 1_888_539,
+           createdAt: 1_717_166_042
+         }
+       ],
+       latest_ledger: 1_888_542,
+       latest_ledger_close_timestamp: 1_717_166_057,
+       oldest_ledger: 1_871_263,
+       oldest_ledger_close_timestamp: 1_717_075_350,
+       cursor: "8111217537191937"
+     }}
+  end
+end
+
+defmodule Soroban.RPC.CannedRPCGetFeeStatsClientImpl do
+  @moduledoc false
+  @behaviour Soroban.RPC.Client.Spec
+
+  @impl true
+  def request(_endpoint, _url, _header, _body, _opts) do
+    send(self(), {:request, "RESPONSE"})
+
+    {:ok,
+     %{
+       soroban_inclusion_fee: %{
+         max: "100",
+         min: "100",
+         mode: "100",
+         p10: "100",
+         p20: "100",
+         p30: "100",
+         p40: "100",
+         p50: "100",
+         p60: "100",
+         p70: "100",
+         p80: "100",
+         p90: "100",
+         p95: "100",
+         p99: "100",
+         transaction_count: "7",
+         ledger_count: 50
+       },
+       inclusion_fee: %{
+         max: "200",
+         min: "100",
+         mode: "200",
+         p10: "100",
+         p20: "100",
+         p30: "100",
+         p40: "150",
+         p50: "200",
+         p60: "200",
+         p70: "200",
+         p80: "200",
+         p90: "200",
+         p95: "200",
+         p99: "200",
+         transaction_count: "27",
+         ledger_count: 10
+       },
+       latest_ledger: 619_731
+     }}
+  end
+end
+
 defmodule Soroban.RPCTest do
   use ExUnit.Case
 
@@ -233,12 +349,15 @@ defmodule Soroban.RPCTest do
 
   alias Soroban.RPC.{
     CannedRPCGetEventsClientImpl,
+    CannedRPCGetFeeStatsClientImpl,
     CannedRPCGetHealthClientImpl,
     CannedRPCGetLatestLedgerClientImpl,
     CannedRPCGetLedgerEntriesClientImpl,
     CannedRPCGetLedgerEntriesForAccountClientImpl,
     CannedRPCGetNetworkClientImpl,
     CannedRPCGetTransactionClientImpl,
+    CannedRPCGetTransactionsClientImpl,
+    CannedRPCGetVersionInfoClientImpl,
     CannedRPCSendTransactionClientImpl,
     CannedRPCSimulateTransactionClientImpl,
     EventFilter,
@@ -249,10 +368,12 @@ defmodule Soroban.RPCTest do
     GetLedgerEntriesResponse,
     GetNetworkResponse,
     GetTransactionResponse,
+    GetTransactionsResponse,
     SendTransactionResponse,
     Server,
     SimulateTransactionResponse,
-    TopicFilter
+    TopicFilter,
+    TransactionsPayload
   }
 
   alias Soroban.Types.Symbol
@@ -388,6 +509,37 @@ defmodule Soroban.RPCTest do
     end
   end
 
+  describe "get_transactions/2" do
+    setup do
+      Application.put_env(:soroban, :http_client_impl, CannedRPCGetTransactionsClientImpl)
+
+      on_exit(fn ->
+        Application.delete_env(:soroban, :http_client_impl)
+      end)
+
+      start_ledger = 1000
+      limit = 2
+      cursor = "8111217537191937"
+
+      transaction_payload =
+        TransactionsPayload.new(start_ledger: start_ledger, limit: limit, cursor: cursor)
+
+      %{payload: transaction_payload}
+    end
+
+    test "request/2", %{server: server, payload: payload} do
+      {:ok,
+       %GetTransactionsResponse{
+         transactions: _transactions,
+         latest_ledger: 1_888_542,
+         latest_ledger_close_timestamp: 1_717_166_057,
+         oldest_ledger: 1_871_263,
+         oldest_ledger_close_timestamp: 1_717_075_350,
+         cursor: "8111217537191937"
+       }} = RPC.get_transactions(server, payload)
+    end
+  end
+
   describe "get_health/1" do
     setup do
       Application.put_env(:soroban, :http_client_impl, CannedRPCGetHealthClientImpl)
@@ -517,6 +669,81 @@ defmodule Soroban.RPCTest do
            }
          ]
        }} = RPC.get_events(server, event)
+    end
+  end
+
+  describe "get_version_info/1" do
+    setup do
+      Application.put_env(:soroban, :http_client_impl, CannedRPCGetVersionInfoClientImpl)
+
+      on_exit(fn ->
+        Application.delete_env(:soroban, :http_client_impl)
+      end)
+    end
+
+    test "request/1", %{server: server} do
+      {:ok,
+       %{
+         version: "21.1.0",
+         commit_hash: "fcd2f0523f04279bae4502f3e3fa00ca627e6f6a",
+         build_time_stamp: "2024-05-10T11:18:38",
+         captive_core_version:
+           "stellar-core 21.0.0.rc2 (c6f474133738ae5f6d11b07963ca841909210273)",
+         protocol_version: 21
+       }} = RPC.get_version_info(server)
+    end
+  end
+
+  describe "get_feed_stats/1" do
+    setup do
+      Application.put_env(:soroban, :http_client_impl, CannedRPCGetFeeStatsClientImpl)
+
+      on_exit(fn ->
+        Application.delete_env(:soroban, :http_client_impl)
+      end)
+    end
+
+    test "request/1", %{server: server} do
+      {:ok,
+       %{
+         soroban_inclusion_fee: %{
+           max: "100",
+           min: "100",
+           mode: "100",
+           p10: "100",
+           p20: "100",
+           p30: "100",
+           p40: "100",
+           p50: "100",
+           p60: "100",
+           p70: "100",
+           p80: "100",
+           p90: "100",
+           p95: "100",
+           p99: "100",
+           transaction_count: "7",
+           ledger_count: 50
+         },
+         inclusion_fee: %{
+           max: "200",
+           min: "100",
+           mode: "200",
+           p10: "100",
+           p20: "100",
+           p30: "100",
+           p40: "150",
+           p50: "200",
+           p60: "200",
+           p70: "200",
+           p80: "200",
+           p90: "200",
+           p95: "200",
+           p99: "200",
+           transaction_count: "27",
+           ledger_count: 10
+         },
+         latest_ledger: 619_731
+       }} = RPC.get_fee_stats(server)
     end
   end
 end

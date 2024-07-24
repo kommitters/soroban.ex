@@ -12,6 +12,7 @@ defmodule Soroban.RPC.SimulateTransactionResponse do
   @type restore_preamble :: map() | nil
   @type latest_ledger :: non_neg_integer()
   @type error :: String.t() | nil
+  @type state_changes :: list(map()) | nil
 
   @type t :: %__MODULE__{
           min_resource_fee: min_resource_fee(),
@@ -21,6 +22,7 @@ defmodule Soroban.RPC.SimulateTransactionResponse do
           events: events(),
           restore_preamble: restore_preamble(),
           latest_ledger: latest_ledger(),
+          state_changes: state_changes(),
           error: error()
         }
 
@@ -32,6 +34,7 @@ defmodule Soroban.RPC.SimulateTransactionResponse do
     :events,
     :restore_preamble,
     :latest_ledger,
+    :state_changes,
     :error
   ]
 
