@@ -405,7 +405,13 @@ General node health check.
 server = Soroban.RPC.Server.testnet()
 Soroban.RPC.get_health(server)
 
-{:ok, %Soroban.RPC.GetHealthResponse{status: "healthy"}}
+{:ok,
+ %Soroban.RPC.GetHealthResponse{
+   status: "healthy",
+   latest_ledger: 706073,
+   oldest_ledger: 688794,
+   ledger_retention_window: 17280
+ }}
 
 ```
 
