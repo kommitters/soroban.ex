@@ -19,7 +19,7 @@
 ```elixir
 def deps do
   [
-    {:soroban, "~> 0.21.0"}
+    {:soroban, "~> 0.22.0"}
   ]
 end
 ```
@@ -405,7 +405,13 @@ General node health check.
 server = Soroban.RPC.Server.testnet()
 Soroban.RPC.get_health(server)
 
-{:ok, %Soroban.RPC.GetHealthResponse{status: "healthy"}}
+{:ok,
+ %Soroban.RPC.GetHealthResponse{
+   status: "healthy",
+   latest_ledger: 706073,
+   oldest_ledger: 688794,
+   ledger_retention_window: 17280
+ }}
 
 ```
 

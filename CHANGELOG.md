@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.22.0 (24.07.2024)
+
+- Update the getHealth endpoint response
+
 ## 0.21.0 (24.07.2024)
 
 - [Stellar Protocol 21 support](https://github.com/kommitters/soroban.ex/issues/158).
